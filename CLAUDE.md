@@ -261,3 +261,91 @@ Orchestrateur:
 - **Workflow** = Architecture → Validation → Implémentation → **Quality Gate (≥8/10)** → Test → Itération
 - **Règle d'or** = Déléguer aux experts, attendre leurs résultats, ne pas faire leur travail
 - **Quality Gate obligatoire** = Aucun code ne passe sans note ≥8/10 du Code Quality Reviewer
+
+---
+
+## Structure de Fichiers du Projet
+
+**IMPORTANT**: Tous les fichiers de code source doivent respecter cette structure obligatoire:
+
+```
+Assets/
+├── lib/                    # Packages réutilisables (bibliothèques)
+│   └── [package-name]/     # Nom en kebab-case
+│       ├── Runtime/
+│       ├── Tests/
+│       └── Documentation~/
+├── game/                   # Code spécifique au jeu
+│   └── [package-name]/     # Nom en kebab-case
+│       ├── Runtime/
+│       ├── Tests/
+│       └── Documentation~/
+```
+
+### Règles Critiques
+
+1. **JAMAIS créer de fichiers .meta manuellement**
+   - Unity génère automatiquement ces fichiers lors de la compilation/import
+   - Les agents ne doivent JAMAIS créer, modifier ou mentionner les fichiers .meta
+
+2. **Assets/lib/** pour les packages réutilisables
+   - Moteur voxel (voxel-core, voxel-terrain, voxel-rendering, etc.)
+   - Utilitaires génériques
+   - Frameworks et systèmes réutilisables
+
+3. **Assets/game/** pour le code spécifique au jeu
+   - Player controller
+   - Ennemis spécifiques
+   - Game modes
+   - UI du jeu
+
+4. **Nommage des packages**: kebab-case obligatoire
+   - ✅ Correct: `voxel-core`, `player-controller`, `enemy-ai`
+   - ❌ Incorrect: `VoxelCore`, `voxel_core`, `voxelcore`
+
+5. **Structure minimale obligatoire** pour chaque package:
+   - `Runtime/` - Code de production
+   - `Tests/` - Tests unitaires et d'intégration
+   - `Documentation~/` - Documentation du package
+
+### Exemple Concret
+
+```
+Assets/
+├── lib/
+│   ├── voxel-core/
+│   │   ├── Runtime/
+│   │   │   ├── Data/
+│   │   │   │   ├── VoxelType.cs
+│   │   │   │   └── ChunkCoord.cs
+│   │   │   ├── Interfaces/
+│   │   │   │   └── IChunkManager.cs
+│   │   │   └── TimeSurvivor.Voxel.Core.asmdef
+│   │   ├── Tests/
+│   │   │   └── Runtime/
+│   │   │       ├── VoxelTypeTests.cs
+│   │   │       └── TimeSurvivor.Voxel.Core.Tests.asmdef
+│   │   └── Documentation~/
+│   │       └── VoxelCore.md
+│   ├── voxel-terrain/
+│   │   └── Runtime/
+│   │       └── TimeSurvivor.Voxel.Terrain.asmdef
+│   └── voxel-rendering/
+│       └── Runtime/
+│           └── TimeSurvivor.Voxel.Rendering.asmdef
+└── game/
+    ├── player/
+    │   └── Runtime/
+    │       └── TimeSurvivor.Game.Player.asmdef
+    └── enemies/
+        └── Runtime/
+            └── TimeSurvivor.Game.Enemies.asmdef
+```
+
+### Instructions pour les Agents
+
+- **Architecte**: Spécifier la structure Assets/lib/ ou Assets/game/ dans les specs
+- **Développeur**: Créer les fichiers dans la bonne structure, ne JAMAIS créer de .meta
+- **Quality Reviewer**: Vérifier que la structure est respectée (pénalité si non-conforme)
+
+Cette structure est **NON NÉGOCIABLE** et doit être respectée par tous les agents.

@@ -124,3 +124,37 @@ Priority order:
 - When requesting revision (score < 8), clearly prioritize what must be fixed vs. what would be nice to improve
 
 You are not just looking for bugs - you are ensuring the code is maintainable, scalable, and adheres to professional software engineering standards.
+
+## Project File Structure Validation
+
+When reviewing code, verify adherence to the project's file structure convention:
+
+**Required Structure:**
+```
+Assets/
+├── lib/                    # Library/reusable packages
+│   └── [package-name]/     # Kebab-case naming
+│       ├── Runtime/
+│       ├── Tests/
+│       └── Documentation~/
+├── game/                   # Game-specific code
+│   └── [package-name]/     # Kebab-case naming
+│       ├── Runtime/
+│       ├── Tests/
+│       └── Documentation~/
+```
+
+**Critical Validation Points:**
+1. **No .meta files should be created manually** - These are Unity-generated and should not appear in code submissions
+2. **Correct folder location**: Library code in Assets/lib/, game code in Assets/game/
+3. **Consistent naming**: Package names must use kebab-case (voxel-core, not VoxelCore or voxel_core)
+4. **Complete structure**: Every package must have Runtime/, Tests/, and Documentation~/ folders
+5. **Assembly definitions**: .asmdef files must be in Runtime/ and Tests/Runtime/ folders
+
+**Quality Impact:**
+- Files in wrong location (not in lib/ or game/): **-2 points** (Major Issue)
+- Missing required folders (Runtime/Tests/Documentation~): **-1 point** (Major Issue)
+- Wrong naming convention: **-1 point** (Major Issue)
+- Manually created .meta files: **-2 points** (Critical Issue)
+
+When reviewing, always check file paths and flag any deviations from this structure.
