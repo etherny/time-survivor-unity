@@ -33,11 +33,12 @@ namespace TimeSurvivor.Demos.ProceduralTerrain.Editor
             System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(SCENE_PATH));
             EditorSceneManager.SaveScene(newScene, SCENE_PATH);
 
-            Debug.Log($"[DemoSceneSetup] Demo scene created successfully at: {SCENE_PATH}");
+            Debug.Log($"[DemoSceneSetup] ✅ Demo scene created successfully at: {SCENE_PATH}");
+            Debug.Log("[DemoSceneSetup] ✅ All UI elements created and automatically assigned to DemoController!");
             Debug.Log("[DemoSceneSetup] Next steps:\n" +
-                      "1. Assign UI references in DemoController Inspector\n" +
-                      "2. Create VoxelTerrain material with vertex color support\n" +
-                      "3. Press Play to test the demo");
+                      "1. Run: Tools > Voxel Demos > Create Voxel Terrain Shader (to create material)\n" +
+                      "2. Assign VoxelTerrain.mat to DemoController > Voxel Material in Inspector\n" +
+                      "3. Press Play to test the demo!");
 
             // Select DemoController for easy configuration
             Selection.activeGameObject = demoController;
@@ -142,15 +143,15 @@ namespace TimeSurvivor.Demos.ProceduralTerrain.Editor
             }
 
             // Create UI panels
-            CreateControlPanel(canvas.transform);
-            CreateStatsPanel(canvas.transform);
+            CreateControlPanel(canvas.transform, demoController);
+            CreateStatsPanel(canvas.transform, demoController);
 
-            Debug.Log("[DemoSceneSetup] UI Canvas created. Manually assign UI elements to DemoController.");
+            Debug.Log("[DemoSceneSetup] UI Canvas created with all sliders, buttons, and automatic DemoController assignments!");
 
             return canvasObj;
         }
 
-        private static void CreateControlPanel(Transform canvasTransform)
+        private static void CreateControlPanel(Transform canvasTransform, GameObject demoController)
         {
             // Create panel
             GameObject panelObj = new GameObject("Panel - Controls");
@@ -160,35 +161,46 @@ namespace TimeSurvivor.Demos.ProceduralTerrain.Editor
             panelRect.anchorMax = new Vector2(0f, 0.5f);
             panelRect.pivot = new Vector2(0f, 0.5f);
             panelRect.anchoredPosition = new Vector2(20f, 0f);
-            panelRect.sizeDelta = new Vector2(300f, 400f);
+            panelRect.sizeDelta = new Vector2(300f, 450f);
 
             Image panelImage = panelObj.AddComponent<Image>();
             panelImage.color = new Color(0f, 0f, 0f, 0.7f);
 
             // Title
             CreateText(panelObj.transform, "Title", "Procedural Terrain Generation",
-                new Vector2(0f, 180f), new Vector2(280f, 30f), 18, TextAlignmentOptions.Center);
+                new Vector2(150f, -20f), new Vector2(280f, 30f), 18, TextAlignmentOptions.Center);
 
-            // Sliders (placeholder - manual setup required)
-            CreateText(panelObj.transform, "Seed Label", "Seed: (Add Slider)",
-                new Vector2(0f, 140f), new Vector2(280f, 30f), 14, TextAlignmentOptions.Left);
-            CreateText(panelObj.transform, "Frequency Label", "Frequency: (Add Slider)",
-                new Vector2(0f, 100f), new Vector2(280f, 30f), 14, TextAlignmentOptions.Left);
-            CreateText(panelObj.transform, "Amplitude Label", "Amplitude: (Add Slider)",
-                new Vector2(0f, 60f), new Vector2(280f, 30f), 14, TextAlignmentOptions.Left);
-            CreateText(panelObj.transform, "OffsetY Label", "Offset Y: (Add Slider)",
-                new Vector2(0f, 20f), new Vector2(280f, 30f), 14, TextAlignmentOptions.Left);
+            // Create sliders
+            Slider seedSlider = CreateSlider(panelObj.transform, "Slider - Seed", "Seed",
+                new Vector2(150f, -70f), 0f, 999999f, 12345f, true);
+            Slider freqSlider = CreateSlider(panelObj.transform, "Slider - Frequency", "Frequency",
+                new Vector2(150f, -130f), 0.01f, 0.2f, 0.05f, false);
+            Slider ampSlider = CreateSlider(panelObj.transform, "Slider - Amplitude", "Amplitude",
+                new Vector2(150f, -190f), 5f, 50f, 20f, true);
+            Slider offsetSlider = CreateSlider(panelObj.transform, "Slider - OffsetY", "Offset Y",
+                new Vector2(150f, -250f), 0f, 64f, 32f, true);
 
-            // Buttons (placeholder - manual setup required)
-            CreateText(panelObj.transform, "Generate Label", "(Add Generate Button)",
-                new Vector2(0f, -40f), new Vector2(280f, 30f), 14, TextAlignmentOptions.Center);
-            CreateText(panelObj.transform, "Randomize Label", "(Add Randomize Button)",
-                new Vector2(0f, -80f), new Vector2(280f, 30f), 14, TextAlignmentOptions.Center);
+            // Create buttons
+            Button generateBtn = CreateButton(panelObj.transform, "Button - Generate", "Generate Chunk",
+                new Vector2(150f, -310f), new Color(0.13f, 0.59f, 0.95f)); // Blue
+            Button randomizeBtn = CreateButton(panelObj.transform, "Button - Randomize", "Randomize Seed",
+                new Vector2(150f, -370f), new Color(0.30f, 0.69f, 0.31f)); // Green
 
-            Debug.Log("[DemoSceneSetup] Control Panel created. Add sliders and buttons manually via UI Builder.");
+            // Assign references to DemoController using reflection
+            var controller = demoController.GetComponent<DemoController>();
+            var controllerType = typeof(DemoController);
+
+            AssignField(controllerType, controller, "seedSlider", seedSlider);
+            AssignField(controllerType, controller, "frequencySlider", freqSlider);
+            AssignField(controllerType, controller, "amplitudeSlider", ampSlider);
+            AssignField(controllerType, controller, "offsetYSlider", offsetSlider);
+            AssignField(controllerType, controller, "generateButton", generateBtn);
+            AssignField(controllerType, controller, "randomizeButton", randomizeBtn);
+
+            Debug.Log("[DemoSceneSetup] Control Panel created with 4 sliders and 2 buttons - automatically assigned to DemoController!");
         }
 
-        private static void CreateStatsPanel(Transform canvasTransform)
+        private static void CreateStatsPanel(Transform canvasTransform, GameObject demoController)
         {
             // Create panel
             GameObject panelObj = new GameObject("Panel - Stats");
@@ -206,14 +218,25 @@ namespace TimeSurvivor.Demos.ProceduralTerrain.Editor
             // Stats texts
             CreateText(panelObj.transform, "Stats Title", "Performance Stats",
                 new Vector2(-175f, -20f), new Vector2(330f, 30f), 18, TextAlignmentOptions.Center);
-            CreateText(panelObj.transform, "Generation Time", "Generation Time: -- ms",
-                new Vector2(-175f, -60f), new Vector2(330f, 25f), 14, TextAlignmentOptions.Left);
-            CreateText(panelObj.transform, "Voxel Count", "Solid Voxels: --",
-                new Vector2(-175f, -90f), new Vector2(330f, 25f), 14, TextAlignmentOptions.Left);
-            CreateText(panelObj.transform, "Distribution", "Distribution:\n(Generating...)",
-                new Vector2(-175f, -160f), new Vector2(330f, 100f), 14, TextAlignmentOptions.TopLeft);
-            CreateText(panelObj.transform, "FPS", "FPS: --",
-                new Vector2(-175f, -270f), new Vector2(330f, 25f), 14, TextAlignmentOptions.Left);
+            TextMeshProUGUI genTimeText = CreateText(panelObj.transform, "Text - Generation Time", "Generation Time: -- ms",
+                new Vector2(-175f, -60f), new Vector2(330f, 25f), 14, TextAlignmentOptions.Left).GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI voxelCountText = CreateText(panelObj.transform, "Text - Voxel Count", "Solid Voxels: --",
+                new Vector2(-175f, -90f), new Vector2(330f, 25f), 14, TextAlignmentOptions.Left).GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI distributionText = CreateText(panelObj.transform, "Text - Distribution", "Distribution:\n(Generating...)",
+                new Vector2(-175f, -160f), new Vector2(330f, 100f), 14, TextAlignmentOptions.TopLeft).GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI fpsText = CreateText(panelObj.transform, "Text - FPS", "FPS: --",
+                new Vector2(-175f, -270f), new Vector2(330f, 25f), 14, TextAlignmentOptions.Left).GetComponent<TextMeshProUGUI>();
+
+            // Assign references to DemoController using reflection
+            var controller = demoController.GetComponent<DemoController>();
+            var controllerType = typeof(DemoController);
+
+            AssignField(controllerType, controller, "generationTimeText", genTimeText);
+            AssignField(controllerType, controller, "voxelCountText", voxelCountText);
+            AssignField(controllerType, controller, "distributionText", distributionText);
+            AssignField(controllerType, controller, "fpsText", fpsText);
+
+            Debug.Log("[DemoSceneSetup] Stats Panel created with 4 text fields - automatically assigned to DemoController!");
         }
 
         private static GameObject CreateText(Transform parent, string name, string content,
@@ -232,6 +255,139 @@ namespace TimeSurvivor.Demos.ProceduralTerrain.Editor
             text.color = Color.white;
 
             return textObj;
+        }
+
+        private static Slider CreateSlider(Transform parent, string name, string label,
+            Vector2 position, float minValue, float maxValue, float defaultValue, bool wholeNumbers)
+        {
+            // Create slider GameObject
+            GameObject sliderObj = new GameObject(name);
+            sliderObj.transform.SetParent(parent, false);
+            RectTransform sliderRect = sliderObj.AddComponent<RectTransform>();
+            sliderRect.anchoredPosition = position;
+            sliderRect.sizeDelta = new Vector2(280f, 30f);
+
+            // Add Slider component
+            Slider slider = sliderObj.AddComponent<Slider>();
+            slider.minValue = minValue;
+            slider.maxValue = maxValue;
+            slider.value = defaultValue;
+            slider.wholeNumbers = wholeNumbers;
+
+            // Create Background
+            GameObject bgObj = new GameObject("Background");
+            bgObj.transform.SetParent(sliderObj.transform, false);
+            RectTransform bgRect = bgObj.AddComponent<RectTransform>();
+            bgRect.anchorMin = new Vector2(0f, 0.25f);
+            bgRect.anchorMax = new Vector2(1f, 0.75f);
+            bgRect.sizeDelta = Vector2.zero;
+            Image bgImage = bgObj.AddComponent<Image>();
+            bgImage.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+
+            // Create Fill Area
+            GameObject fillAreaObj = new GameObject("Fill Area");
+            fillAreaObj.transform.SetParent(sliderObj.transform, false);
+            RectTransform fillAreaRect = fillAreaObj.AddComponent<RectTransform>();
+            fillAreaRect.anchorMin = new Vector2(0f, 0.25f);
+            fillAreaRect.anchorMax = new Vector2(1f, 0.75f);
+            fillAreaRect.sizeDelta = new Vector2(-20f, 0f);
+
+            // Create Fill
+            GameObject fillObj = new GameObject("Fill");
+            fillObj.transform.SetParent(fillAreaObj.transform, false);
+            RectTransform fillRect = fillObj.AddComponent<RectTransform>();
+            fillRect.sizeDelta = Vector2.zero;
+            Image fillImage = fillObj.AddComponent<Image>();
+            fillImage.color = new Color(0.13f, 0.59f, 0.95f, 1f); // Blue
+
+            // Create Handle Slide Area
+            GameObject handleAreaObj = new GameObject("Handle Slide Area");
+            handleAreaObj.transform.SetParent(sliderObj.transform, false);
+            RectTransform handleAreaRect = handleAreaObj.AddComponent<RectTransform>();
+            handleAreaRect.anchorMin = Vector2.zero;
+            handleAreaRect.anchorMax = Vector2.one;
+            handleAreaRect.sizeDelta = new Vector2(-20f, 0f);
+
+            // Create Handle
+            GameObject handleObj = new GameObject("Handle");
+            handleObj.transform.SetParent(handleAreaObj.transform, false);
+            RectTransform handleRect = handleObj.AddComponent<RectTransform>();
+            handleRect.sizeDelta = new Vector2(20f, 0f);
+            Image handleImage = handleObj.AddComponent<Image>();
+            handleImage.color = Color.white;
+
+            // Assign slider references
+            slider.fillRect = fillRect;
+            slider.handleRect = handleRect;
+            slider.targetGraphic = handleImage;
+
+            // Create label above slider
+            string valueStr = wholeNumbers ? defaultValue.ToString("F0") : defaultValue.ToString("F2");
+            GameObject labelObj = CreateText(sliderObj.transform, "Label", $"{label}: {valueStr}",
+                new Vector2(0f, 20f), new Vector2(280f, 20f), 14, TextAlignmentOptions.Left);
+
+            return slider;
+        }
+
+        private static Button CreateButton(Transform parent, string name, string buttonText,
+            Vector2 position, Color normalColor)
+        {
+            // Create button GameObject
+            GameObject buttonObj = new GameObject(name);
+            buttonObj.transform.SetParent(parent, false);
+            RectTransform buttonRect = buttonObj.AddComponent<RectTransform>();
+            buttonRect.anchoredPosition = position;
+            buttonRect.sizeDelta = new Vector2(280f, 40f);
+
+            // Add Image
+            Image buttonImage = buttonObj.AddComponent<Image>();
+            buttonImage.color = normalColor;
+
+            // Add Button component
+            Button button = buttonObj.AddComponent<Button>();
+            button.targetGraphic = buttonImage;
+
+            // Set color tint transition
+            ColorBlock colors = button.colors;
+            colors.normalColor = normalColor;
+            colors.highlightedColor = normalColor * 1.2f;
+            colors.pressedColor = normalColor * 0.8f;
+            button.colors = colors;
+
+            // Create text child
+            GameObject textObj = new GameObject("Text (TMP)");
+            textObj.transform.SetParent(buttonObj.transform, false);
+            RectTransform textRect = textObj.AddComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.sizeDelta = Vector2.zero;
+
+            TextMeshProUGUI text = textObj.AddComponent<TextMeshProUGUI>();
+            text.text = buttonText;
+            text.fontSize = 18;
+            text.alignment = TextAlignmentOptions.Center;
+            text.color = Color.white;
+            text.fontStyle = FontStyles.Bold;
+
+            return button;
+        }
+
+        private static void AssignField(System.Type type, object instance, string fieldName, object value)
+        {
+            var field = type.GetField(fieldName,
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.Instance);
+
+            if (field != null)
+            {
+                field.SetValue(instance, value);
+                Debug.Log($"[DemoSceneSetup] Assigned {fieldName} to DemoController");
+            }
+            else
+            {
+                Debug.LogWarning($"[DemoSceneSetup] Field '{fieldName}' not found in DemoController");
+            }
         }
     }
 }
