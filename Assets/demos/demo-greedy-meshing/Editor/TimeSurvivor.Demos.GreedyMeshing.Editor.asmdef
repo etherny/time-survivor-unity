@@ -5,6 +5,7 @@
         "TimeSurvivor.Demos.GreedyMeshing",
         "TimeSurvivor.Voxel.Core",
         "TimeSurvivor.Voxel.Rendering",
+        "Unity.RenderPipelines.Universal.Runtime",
         "Unity.TextMeshPro"
     ],
     "includePlatforms": [
