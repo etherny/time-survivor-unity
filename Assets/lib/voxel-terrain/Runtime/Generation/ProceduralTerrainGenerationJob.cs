@@ -24,8 +24,6 @@ namespace TimeSurvivor.Voxel.Terrain
 
         public void Execute()
         {
-            var noise = new SimplexNoise3D(Seed, NoiseFrequency, NoiseOctaves);
-
             // Calculate world position of chunk origin
             float3 chunkWorldOrigin = VoxelMath.ChunkCoordToWorld(ChunkCoord, ChunkSize, VoxelSize);
 
@@ -41,17 +39,21 @@ namespace TimeSurvivor.Voxel.Terrain
                         // Calculate world position of this voxel
                         float3 worldPos = chunkWorldOrigin + (float3)localCoord * VoxelSize;
 
-                        // Generate voxel type based on noise
-                        VoxelData[index] = GenerateVoxelAt(worldPos, noise);
+                        // Generate voxel type based on noise (using static class methods)
+                        VoxelData[index] = GenerateVoxelAt(worldPos);
                     }
                 }
             }
         }
 
-        private VoxelType GenerateVoxelAt(float3 worldPos, SimplexNoise3D noise)
+        private VoxelType GenerateVoxelAt(float3 worldPos)
         {
-            // Get 3D noise value for this position
-            float density = noise.GetNoise(worldPos.x, worldPos.y, worldPos.z);
+            // Get 3D noise value for this position using SimplexNoise3D static methods
+            float density = SimplexNoise3D.MultiOctave(
+                worldPos.x, worldPos.y, worldPos.z,
+                Seed,
+                NoiseFrequency,
+                NoiseOctaves);
 
             // Simple terrain generation: higher Y = less likely to be solid
             float heightFactor = worldPos.y * 0.05f; // Scale factor for height influence
@@ -66,8 +68,12 @@ namespace TimeSurvivor.Voxel.Terrain
                 }
                 else if (worldPos.y > 0f)
                 {
-                    // Surface layer
-                    float surfaceNoise = noise.GetNoise(worldPos.x * 0.1f, 0, worldPos.z * 0.1f);
+                    // Surface layer - use different noise sample for surface detail
+                    float surfaceNoise = SimplexNoise3D.Noise(
+                        worldPos.x * 0.1f,
+                        0,
+                        worldPos.z * 0.1f,
+                        Seed + 1); // Different seed for surface variation
                     if (surfaceNoise > 0.2f)
                         return VoxelType.Grass;
                     else
