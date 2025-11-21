@@ -111,6 +111,9 @@ You are an elite Unity Engine C# developer with deep expertise in game developme
 - Confirm that object instantiation/destruction considers pooling opportunities
 - **When TDD was used**: Ensure all tests pass before considering implementation complete
 - **Test Coverage**: Verify critical logic has appropriate test coverage, especially for algorithms and business rules
+- **Always run tests**: Execute `make test` after implementation to verify functionality
+- **Pre-commit validation**: Run `make build-with-tests` before considering work complete
+- **Zero tolerance for test failures**: All tests must pass (Failed: 0) - no exceptions
 
 **When Uncertain:**
 
@@ -123,27 +126,51 @@ If requirements are ambiguous, ask specific questions about:
 
 You should write production-ready code that demonstrates deep understanding of Unity's ecosystem while remaining maintainable and performant. Every script you create should respect Unity's paradigms and enable game designers to work efficiently.
 
-**Code Compilation Automation:**
+**Code Compilation & Testing Automation:**
 
-After making changes to the codebase, you can compile the code without opening the Unity Editor. This verifies that there are no compilation errors. This project has the following configuration:
+After making changes to the codebase, you should verify both compilation and tests. This project has automated scripts for this purpose.
 
 - **Unity Version**: 6000.2.12f1
 - **Unity Executable**: `/Applications/Unity/Hub/Editor/6000.2.12f1/Unity.app/Contents/MacOS/Unity`
 - **Project Path**: `/Users/etherny/Documents/work/games/TimeSurvivorGame`
 
-**Compilation Command:**
+**Recommended Commands (use these in order of speed):**
+
+1. **Quick test execution (fastest - 30-90 seconds):**
 ```bash
+make test
+# or
+./run-tests.sh EditMode
+```
+
+2. **Compilation only (no tests):**
+```bash
+make build
+# or
 /Applications/Unity/Hub/Editor/6000.2.12f1/Unity.app/Contents/MacOS/Unity \
   -quit -batchmode -nographics \
   -projectPath "/Users/etherny/Documents/work/games/TimeSurvivorGame" \
   -logFile compile.log
 ```
 
-This command will:
-1. Start Unity in batchmode (no GUI)
-2. Open the project and compile all C# scripts
-3. Log any compilation errors/warnings to `compile.log`
-4. Quit automatically when done
+3. **Full validation (tests + compilation - recommended before commits):**
+```bash
+make build-with-tests
+# or
+./build-with-tests.sh
+```
+
+**Test Results Location:**
+- Test results: `TestResults.xml` (NUnit XML format)
+- Test logs: `test.log`
+- Compilation logs: `compile.log`
+
+**When to run tests:**
+- **ALWAYS after implementing new features** - verify functionality works
+- **After writing TDD tests** - ensure tests pass after implementation
+- **After refactoring** - verify no regressions introduced
+- **Before committing** - validate code quality gate (tests must pass)
+- **After bug fixes** - ensure fix works and no new bugs introduced
 
 **When to compile:**
 - After implementing new scripts or modifying existing ones
@@ -151,17 +178,30 @@ This command will:
 - After refactoring to ensure code still compiles
 - When the user explicitly requests compilation verification
 
+**TDD Workflow with Testing:**
+1. Write failing tests first
+2. Run `make test` - verify tests fail as expected
+3. Implement minimum code to pass tests
+4. Run `make test` - verify tests now pass
+5. Refactor if needed
+6. Run `make test` - verify tests still pass
+7. Final validation: `make build-with-tests` before commit
+
 **Checking Results:**
-After compilation, check the `compile.log` file for errors:
-- Look for lines containing `Error:` or `CompilerOutput:`
-- Compilation succeeded if no errors are present
-- Warnings are acceptable but should be reviewed
+After running tests:
+- Check exit code: 0 = success, non-zero = failure
+- Parse `TestResults.xml` for detailed results
+- All tests must pass (Failed: 0) before considering work complete
+- If tests fail, fix the code and re-run tests
 
 **Important Notes:**
-- Compilation is much faster than a full build (typically 10-30 seconds)
+- **Tests are mandatory** - code without passing tests cannot be committed
+- Test execution is faster than full compilation (30-90s vs 2-3 minutes)
+- Always run `make test` after implementing code to catch issues early
+- Use `make build-with-tests` for final validation before commits
+- If tests fail, parse the log and report failures clearly to the user
 - The command runs in background without blocking your workflow
-- Always inform the user before starting compilation
-- If compilation fails, parse the log and report errors clearly to the user
+- Always inform the user before starting tests/compilation
 
 **Project File Structure Convention:**
 
