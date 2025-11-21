@@ -26,6 +26,7 @@ agent unity-voxel-engine-architect
 - Définir les patterns et bonnes pratiques
 - Créer des roadmaps architecturales
 - Analyser les trade-offs entre différentes approches
+- **Définir la structure et le scope des démonstrations Unity**
 
 **Quand l'utiliser**:
 - Conception de nouveaux systèmes voxel
@@ -52,6 +53,7 @@ agent unity-csharp-developer
 - Gérer le lifecycle Unity (Awake, Start, Update, etc.)
 - Implémenter les patterns de design
 - Assurer la qualité et maintenabilité du code
+- **Créer les scènes de démonstration Unity complètes (structure, scripts, assets, README.md)**
 
 **Quand l'utiliser**:
 - Implémentation de features après la phase d'architecture
@@ -80,6 +82,7 @@ agent code-quality-reviewer
 - Proposer des améliorations concrètes et actionnables
 - Vérifier la testabilité et maintenabilité du code
 - **Compiler le projet Unity** pour s'assurer qu'il n'y a pas d'erreurs de compilation avant de rendre la main ou de faire un commit
+- **Valider les démonstrations Unity** (scène fonctionnelle, README complet, compilation réussie, note ≥8/10)
 
 **Quand l'utiliser**:
 - **SYSTÉMATIQUEMENT** après chaque implémentation de code par le Développeur
@@ -103,7 +106,7 @@ agent code-quality-reviewer
 
 ---
 
-## Workflow Recommandé : Architecture → Réalisation → Quality Gate
+## Workflow Recommandé : Architecture → Réalisation → Quality Gate → Démonstration
 
 ### Phase 1 : Architecture et Conception
 1. **Délégation à l'Architecte** (`unity-voxel-engine-architect`)
@@ -151,6 +154,127 @@ agent code-quality-reviewer
    - Si bugs/optimisations → retour au Développeur + Quality Reviewer
    - Si qualité insuffisante → retour au Développeur (Quality Gate)
    - Itérer jusqu'à satisfaction (specs + qualité ≥8)
+
+### Phase 4 : Démonstration ⚠️ **OBLIGATOIRE À LA FIN DE CHAQUE ISSUE**
+7. **Création de la Démo Unity** - Collaboration de **TOUS les agents**
+
+   **Objectif**: Livrer une scène Unity de démonstration fonctionnelle pour validation humaine.
+
+   **Participants**:
+   - **Architecte** (`unity-voxel-engine-architect`): Définir la structure de la démo et son architecture
+   - **Développeur** (`unity-csharp-developer`): Créer tous les assets nécessaires (scripts, scène, materials, prefabs)
+   - **Quality Reviewer** (`code-quality-reviewer`): Valider la qualité de la démo et compiler Unity
+
+   **Livrables obligatoires**:
+
+   a. **Structure complète de la démo** (créée par le Développeur):
+   ```
+   Assets/
+   └── demos/
+       └── [issue-name]/              # Nom en kebab-case (ex: demo-greedy-meshing)
+           ├── Scenes/
+           │   └── DemoScene.unity
+           ├── Scripts/
+           │   └── DemoController.cs  # Script orchestrant la démo
+           ├── Materials/
+           │   └── *.mat              # Materials nécessaires
+           ├── Prefabs/
+           │   └── *.prefab           # Prefabs de la démo
+           └── README.md              # Guide utilisateur (OBLIGATOIRE)
+   ```
+
+   b. **Document Guide (README.md)** - Template obligatoire:
+   ```markdown
+   # Démo: [Nom de la Feature/Issue]
+
+   ## Description
+   [Brève description de ce que démontre cette scène]
+
+   ## Prérequis
+   - Unity Version: [version]
+   - Packages requis: [liste]
+   - Configuration: [settings Unity nécessaires]
+
+   ## Installation
+   1. [Étape 1 avec détails]
+   2. [Étape 2 avec détails]
+   3. [...]
+
+   ## Utilisation
+   ### Étape 1: Ouvrir la scène
+   - Aller dans `Assets/demos/[issue-name]/Scenes/DemoScene.unity`
+   - Double-cliquer pour ouvrir
+
+   ### Étape 2: Configuration de la scène
+   - [Instructions détaillées]
+   - [Paramètres à vérifier dans l'Inspector]
+
+   ### Étape 3: Lancer la démonstration
+   - Appuyer sur Play
+   - [Comportements attendus]
+   - [Contrôles disponibles (clavier/souris)]
+
+   ## Validation
+   ### Ce que vous devriez voir:
+   - ✅ [Critère de succès 1]
+   - ✅ [Critère de succès 2]
+   - ✅ [Critère de succès 3]
+
+   ### Problèmes connus
+   - [Liste des limitations ou bugs connus]
+
+   ## Notes techniques
+   - [Détails d'implémentation importants]
+   - [Considérations de performance]
+   ```
+
+   c. **Validation de la démo** (par le Quality Reviewer):
+   - La scène Unity s'ouvre sans erreurs
+   - Tous les assets sont correctement référencés (pas de références manquantes)
+   - Le build Unity compile sans erreurs ni warnings
+   - La démo fonctionne en mode Play
+   - Le README.md est complet et suit le template
+   - Note qualité globale de la démo ≥ 8/10
+
+   **Processus de création**:
+
+   1. **Architecte**: Définir le scope et la structure de la démo
+      - Quels aspects de la feature doivent être démontrés?
+      - Quelle architecture pour la scène de démo?
+      - Quels assets sont nécessaires?
+
+   2. **Développeur**: Créer l'intégralité de la démo
+      - Créer la structure de répertoires dans `Assets/demos/[issue-name]/`
+      - Créer la scène Unity (`DemoScene.unity`)
+      - Créer le script `DemoController.cs` orchestrant la démo
+      - Créer tous les materials, prefabs nécessaires
+      - Rédiger le README.md complet selon le template
+      - Configurer la scène pour être plug-and-play
+
+   3. **Quality Reviewer**: Valider la démo
+      - Ouvrir la scène et vérifier qu'il n'y a pas d'erreurs
+      - Compiler le projet Unity
+      - Tester la démo en mode Play
+      - Vérifier que le README est complet et clair
+      - Vérifier que tous les assets sont bien organisés
+      - Donner une note /10 (≥8 requis)
+
+   4. **Livraison finale**:
+      - Structure complète dans `Assets/demos/[issue-name]/`
+      - README.md avec instructions détaillées
+      - Scène Unity fonctionnelle
+      - Compilation réussie
+      - Validation humaine possible immédiatement
+
+   **Critères de succès**:
+   - ✅ Structure de répertoires respectée
+   - ✅ README.md complet et détaillé
+   - ✅ Scène Unity fonctionnelle sans erreurs
+   - ✅ Build Unity compile sans erreurs
+   - ✅ Démo testable en <2 minutes par un humain
+   - ✅ Note qualité ≥ 8/10 du Quality Reviewer
+
+   **Important**: La démo n'est PAS optionnelle. Chaque issue doit se terminer avec une démo validée permettant à un humain de tester immédiatement la feature implémentée.
 
 ---
 
@@ -218,7 +342,27 @@ Orchestrateur:
    → Build : ✅ Compilation réussie
    → Passe la quality gate
 
-7. Présente le résultat final à l'utilisateur (code validé qualité ≥8 + build OK)
+7. DÉMONSTRATION - Collaboration des 3 agents
+   a. Délègue à unity-voxel-engine-architect
+      → Définit la structure de la démo : scène simple avec chunks, contrôles camera
+
+   b. Délègue à unity-csharp-developer
+      → Crée Assets/demos/demo-greedy-meshing/
+      → Crée DemoScene.unity avec terrain voxel
+      → Crée DemoController.cs (toggle greedy meshing on/off, stats FPS)
+      → Crée README.md avec instructions détaillées
+
+   c. Délègue à code-quality-reviewer
+      → Ouvre la scène, teste en Play mode
+      → Vérifie README complet et clair
+      → Build Unity compile ✅
+      → Note démo : 9/10 ✅
+
+8. Présente la démo finale à l'utilisateur
+   → Code validé qualité ≥8
+   → Démo fonctionnelle dans Assets/demos/demo-greedy-meshing/
+   → README.md guide l'utilisateur pour tester en <2min
+   → Issue terminée et prête pour validation humaine
 ```
 
 ### Exemple 2 : Bug de Performance
@@ -270,9 +414,10 @@ Orchestrateur:
 - **Architecte** = Conception, spécifications, analyse système
 - **Développeur** = Implémentation, code, bugs, optimisations
 - **Code Quality Reviewer** = Validation qualité, SOLID, Clean Code, ADRs, compilation Unity (Quality Gate ≥8/10 + build OK)
-- **Workflow** = Architecture → Validation → Implémentation → **Quality Gate (≥8/10 + build)** → Test → Itération
+- **Workflow** = Architecture → Validation → Implémentation → **Quality Gate (≥8/10 + build)** → Test → Itération → **Démonstration (obligatoire)**
 - **Règle d'or** = Déléguer aux experts, attendre leurs résultats, ne pas faire leur travail
 - **Quality Gate obligatoire** = Aucun code ne passe sans note ≥8/10 ET compilation Unity réussie
+- **Démonstration obligatoire** = Chaque issue se termine avec une démo Unity fonctionnelle + README.md pour validation humaine immédiate
 
 ---
 
@@ -356,8 +501,17 @@ Assets/
 
 ### Instructions pour les Agents
 
-- **Architecte**: Spécifier la structure Assets/lib/ ou Assets/game/ dans les specs
-- **Développeur**: Créer les fichiers dans la bonne structure, ne JAMAIS créer de .meta
-- **Quality Reviewer**: Vérifier que la structure est respectée (pénalité si non-conforme)
+- **Architecte**:
+  - Spécifier la structure Assets/lib/ ou Assets/game/ dans les specs
+  - Définir le scope et l'architecture des démonstrations Unity
+
+- **Développeur**:
+  - Créer les fichiers dans la bonne structure, ne JAMAIS créer de .meta
+  - Créer les démonstrations dans Assets/demos/[issue-name]/ avec structure complète
+  - Rédiger les README.md détaillés selon le template obligatoire
+
+- **Quality Reviewer**:
+  - Vérifier que la structure est respectée (pénalité si non-conforme)
+  - Valider les démonstrations (scène fonctionnelle, README complet, note ≥8/10)
 
 Cette structure est **NON NÉGOCIABLE** et doit être respectée par tous les agents.
