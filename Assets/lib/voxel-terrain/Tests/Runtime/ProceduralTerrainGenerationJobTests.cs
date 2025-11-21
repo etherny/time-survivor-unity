@@ -51,6 +51,7 @@ namespace TimeSurvivor.Voxel.Terrain.Tests
                 NoiseOctaves = DefaultOctaves,
                 Lacunarity = DefaultLacunarity,
                 Persistence = DefaultPersistence,
+                TerrainOffsetY = (DefaultChunkSize * DefaultVoxelSize) / 2f, // Center terrain in chunk (6.4 world units for 64-size chunks)
                 VoxelData = voxelData
             };
         }

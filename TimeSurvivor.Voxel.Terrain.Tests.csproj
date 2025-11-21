@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Assets/lib/voxel-terrain/Tests/Runtime/ProceduralTerrainGenerationJobTests.cs" />
     <Compile Include="Assets/lib/voxel-terrain/Tests/Runtime/SimplexNoise3DTests.cs" />
+    <Compile Include="Assets/lib/voxel-terrain/Tests/Runtime/ProceduralTerrainGenerationJobValidationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets/lib/voxel-terrain/Tests/Runtime/TimeSurvivor.Voxel.Terrain.Tests.asmdef" />

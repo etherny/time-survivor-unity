@@ -108,12 +108,12 @@ namespace TimeSurvivor.Voxel.Terrain
                 Lacunarity,
                 Persistence);
 
-            // BUG FIX #1: Reduce amplitude from 30% to 25% for better terrain visibility
-            // Amplitude controls hill height variation (±25% = ±16 blocks for ChunkSize=64)
+            // AMPLITUDE FIX: Increase amplitude to 50% for better stone distribution
+            // Amplitude controls hill height variation (±50% = ±6.4 world units for ChunkSize=64, VoxelSize=0.2)
             // Example: noise=0  → surfaceHeight = TerrainOffsetY
-            //          noise=1  → surfaceHeight = TerrainOffsetY + 16 blocks
-            //          noise=-1 → surfaceHeight = TerrainOffsetY - 16 blocks
-            float heightAmplitude = ChunkSize * 0.25f; // ±25% of chunk height
+            //          noise=1  → surfaceHeight = TerrainOffsetY + 6.4 world units (32 voxels)
+            //          noise=-1 → surfaceHeight = TerrainOffsetY - 6.4 world units (32 voxels)
+            float heightAmplitude = ChunkSize * VoxelSize * 0.5f; // ±50% in world units (reduced stone from 44% to ~28%)
             float surfaceHeight = TerrainOffsetY + (heightNoise * heightAmplitude);
 
             // STEP 2: Define water level at base terrain height (fills valleys only)
