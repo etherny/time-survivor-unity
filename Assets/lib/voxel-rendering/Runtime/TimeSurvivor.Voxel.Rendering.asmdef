@@ -1,0 +1,20 @@
+{
+  "name": "TimeSurvivor.Voxel.Rendering",
+  "rootNamespace": "TimeSurvivor.Voxel.Rendering",
+  "references": [
+    "TimeSurvivor.Voxel.Core",
+    "Unity.Mathematics",
+    "Unity.Collections",
+    "Unity.Burst",
+    "Unity.Jobs"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": true,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

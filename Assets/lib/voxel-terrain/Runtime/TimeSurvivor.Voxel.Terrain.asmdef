@@ -1,0 +1,21 @@
+{
+  "name": "TimeSurvivor.Voxel.Terrain",
+  "rootNamespace": "TimeSurvivor.Voxel.Terrain",
+  "references": [
+    "TimeSurvivor.Voxel.Core",
+    "TimeSurvivor.Voxel.Rendering",
+    "Unity.Mathematics",
+    "Unity.Collections",
+    "Unity.Burst",
+    "Unity.Jobs"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": true,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
