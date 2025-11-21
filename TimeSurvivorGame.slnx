@@ -1,6 +1,8 @@
 ﻿<Solution>
   <Project Path="TimeSurvivor.Voxel.Core.csproj" />
+  <Project Path="TimeSurvivor.Voxel.Terrain.Tests.csproj" />
   <Project Path="TimeSurvivor.Voxel.Terrain.csproj" />
   <Project Path="TimeSurvivor.Voxel.Rendering.csproj" />
   <Project Path="TimeSurvivor.Voxel.Physics.csproj" />
+  <Project Path="TimeSurvivor.Game.DebugTools.csproj" />
 </Solution>

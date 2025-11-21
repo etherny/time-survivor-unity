@@ -2,3 +2,5 @@ Library/
 Logs/
 Temp/
 *.log
+UserSettings/Search.index
+UserSettings/Search.settings
