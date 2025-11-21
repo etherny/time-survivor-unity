@@ -79,6 +79,7 @@ agent code-quality-reviewer
 - Fournir une note de qualité /10 avec justification détaillée
 - Proposer des améliorations concrètes et actionnables
 - Vérifier la testabilité et maintenabilité du code
+- **Compiler le projet Unity** pour s'assurer qu'il n'y a pas d'erreurs de compilation avant de rendre la main ou de faire un commit
 
 **Quand l'utiliser**:
 - **SYSTÉMATIQUEMENT** après chaque implémentation de code par le Développeur
@@ -92,11 +93,13 @@ agent code-quality-reviewer
 - Rapport détaillé des violations
 - Recommandations d'amélioration
 - Code corrigé si note <8
+- **Confirmation que le build Unity compile sans erreurs**
 
 **Quality Gate**:
 - **Note minimale requise**: 8/10
-- **Si note <8**: Retour au Développeur pour corrections obligatoires
-- **Itération**: Continuer jusqu'à atteindre ≥8/10
+- **Build Unity doit compiler sans erreurs**
+- **Si note <8 OU erreurs de compilation**: Retour au Développeur pour corrections obligatoires
+- **Itération**: Continuer jusqu'à atteindre ≥8/10 ET compilation réussie
 
 ---
 
@@ -125,16 +128,17 @@ agent code-quality-reviewer
 4. **Quality Gate - Revue de Code** (`code-quality-reviewer`) ⚠️ **OBLIGATOIRE**
    - Délégation SYSTÉMATIQUE au Code Quality Reviewer
    - Évaluation selon SOLID, Clean Code, ADRs
+   - **Compilation du projet Unity (build)**
    - Obtention d'une note /10
 
-   **Si note ≥ 8/10** ✅
+   **Si note ≥ 8/10 ET build réussi** ✅
    - Passer à la phase suivante (Intégration et Test)
 
-   **Si note < 8/10** ❌
-   - Retour au Développeur avec le rapport de revue
-   - Corrections des violations identifiées
+   **Si note < 8/10 OU erreurs de compilation** ❌
+   - Retour au Développeur avec le rapport de revue et/ou erreurs de compilation
+   - Corrections des violations identifiées et/ou erreurs de build
    - Nouvelle soumission au Code Quality Reviewer
-   - **Boucle jusqu'à atteindre ≥ 8/10**
+   - **Boucle jusqu'à atteindre ≥ 8/10 ET compilation réussie**
 
 5. **Intégration et Test**
    - Vérifier la conformité avec les specs
@@ -199,18 +203,22 @@ Orchestrateur:
 
 4. QUALITY GATE - Délègue à code-quality-reviewer
    → Évaluation selon SOLID, Clean Code, ADR-003 (Greedy Meshing)
+   → Compilation du projet Unity
    → Note obtenue : 7/10 ❌
    → Violations : Méthode trop longue (150 lignes), responsabilités mixées
+   → Build : ✅ Compilation réussie
 
 5. Retour au unity-csharp-developer avec rapport
    → Corrections : Extraction de méthodes, SRP appliqué
    → Nouvelle soumission
 
 6. QUALITY GATE - Nouvelle revue code-quality-reviewer
+   → Compilation du projet Unity
    → Note obtenue : 9/10 ✅
+   → Build : ✅ Compilation réussie
    → Passe la quality gate
 
-7. Présente le résultat final à l'utilisateur (code validé qualité ≥8)
+7. Présente le résultat final à l'utilisateur (code validé qualité ≥8 + build OK)
 ```
 
 ### Exemple 2 : Bug de Performance
@@ -227,11 +235,13 @@ Orchestrateur:
    → Implémente les optimisations recommandées (Burst, Jobs, Object Pooling)
 
 4. QUALITY GATE - Délègue à code-quality-reviewer
+   → Compilation du projet Unity
    → Note obtenue : 8/10 ✅
+   → Build : ✅ Compilation réussie
    → Optimisations correctes, SOLID respecté, Burst bien utilisé
    → Passe la quality gate
 
-5. Présente le code optimisé à l'utilisateur (validé qualité)
+5. Présente le code optimisé à l'utilisateur (validé qualité + build OK)
 ```
 
 ### Exemple 3 : Simple Bug Fix
@@ -243,11 +253,13 @@ Orchestrateur:
    → Corrige le bug (pas besoin d'architecture pour un simple fix)
 
 2. QUALITY GATE - Délègue à code-quality-reviewer
+   → Compilation du projet Unity
    → Note obtenue : 9/10 ✅
+   → Build : ✅ Compilation réussie
    → Fix propre, null checks ajoutés, logs appropriés
    → Passe la quality gate
 
-3. Présente la correction à l'utilisateur (validée qualité)
+3. Présente la correction à l'utilisateur (validée qualité + build OK)
 ```
 
 ---
@@ -257,10 +269,10 @@ Orchestrateur:
 - **Claude Code** = Orchestrateur et coordinateur
 - **Architecte** = Conception, spécifications, analyse système
 - **Développeur** = Implémentation, code, bugs, optimisations
-- **Code Quality Reviewer** = Validation qualité, SOLID, Clean Code, ADRs (Quality Gate ≥8/10)
-- **Workflow** = Architecture → Validation → Implémentation → **Quality Gate (≥8/10)** → Test → Itération
+- **Code Quality Reviewer** = Validation qualité, SOLID, Clean Code, ADRs, compilation Unity (Quality Gate ≥8/10 + build OK)
+- **Workflow** = Architecture → Validation → Implémentation → **Quality Gate (≥8/10 + build)** → Test → Itération
 - **Règle d'or** = Déléguer aux experts, attendre leurs résultats, ne pas faire leur travail
-- **Quality Gate obligatoire** = Aucun code ne passe sans note ≥8/10 du Code Quality Reviewer
+- **Quality Gate obligatoire** = Aucun code ne passe sans note ≥8/10 ET compilation Unity réussie
 
 ---
 
