@@ -21,9 +21,11 @@ namespace TimeSurvivor.Voxel.Rendering
         [WriteOnly] public NativeList<int> Triangles;
         [WriteOnly] public NativeList<float2> UVs;
         [WriteOnly] public NativeList<float3> Normals;
+        [WriteOnly] public NativeList<float4> Colors;
 
         // Temporary buffers for greedy algorithm (allocated externally for reuse)
         public NativeArray<bool> Mask;
+        public NativeArray<VoxelType> MaskVoxelTypes;
 
         public void Execute()
         {
@@ -71,9 +73,14 @@ namespace TimeSurvivor.Voxel.Rendering
 
                         if (Mask[maskIndex])
                         {
+                            // Get the voxel type for this face
+                            VoxelType voxelType = MaskVoxelTypes[maskIndex];
+
                             // Compute width (u direction)
                             int width = 1;
-                            while (i + width < ChunkSize && Mask[i + width + j * ChunkSize])
+                            while (i + width < ChunkSize &&
+                                   Mask[i + width + j * ChunkSize] &&
+                                   MaskVoxelTypes[i + width + j * ChunkSize] == voxelType)
                             {
                                 width++;
                             }
@@ -85,7 +92,8 @@ namespace TimeSurvivor.Voxel.Rendering
                             {
                                 for (int k = 0; k < width; k++)
                                 {
-                                    if (!Mask[i + k + (j + height) * ChunkSize])
+                                    if (!Mask[i + k + (j + height) * ChunkSize] ||
+                                        MaskVoxelTypes[i + k + (j + height) * ChunkSize] != voxelType)
                                     {
                                         canExtend = false;
                                         break;
@@ -103,7 +111,7 @@ namespace TimeSurvivor.Voxel.Rendering
                             int3 du = uVec * width;
                             int3 dv = vVec * height;
 
-                            CreateQuad(origin, du, dv, direction > 0, ref vertexCount);
+                            CreateQuad(origin, du, dv, direction > 0, voxelType, ref vertexCount);
 
                             // Clear mask for merged region
                             for (int h = 0; h < height; h++)
@@ -125,6 +133,7 @@ namespace TimeSurvivor.Voxel.Rendering
             for (int i = 0; i < Mask.Length; i++)
             {
                 Mask[i] = false;
+                MaskVoxelTypes[i] = VoxelType.Air;
             }
 
             // Build mask for this slice
@@ -149,7 +158,9 @@ namespace TimeSurvivor.Voxel.Rendering
                     // Only create face if neighbor is air (face is visible)
                     if (neighbor == VoxelType.Air)
                     {
-                        Mask[i + j * ChunkSize] = true;
+                        int maskIndex = i + j * ChunkSize;
+                        Mask[maskIndex] = true;
+                        MaskVoxelTypes[maskIndex] = current;
                     }
                 }
             }
@@ -168,7 +179,7 @@ namespace TimeSurvivor.Voxel.Rendering
             return Voxels[index];
         }
 
-        private void CreateQuad(int3 origin, int3 du, int3 dv, bool flipWinding, ref int vertexCount)
+        private void CreateQuad(int3 origin, int3 du, int3 dv, bool flipWinding, VoxelType voxelType, ref int vertexCount)
         {
             // Create 4 vertices for the quad
             float3 v0 = (float3)origin;
@@ -179,6 +190,9 @@ namespace TimeSurvivor.Voxel.Rendering
             // Calculate normal (cross product)
             float3 normal = math.normalize(math.cross((float3)du, (float3)dv));
             if (!flipWinding) normal = -normal;
+
+            // Get color for this voxel type
+            float4 color = GetColorForVoxelType(voxelType);
 
             // Add vertices
             Vertices.Add(v0);
@@ -197,6 +211,12 @@ namespace TimeSurvivor.Voxel.Rendering
             UVs.Add(new float2(1, 0));
             UVs.Add(new float2(1, 1));
             UVs.Add(new float2(0, 1));
+
+            // Add vertex colors (same color for all 4 vertices of the quad)
+            Colors.Add(color);
+            Colors.Add(color);
+            Colors.Add(color);
+            Colors.Add(color);
 
             // Add triangles (two triangles per quad)
             if (flipWinding)
@@ -221,6 +241,34 @@ namespace TimeSurvivor.Voxel.Rendering
             }
 
             vertexCount += 4;
+        }
+
+        /// <summary>
+        /// Map VoxelType to color (RGBA).
+        /// Uses switch for Burst compatibility (no dictionaries).
+        /// </summary>
+        private float4 GetColorForVoxelType(VoxelType voxelType)
+        {
+            switch (voxelType)
+            {
+                case VoxelType.Grass:
+                    return new float4(0.2f, 0.8f, 0.2f, 1.0f); // Bright green
+                case VoxelType.Dirt:
+                    return new float4(0.6f, 0.4f, 0.2f, 1.0f); // Brown
+                case VoxelType.Stone:
+                    return new float4(0.5f, 0.5f, 0.5f, 1.0f); // Gray
+                case VoxelType.Sand:
+                    return new float4(0.9f, 0.8f, 0.5f, 1.0f); // Yellow
+                case VoxelType.Water:
+                    return new float4(0.2f, 0.4f, 0.8f, 0.7f); // Blue (semi-transparent)
+                case VoxelType.Wood:
+                    return new float4(0.4f, 0.25f, 0.1f, 1.0f); // Dark brown
+                case VoxelType.Leaves:
+                    return new float4(0.1f, 0.6f, 0.1f, 1.0f); // Green
+                case VoxelType.Air:
+                default:
+                    return new float4(1.0f, 0.0f, 1.0f, 1.0f); // Magenta (debug color)
+            }
         }
     }
 }

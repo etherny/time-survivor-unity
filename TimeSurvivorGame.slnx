@@ -1,7 +1,7 @@
 ﻿<Solution>
+  <Project Path="TimeSurvivor.Demos.ChessboardVoxel.csproj" />
   <Project Path="TimeSurvivor.Voxel.Core.Tests.csproj" />
   <Project Path="TimeSurvivor.Voxel.Core.csproj" />
-  <Project Path="TimeSurvivor.Demos.ColorfulCubes.csproj" />
   <Project Path="TimeSurvivor.Voxel.Terrain.Tests.csproj" />
   <Project Path="TimeSurvivor.Voxel.Terrain.csproj" />
   <Project Path="TimeSurvivor.Voxel.Rendering.csproj" />

@@ -20,8 +20,9 @@ namespace TimeSurvivor.Voxel.Terrain
         private readonly Queue<ChunkCoord> _meshingQueue;
         private readonly Transform _chunkParent;
         private readonly Material _chunkMaterial;
+        private readonly IVoxelGenerator _customGenerator;
 
-        public ChunkManager(VoxelConfiguration config, Transform chunkParent = null, Material chunkMaterial = null)
+        public ChunkManager(VoxelConfiguration config, Transform chunkParent = null, Material chunkMaterial = null, IVoxelGenerator customGenerator = null)
         {
             _config = config;
             _chunks = new Dictionary<ChunkCoord, TerrainChunk>();
@@ -40,6 +41,7 @@ namespace TimeSurvivor.Voxel.Terrain
             }
 
             _chunkMaterial = chunkMaterial;
+            _customGenerator = customGenerator;
         }
 
         /// <summary>
@@ -51,8 +53,8 @@ namespace TimeSurvivor.Voxel.Terrain
             if (_chunks.ContainsKey(coord))
                 return;
 
-            // Create chunk object
-            var chunk = new TerrainChunk(coord, _chunkParent, _chunkMaterial);
+            // Create chunk object with voxel size for proper scaling
+            var chunk = new TerrainChunk(coord, _chunkParent, _chunkMaterial, _config.MacroVoxelSize);
             chunk.AllocateVoxelData(_config.ChunkSize);
 
             // Set world position
@@ -158,24 +160,35 @@ namespace TimeSurvivor.Voxel.Terrain
         }
 
         /// <summary>
-        /// Generate voxel data for a chunk using procedural generation.
+        /// Generate voxel data for a chunk using procedural generation or custom generator.
         /// </summary>
         private void GenerateChunk(TerrainChunk chunk)
         {
-            var job = new ProceduralTerrainGenerationJob
+            if (_customGenerator != null)
             {
-                ChunkCoord = chunk.Coord,
-                ChunkSize = _config.ChunkSize,
-                VoxelSize = _config.MacroVoxelSize,
-                Seed = _config.Seed == 0 ? UnityEngine.Random.Range(1, 1000000) : _config.Seed,
-                NoiseFrequency = _config.NoiseFrequency,
-                NoiseOctaves = _config.NoiseOctaves,
-                VoxelData = chunk.VoxelData
-            };
+                // Use custom generator
+                var generatedData = _customGenerator.Generate(chunk.Coord, _config.ChunkSize, Allocator.Temp);
+                NativeArray<VoxelType>.Copy(generatedData, chunk.VoxelData);
+                generatedData.Dispose();
+            }
+            else
+            {
+                // Use default procedural generation
+                var job = new ProceduralTerrainGenerationJob
+                {
+                    ChunkCoord = chunk.Coord,
+                    ChunkSize = _config.ChunkSize,
+                    VoxelSize = _config.MacroVoxelSize,
+                    Seed = _config.Seed == 0 ? UnityEngine.Random.Range(1, 1000000) : _config.Seed,
+                    NoiseFrequency = _config.NoiseFrequency,
+                    NoiseOctaves = _config.NoiseOctaves,
+                    VoxelData = chunk.VoxelData
+                };
 
-            // Schedule job
-            var handle = job.Schedule();
-            handle.Complete(); // TODO: Make async with job handles
+                // Schedule job
+                var handle = job.Schedule();
+                handle.Complete(); // TODO: Make async with job handles
+            }
 
             chunk.MarkGenerated();
 
@@ -196,7 +209,9 @@ namespace TimeSurvivor.Voxel.Terrain
             var triangles = new NativeList<int>(Allocator.TempJob);
             var uvs = new NativeList<float2>(Allocator.TempJob);
             var normals = new NativeList<float3>(Allocator.TempJob);
+            var colors = new NativeList<float4>(Allocator.TempJob);
             var mask = new NativeArray<bool>(_config.ChunkSize * _config.ChunkSize, Allocator.TempJob);
+            var maskVoxelTypes = new NativeArray<VoxelType>(_config.ChunkSize * _config.ChunkSize, Allocator.TempJob);
 
             // Create meshing job
             var job = new GreedyMeshingJob
@@ -207,7 +222,9 @@ namespace TimeSurvivor.Voxel.Terrain
                 Triangles = triangles,
                 UVs = uvs,
                 Normals = normals,
-                Mask = mask
+                Colors = colors,
+                Mask = mask,
+                MaskVoxelTypes = maskVoxelTypes
             };
 
             // Schedule and complete
@@ -215,7 +232,7 @@ namespace TimeSurvivor.Voxel.Terrain
             handle.Complete();
 
             // Build mesh
-            Mesh mesh = MeshBuilder.BuildMesh(vertices, triangles, uvs, normals);
+            Mesh mesh = MeshBuilder.BuildMesh(vertices, triangles, uvs, normals, colors);
             chunk.SetMesh(mesh);
 
             // Cleanup
@@ -223,7 +240,9 @@ namespace TimeSurvivor.Voxel.Terrain
             triangles.Dispose();
             uvs.Dispose();
             normals.Dispose();
+            colors.Dispose();
             mask.Dispose();
+            maskVoxelTypes.Dispose();
         }
 
         /// <summary>

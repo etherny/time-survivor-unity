@@ -69,6 +69,64 @@ namespace TimeSurvivor.Voxel.Rendering
         }
 
         /// <summary>
+        /// Build a Unity Mesh with vertex colors from NativeList data.
+        /// Supports vertex color rendering for voxel types.
+        /// </summary>
+        public static Mesh BuildMesh(
+            NativeList<float3> vertices,
+            NativeList<int> triangles,
+            NativeList<float2> uvs,
+            NativeList<float3> normals,
+            NativeList<float4> colors)
+        {
+            return BuildMesh(
+                vertices.AsArray(),
+                triangles.AsArray(),
+                uvs.AsArray(),
+                normals.AsArray(),
+                colors.AsArray()
+            );
+        }
+
+        /// <summary>
+        /// Build a Unity Mesh with vertex colors from NativeArray data.
+        /// </summary>
+        public static Mesh BuildMesh(
+            NativeArray<float3> vertices,
+            NativeArray<int> triangles,
+            NativeArray<float2> uvs,
+            NativeArray<float3> normals,
+            NativeArray<float4> colors)
+        {
+            var mesh = new Mesh
+            {
+                name = "VoxelChunkMesh",
+                indexFormat = vertices.Length > 65535
+                    ? UnityEngine.Rendering.IndexFormat.UInt32
+                    : UnityEngine.Rendering.IndexFormat.UInt16
+            };
+
+            // Convert native arrays to managed arrays
+            var vertArray = ToVector3Array(vertices);
+            var triArray = ToIntArray(triangles);
+            var uvArray = ToVector2Array(uvs);
+            var normalArray = ToVector3Array(normals);
+            var colorArray = ToColorArray(colors);
+
+            // Assign to mesh
+            mesh.vertices = vertArray;
+            mesh.triangles = triArray;
+            mesh.uv = uvArray;
+            mesh.normals = normalArray;
+            mesh.colors = colorArray;
+
+            // Recalculate bounds for culling
+            mesh.RecalculateBounds();
+
+            return mesh;
+        }
+
+        /// <summary>
         /// Build mesh without normals (auto-calculate them).
         /// Slower but useful when normals aren't computed in Job.
         /// </summary>
@@ -176,6 +234,20 @@ namespace TimeSurvivor.Voxel.Rendering
         {
             var result = new int[source.Length];
             source.CopyTo(result);
+            return result;
+        }
+
+        /// <summary>
+        /// Convert NativeArray of float4 to Color array.
+        /// </summary>
+        private static Color[] ToColorArray(NativeArray<float4> source)
+        {
+            var result = new Color[source.Length];
+            for (int i = 0; i < source.Length; i++)
+            {
+                var c = source[i];
+                result[i] = new Color(c.x, c.y, c.z, c.w);
+            }
             return result;
         }
 
