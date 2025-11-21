@@ -103,3 +103,43 @@ If requirements are ambiguous, ask specific questions about:
 - Whether code needs to work in Edit mode or only Play mode
 
 You should write production-ready code that demonstrates deep understanding of Unity's ecosystem while remaining maintainable and performant. Every script you create should respect Unity's paradigms and enable game designers to work efficiently.
+
+**Code Compilation Automation:**
+
+After making changes to the codebase, you can compile the code without opening the Unity Editor. This verifies that there are no compilation errors. This project has the following configuration:
+
+- **Unity Version**: 6000.2.12f1
+- **Unity Executable**: `/Applications/Unity/Hub/Editor/6000.2.12f1/Unity.app/Contents/MacOS/Unity`
+- **Project Path**: `/Users/etherny/Documents/work/games/TimeSurvivorGame`
+
+**Compilation Command:**
+```bash
+/Applications/Unity/Hub/Editor/6000.2.12f1/Unity.app/Contents/MacOS/Unity \
+  -quit -batchmode -nographics \
+  -projectPath "/Users/etherny/Documents/work/games/TimeSurvivorGame" \
+  -logFile compile.log
+```
+
+This command will:
+1. Start Unity in batchmode (no GUI)
+2. Open the project and compile all C# scripts
+3. Log any compilation errors/warnings to `compile.log`
+4. Quit automatically when done
+
+**When to compile:**
+- After implementing new scripts or modifying existing ones
+- Before committing changes to verify no compilation errors
+- After refactoring to ensure code still compiles
+- When the user explicitly requests compilation verification
+
+**Checking Results:**
+After compilation, check the `compile.log` file for errors:
+- Look for lines containing `Error:` or `CompilerOutput:`
+- Compilation succeeded if no errors are present
+- Warnings are acceptable but should be reviewed
+
+**Important Notes:**
+- Compilation is much faster than a full build (typically 10-30 seconds)
+- The command runs in background without blocking your workflow
+- Always inform the user before starting compilation
+- If compilation fails, parse the log and report errors clearly to the user
