@@ -1,5 +1,6 @@
 using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using TimeSurvivor.Voxel.Core;
@@ -11,7 +12,7 @@ namespace TimeSurvivor.Voxel.Rendering
     /// Generates optimized mesh by merging adjacent identical voxel faces.
     /// Algorithm: For each axis, scan perpendicular slices and merge rectangular regions.
     /// </summary>
-    [BurstCompile]
+    [BurstCompile(FloatMode = FloatMode.Fast)]
     public struct GreedyMeshingJob : IJob
     {
         [ReadOnly] public NativeArray<VoxelType> Voxels;
@@ -127,14 +128,11 @@ namespace TimeSurvivor.Voxel.Rendering
             }
         }
 
-        private void BuildMask(int axis, int d, int direction, int u, int v)
+        private unsafe void BuildMask(int axis, int d, int direction, int u, int v)
         {
-            // Clear mask
-            for (int i = 0; i < Mask.Length; i++)
-            {
-                Mask[i] = false;
-                MaskVoxelTypes[i] = VoxelType.Air;
-            }
+            // Clear mask using efficient memory clear
+            UnsafeUtility.MemClear(Mask.GetUnsafePtr(), Mask.Length * sizeof(bool));
+            UnsafeUtility.MemClear(MaskVoxelTypes.GetUnsafePtr(), Mask.Length * sizeof(VoxelType));
 
             // Build mask for this slice
             for (int j = 0; j < ChunkSize; j++)
