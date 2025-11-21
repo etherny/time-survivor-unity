@@ -1,77 +1,539 @@
 <?xml version="1.0" encoding="utf-8"?>
-<test-run id="2" testcasecount="4" result="Failed(Child)" total="4" passed="3" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2025-11-21 09:23:02Z" end-time="2025-11-21 09:23:02Z" duration="0.1501319">
-  <test-suite type="TestSuite" id="1000" name="TimeSurvivorGame" fullname="TimeSurvivorGame" runstate="Runnable" testcasecount="4" result="Failed" site="Child" start-time="2025-11-21 09:23:02Z" end-time="2025-11-21 09:23:02Z" duration="0.150132" total="4" passed="3" failed="1" inconclusive="0" skipped="0" asserts="0">
+<test-run id="2" testcasecount="80" result="Passed" total="80" passed="80" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.1707532">
+  <test-suite type="TestSuite" id="1000" name="TimeSurvivorGame" fullname="TimeSurvivorGame" runstate="Runnable" testcasecount="80" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.170753" total="80" passed="80" failed="0" inconclusive="0" skipped="0" asserts="0">
     <properties>
       <property name="platform" value="EditMode" />
     </properties>
-    <failure>
-      <message><![CDATA[One or more child tests had errors]]></message>
-    </failure>
-    <test-suite type="Assembly" id="1006" name="TimeSurvivor.Voxel.Terrain.Tests.dll" fullname="/Users/etherny/Documents/work/games/TimeSurvivorGame/Library/ScriptAssemblies/TimeSurvivor.Voxel.Terrain.Tests.dll" runstate="Runnable" testcasecount="4" result="Failed" site="Child" start-time="2025-11-21 09:23:02Z" end-time="2025-11-21 09:23:02Z" duration="0.144595" total="4" passed="3" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <test-suite type="Assembly" id="1082" name="TimeSurvivor.Voxel.Core.Tests.dll" fullname="/Users/etherny/Documents/work/games/TimeSurvivorGame/Library/ScriptAssemblies/TimeSurvivor.Voxel.Core.Tests.dll" runstate="Runnable" testcasecount="76" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.068081" total="76" passed="76" failed="0" inconclusive="0" skipped="0" asserts="0">
       <properties>
-        <property name="_PID" value="9218" />
+        <property name="_PID" value="36925" />
         <property name="_APPDOMAIN" value="Unity Child Domain" />
         <property name="platform" value="EditMode" />
         <property name="EditorOnly" value="True" />
       </properties>
-      <failure>
-        <message><![CDATA[One or more child tests had errors]]></message>
-      </failure>
-      <test-suite type="TestSuite" id="1007" name="TimeSurvivor" fullname="TimeSurvivor" runstate="Runnable" testcasecount="4" result="Failed" site="Child" start-time="2025-11-21 09:23:02Z" end-time="2025-11-21 09:23:02Z" duration="0.143698" total="4" passed="3" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <test-suite type="TestSuite" id="1083" name="TimeSurvivor" fullname="TimeSurvivor" runstate="Runnable" testcasecount="76" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.067090" total="76" passed="76" failed="0" inconclusive="0" skipped="0" asserts="0">
         <properties />
-        <failure>
-          <message><![CDATA[One or more child tests had errors]]></message>
-        </failure>
-        <test-suite type="TestSuite" id="1008" name="Voxel" fullname="TimeSurvivor.Voxel" runstate="Runnable" testcasecount="4" result="Failed" site="Child" start-time="2025-11-21 09:23:02Z" end-time="2025-11-21 09:23:02Z" duration="0.143021" total="4" passed="3" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <test-suite type="TestSuite" id="1084" name="Voxel" fullname="TimeSurvivor.Voxel" runstate="Runnable" testcasecount="76" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.066013" total="76" passed="76" failed="0" inconclusive="0" skipped="0" asserts="0">
           <properties />
-          <failure>
-            <message><![CDATA[One or more child tests had errors]]></message>
-          </failure>
-          <test-suite type="TestSuite" id="1009" name="Terrain" fullname="TimeSurvivor.Voxel.Terrain" runstate="Runnable" testcasecount="4" result="Failed" site="Child" start-time="2025-11-21 09:23:02Z" end-time="2025-11-21 09:23:02Z" duration="0.142286" total="4" passed="3" failed="1" inconclusive="0" skipped="0" asserts="0">
+          <test-suite type="TestSuite" id="1085" name="Core" fullname="TimeSurvivor.Voxel.Core" runstate="Runnable" testcasecount="76" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.064687" total="76" passed="76" failed="0" inconclusive="0" skipped="0" asserts="0">
             <properties />
-            <failure>
-              <message><![CDATA[One or more child tests had errors]]></message>
-            </failure>
-            <test-suite type="TestSuite" id="1010" name="Tests" fullname="TimeSurvivor.Voxel.Terrain.Tests" runstate="Runnable" testcasecount="4" result="Failed" site="Child" start-time="2025-11-21 09:23:02Z" end-time="2025-11-21 09:23:02Z" duration="0.141701" total="4" passed="3" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <test-suite type="TestSuite" id="1086" name="Tests" fullname="TimeSurvivor.Voxel.Core.Tests" runstate="Runnable" testcasecount="76" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.063415" total="76" passed="76" failed="0" inconclusive="0" skipped="0" asserts="0">
               <properties />
-              <failure>
-                <message><![CDATA[One or more child tests had errors]]></message>
-              </failure>
-              <test-suite type="TestFixture" id="1001" name="SimplexNoise3DTests" fullname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests" classname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests" runstate="Runnable" testcasecount="4" result="Failed" site="Child" start-time="2025-11-21 09:23:02Z" end-time="2025-11-21 09:23:02Z" duration="0.140722" total="4" passed="3" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <test-suite type="TestFixture" id="1001" name="ChunkCoordTests" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" testcasecount="13" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.025039" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
                 <properties />
-                <failure>
-                  <message><![CDATA[One or more child tests had errors]]></message>
-                </failure>
-                <test-case id="1005" name="Test_Continuity" fullname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests.Test_Continuity" methodname="Test_Continuity" classname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests" runstate="Runnable" seed="1191754184" result="Passed" start-time="2025-11-21 09:23:02Z" end-time="2025-11-21 09:23:02Z" duration="0.037799" asserts="0">
+                <test-case id="1008" name="Test_AdditionOperator_PositiveOffset_ReturnsCorrectCoord" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests.Test_AdditionOperator_PositiveOffset_ReturnsCorrectCoord" methodname="Test_AdditionOperator_PositiveOffset_ReturnsCorrectCoord" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" seed="50598757" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.009072" asserts="0">
                   <properties>
                     <property name="retryIteration" value="0" />
                     <property name="repeatIteration" value="0" />
                   </properties>
                 </test-case>
-                <test-case id="1002" name="Test_Determinism" fullname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests.Test_Determinism" methodname="Test_Determinism" classname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests" runstate="Runnable" seed="1642273188" result="Passed" start-time="2025-11-21 09:23:02Z" end-time="2025-11-21 09:23:02Z" duration="0.002882" asserts="0">
+                <test-case id="1003" name="Test_Constructor_Int3Parameter_CreatesCorrectCoord" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests.Test_Constructor_Int3Parameter_CreatesCorrectCoord" methodname="Test_Constructor_Int3Parameter_CreatesCorrectCoord" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" seed="564336824" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000475" asserts="0">
                   <properties>
                     <property name="retryIteration" value="0" />
                     <property name="repeatIteration" value="0" />
                   </properties>
                 </test-case>
-                <test-case id="1004" name="Test_Performance" fullname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests.Test_Performance" methodname="Test_Performance" classname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests" runstate="Runnable" seed="1165173926" result="Failed" start-time="2025-11-21 09:23:02Z" end-time="2025-11-21 09:23:02Z" duration="0.050004" asserts="0">
+                <test-case id="1002" name="Test_Constructor_IntParameters_CreatesCorrectCoord" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests.Test_Constructor_IntParameters_CreatesCorrectCoord" methodname="Test_Constructor_IntParameters_CreatesCorrectCoord" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" seed="1825625318" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000249" asserts="0">
                   <properties>
                     <property name="retryIteration" value="0" />
                     <property name="repeatIteration" value="0" />
                   </properties>
-                  <failure>
-                    <message><![CDATA[  MultiOctave (4 octaves) exceeded Editor performance threshold. Measured: 4409.09ns, Editor threshold: 3000ns. Note: Burst-compiled builds should achieve <300ns.
-  Expected: less than or equal to 3000.0d
-  But was:  4409.0900000000011d
-]]></message>
-                    <stack-trace><![CDATA[at TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests.Test_Performance () [0x000e8] in /Users/etherny/Documents/work/games/TimeSurvivorGame/Assets/lib/voxel-terrain/Tests/Runtime/SimplexNoise3DTests.cs:141
-]]></stack-trace>
-                  </failure>
-                  <output><![CDATA[SimplexNoise3D.MultiOctave (4 octaves) average execution time: 4409.09 ns
-Target: <300ns (Burst-compiled build), Measured: 4409.09 ns
+                </test-case>
+                <test-case id="1012" name="Test_Constructor_NegativeCoordinates_WorksCorrectly" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests.Test_Constructor_NegativeCoordinates_WorksCorrectly" methodname="Test_Constructor_NegativeCoordinates_WorksCorrectly" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" seed="1330285701" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000137" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1005" name="Test_Equals_DifferentCoordinates_ReturnsFalse" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests.Test_Equals_DifferentCoordinates_ReturnsFalse" methodname="Test_Equals_DifferentCoordinates_ReturnsFalse" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" seed="636734474" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000327" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1014" name="Test_Equals_ObjectOverload_WorksCorrectly" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests.Test_Equals_ObjectOverload_WorksCorrectly" methodname="Test_Equals_ObjectOverload_WorksCorrectly" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" seed="2005745261" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000190" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1004" name="Test_Equals_SameCoordinates_ReturnsTrue" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests.Test_Equals_SameCoordinates_ReturnsTrue" methodname="Test_Equals_SameCoordinates_ReturnsTrue" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" seed="1419054672" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000095" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1006" name="Test_EqualsOperator_SameCoordinates_ReturnsTrue" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests.Test_EqualsOperator_SameCoordinates_ReturnsTrue" methodname="Test_EqualsOperator_SameCoordinates_ReturnsTrue" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" seed="1158243523" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000186" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1010" name="Test_GetHashCode_EqualCoords_ReturnsSameHash" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests.Test_GetHashCode_EqualCoords_ReturnsSameHash" methodname="Test_GetHashCode_EqualCoords_ReturnsSameHash" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" seed="1169697242" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000185" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1007" name="Test_NotEqualsOperator_DifferentCoordinates_ReturnsTrue" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests.Test_NotEqualsOperator_DifferentCoordinates_ReturnsTrue" methodname="Test_NotEqualsOperator_DifferentCoordinates_ReturnsTrue" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" seed="2028336834" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000229" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1013" name="Test_Operators_NegativeCoordinates_WorksCorrectly" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests.Test_Operators_NegativeCoordinates_WorksCorrectly" methodname="Test_Operators_NegativeCoordinates_WorksCorrectly" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" seed="683764821" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000298" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1009" name="Test_SubtractionOperator_PositiveOffset_ReturnsCorrectCoord" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests.Test_SubtractionOperator_PositiveOffset_ReturnsCorrectCoord" methodname="Test_SubtractionOperator_PositiveOffset_ReturnsCorrectCoord" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" seed="1283097338" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000138" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1011" name="Test_ToString_ReturnsFormattedString" fullname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests.Test_ToString_ReturnsFormattedString" methodname="Test_ToString_ReturnsFormattedString" classname="TimeSurvivor.Voxel.Core.Tests.ChunkCoordTests" runstate="Runnable" seed="955134339" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000231" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1015" name="MacroVoxelDataTests" fullname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests" classname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.006687" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1022" name="Test_Constructor_AllVoxelTypes_StoredCorrectly" fullname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests.Test_Constructor_AllVoxelTypes_StoredCorrectly" methodname="Test_Constructor_AllVoxelTypes_StoredCorrectly" classname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests" runstate="Runnable" seed="235416584" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.001023" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1020" name="Test_Constructor_DefaultMetadata_StoresTypeCorrectly" fullname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests.Test_Constructor_DefaultMetadata_StoresTypeCorrectly" methodname="Test_Constructor_DefaultMetadata_StoresTypeCorrectly" classname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests" runstate="Runnable" seed="891131814" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000347" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1021" name="Test_Constructor_WithMetadata_StoresBothValues" fullname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests.Test_Constructor_WithMetadata_StoresBothValues" methodname="Test_Constructor_WithMetadata_StoresBothValues" classname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests" runstate="Runnable" seed="1395803807" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000132" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1016" name="Test_IsSolid_AirVoxel_ReturnsFalse" fullname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests.Test_IsSolid_AirVoxel_ReturnsFalse" methodname="Test_IsSolid_AirVoxel_ReturnsFalse" classname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests" runstate="Runnable" seed="873055675" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000158" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1017" name="Test_IsSolid_SolidVoxelTypes_ReturnsTrue" fullname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests.Test_IsSolid_SolidVoxelTypes_ReturnsTrue" methodname="Test_IsSolid_SolidVoxelTypes_ReturnsTrue" classname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests" runstate="Runnable" seed="1490370745" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000144" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1019" name="Test_IsTransparent_OpaqueVoxelTypes_ReturnsFalse" fullname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests.Test_IsTransparent_OpaqueVoxelTypes_ReturnsFalse" methodname="Test_IsTransparent_OpaqueVoxelTypes_ReturnsFalse" classname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests" runstate="Runnable" seed="1669916359" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000261" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1018" name="Test_IsTransparent_WaterAndLeaves_ReturnsTrue" fullname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests.Test_IsTransparent_WaterAndLeaves_ReturnsTrue" methodname="Test_IsTransparent_WaterAndLeaves_ReturnsTrue" classname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests" runstate="Runnable" seed="536827295" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000147" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1025" name="Test_LeavesVoxel_IsSolidAndTransparent" fullname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests.Test_LeavesVoxel_IsSolidAndTransparent" methodname="Test_LeavesVoxel_IsSolidAndTransparent" classname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests" runstate="Runnable" seed="1168198937" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000117" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1023" name="Test_Metadata_MaxValue_StoredCorrectly" fullname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests.Test_Metadata_MaxValue_StoredCorrectly" methodname="Test_Metadata_MaxValue_StoredCorrectly" classname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests" runstate="Runnable" seed="1348774115" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000092" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1024" name="Test_WaterVoxel_IsSolidAndTransparent" fullname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests.Test_WaterVoxel_IsSolidAndTransparent" methodname="Test_WaterVoxel_IsSolidAndTransparent" classname="TimeSurvivor.Voxel.Core.Tests.MacroVoxelDataTests" runstate="Runnable" seed="171575894" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000181" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1026" name="MicroVoxelDataTests" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" testcasecount="16" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.007750" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1038" name="Test_Constructor_CustomHealth_StoresCorrectly" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_Constructor_CustomHealth_StoresCorrectly" methodname="Test_Constructor_CustomHealth_StoresCorrectly" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="47767622" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000307" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1037" name="Test_Constructor_DefaultHealth_SetsMaxHealth" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_Constructor_DefaultHealth_SetsMaxHealth" methodname="Test_Constructor_DefaultHealth_SetsMaxHealth" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="1810506970" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000184" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1039" name="Test_Constructor_WithAllParameters_StoresAllValues" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_Constructor_WithAllParameters_StoresAllValues" methodname="Test_Constructor_WithAllParameters_StoresAllValues" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="673258728" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000160" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1031" name="Test_IsDestroyed_PositiveHealth_ReturnsFalse" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_IsDestroyed_PositiveHealth_ReturnsFalse" methodname="Test_IsDestroyed_PositiveHealth_ReturnsFalse" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="1620336954" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000149" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1030" name="Test_IsDestroyed_ZeroHealth_ReturnsTrue" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_IsDestroyed_ZeroHealth_ReturnsTrue" methodname="Test_IsDestroyed_ZeroHealth_ReturnsTrue" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="23850693" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000106" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1027" name="Test_IsSolid_AirVoxel_ReturnsFalse" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_IsSolid_AirVoxel_ReturnsFalse" methodname="Test_IsSolid_AirVoxel_ReturnsFalse" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="2073775957" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000143" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1028" name="Test_IsSolid_HealthyVoxel_ReturnsTrue" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_IsSolid_HealthyVoxel_ReturnsTrue" methodname="Test_IsSolid_HealthyVoxel_ReturnsTrue" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="462944723" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000161" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1042" name="Test_IsSolid_MinimumHealth_ReturnsTrue" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_IsSolid_MinimumHealth_ReturnsTrue" methodname="Test_IsSolid_MinimumHealth_ReturnsTrue" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="1583932826" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000101" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1029" name="Test_IsSolid_ZeroHealth_ReturnsFalse" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_IsSolid_ZeroHealth_ReturnsFalse" methodname="Test_IsSolid_ZeroHealth_ReturnsFalse" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="1211634843" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000093" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1033" name="Test_WithDamage_ExactDamage_ConvertsToAir" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_WithDamage_ExactDamage_ConvertsToAir" methodname="Test_WithDamage_ExactDamage_ConvertsToAir" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="1085000340" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000342" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1036" name="Test_WithDamage_MetadataPreservedOnDestruction" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_WithDamage_MetadataPreservedOnDestruction" methodname="Test_WithDamage_MetadataPreservedOnDestruction" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="720623801" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000172" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1040" name="Test_WithDamage_OneHealthPoint_ConvertsToAir" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_WithDamage_OneHealthPoint_ConvertsToAir" methodname="Test_WithDamage_OneHealthPoint_ConvertsToAir" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="220773508" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000147" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1034" name="Test_WithDamage_Overkill_ConvertsToAirWithZeroHealth" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_WithDamage_Overkill_ConvertsToAirWithZeroHealth" methodname="Test_WithDamage_Overkill_ConvertsToAirWithZeroHealth" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="1647219123" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000178" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1032" name="Test_WithDamage_PartialDamage_ReturnsNewVoxelWithReducedHealth" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_WithDamage_PartialDamage_ReturnsNewVoxelWithReducedHealth" methodname="Test_WithDamage_PartialDamage_ReturnsNewVoxelWithReducedHealth" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="776815766" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000165" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1035" name="Test_WithDamage_PreservesMetadata" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_WithDamage_PreservesMetadata" methodname="Test_WithDamage_PreservesMetadata" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="875814353" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000195" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1041" name="Test_WithDamage_ZeroDamage_ReturnsUnchangedCopy" fullname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests.Test_WithDamage_ZeroDamage_ReturnsUnchangedCopy" methodname="Test_WithDamage_ZeroDamage_ReturnsUnchangedCopy" classname="TimeSurvivor.Voxel.Core.Tests.MicroVoxelDataTests" runstate="Runnable" seed="73201238" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000177" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1043" name="VoxelConfigurationTests" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" testcasecount="15" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.010412" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1045" name="Test_ChunkVolume_DifferentSizes_ReturnsCorrectVolumes" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_ChunkVolume_DifferentSizes_ReturnsCorrectVolumes" methodname="Test_ChunkVolume_DifferentSizes_ReturnsCorrectVolumes" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="1110583299" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000466" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1044" name="Test_ChunkVolume_ReturnsCorrectVolume" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_ChunkVolume_ReturnsCorrectVolume" methodname="Test_ChunkVolume_ReturnsCorrectVolume" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="1401821495" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000164" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1058" name="Test_ChunkWorldSize_ScalesWithChunkSize" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_ChunkWorldSize_ScalesWithChunkSize" methodname="Test_ChunkWorldSize_ScalesWithChunkSize" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="1347046523" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000651" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1057" name="Test_ChunkWorldSize_ScalesWithVoxelSize" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_ChunkWorldSize_ScalesWithVoxelSize" methodname="Test_ChunkWorldSize_ScalesWithVoxelSize" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="1409879247" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000147" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1048" name="Test_ChunkWorldSizes_MacroLargerThanMicro" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_ChunkWorldSizes_MacroLargerThanMicro" methodname="Test_ChunkWorldSizes_MacroLargerThanMicro" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="1792951749" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.001875" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1050" name="Test_CreateTestConfig_CustomValues_ArePreserved" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_CreateTestConfig_CustomValues_ArePreserved" methodname="Test_CreateTestConfig_CustomValues_ArePreserved" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="448293639" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000192" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1049" name="Test_CreateTestConfig_DefaultValues_AreSet" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_CreateTestConfig_DefaultValues_AreSet" methodname="Test_CreateTestConfig_DefaultValues_AreSet" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="793314265" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000211" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1046" name="Test_MacroChunkWorldSize_ReturnsCorrectSize" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_MacroChunkWorldSize_ReturnsCorrectSize" methodname="Test_MacroChunkWorldSize_ReturnsCorrectSize" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="102356426" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000103" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1047" name="Test_MicroChunkWorldSize_ReturnsCorrectSize" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_MicroChunkWorldSize_ReturnsCorrectSize" methodname="Test_MicroChunkWorldSize_ReturnsCorrectSize" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="1814231731" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000139" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1053" name="Test_VoxelConfiguration_DeterministicSeed_IsSet" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_VoxelConfiguration_DeterministicSeed_IsSet" methodname="Test_VoxelConfiguration_DeterministicSeed_IsSet" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="1801449699" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000124" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1051" name="Test_VoxelConfiguration_IsScriptableObject" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_VoxelConfiguration_IsScriptableObject" methodname="Test_VoxelConfiguration_IsScriptableObject" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="279706778" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.001901" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1055" name="Test_VoxelConfiguration_MaxCachedChunks_IsPositive" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_VoxelConfiguration_MaxCachedChunks_IsPositive" methodname="Test_VoxelConfiguration_MaxCachedChunks_IsPositive" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="56885591" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000149" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1052" name="Test_VoxelConfiguration_PowerOfTwoChunkSize_CalculatesCorrectly" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_VoxelConfiguration_PowerOfTwoChunkSize_CalculatesCorrectly" methodname="Test_VoxelConfiguration_PowerOfTwoChunkSize_CalculatesCorrectly" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="217299696" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000197" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1054" name="Test_VoxelConfiguration_RenderDistance_IsPositive" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_VoxelConfiguration_RenderDistance_IsPositive" methodname="Test_VoxelConfiguration_RenderDistance_IsPositive" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="764400287" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000135" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1056" name="Test_VoxelSizes_MicroSmallerThanMacro" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests.Test_VoxelSizes_MicroSmallerThanMacro" methodname="Test_VoxelSizes_MicroSmallerThanMacro" classname="TimeSurvivor.Voxel.Core.Tests.VoxelConfigurationTests" runstate="Runnable" seed="936459051" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000166" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1059" name="VoxelMathTests" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" testcasecount="22" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.009623" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1064" name="Test_ChunkCoordToWorld_NegativeChunk_ReturnsCorrectWorldPos" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_ChunkCoordToWorld_NegativeChunk_ReturnsCorrectWorldPos" methodname="Test_ChunkCoordToWorld_NegativeChunk_ReturnsCorrectWorldPos" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="1121175566" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000353" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1063" name="Test_ChunkCoordToWorld_PositiveChunk_ReturnsCorrectWorldPos" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_ChunkCoordToWorld_PositiveChunk_ReturnsCorrectWorldPos" methodname="Test_ChunkCoordToWorld_PositiveChunk_ReturnsCorrectWorldPos" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="1041149678" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000215" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1065" name="Test_ChunkCoordToWorld_RoundTrip_ReturnsOriginalChunk" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_ChunkCoordToWorld_RoundTrip_ReturnsOriginalChunk" methodname="Test_ChunkCoordToWorld_RoundTrip_ReturnsOriginalChunk" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="740465643" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000609" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1079" name="Test_ChunkDistanceSquared_ReturnsCorrectSquaredDistance" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_ChunkDistanceSquared_ReturnsCorrectSquaredDistance" methodname="Test_ChunkDistanceSquared_ReturnsCorrectSquaredDistance" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="611754848" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000421" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1078" name="Test_ChunkManhattanDistance_ReturnsCorrectDistance" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_ChunkManhattanDistance_ReturnsCorrectDistance" methodname="Test_ChunkManhattanDistance_ReturnsCorrectDistance" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="485554184" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000252" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1070" name="Test_Flatten3DIndex_MaxCoordinate_ReturnsLastIndex" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_Flatten3DIndex_MaxCoordinate_ReturnsLastIndex" methodname="Test_Flatten3DIndex_MaxCoordinate_ReturnsLastIndex" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="1579575883" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000234" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1068" name="Test_Flatten3DIndex_Origin_ReturnsZero" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_Flatten3DIndex_Origin_ReturnsZero" methodname="Test_Flatten3DIndex_Origin_ReturnsZero" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="394700868" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000155" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1069" name="Test_Flatten3DIndex_XYZOrdering_IsCorrect" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_Flatten3DIndex_XYZOrdering_IsCorrect" methodname="Test_Flatten3DIndex_XYZOrdering_IsCorrect" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="1076771926" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000294" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1076" name="Test_IsValidLocalCoord_BoundaryValues_ReturnsCorrectly" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_IsValidLocalCoord_BoundaryValues_ReturnsCorrectly" methodname="Test_IsValidLocalCoord_BoundaryValues_ReturnsCorrectly" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="1601942042" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000447" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1075" name="Test_IsValidLocalCoord_OutOfBounds_ReturnsFalse" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_IsValidLocalCoord_OutOfBounds_ReturnsFalse" methodname="Test_IsValidLocalCoord_OutOfBounds_ReturnsFalse" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="600140617" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000335" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1074" name="Test_IsValidLocalCoord_WithinBounds_ReturnsTrue" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_IsValidLocalCoord_WithinBounds_ReturnsTrue" methodname="Test_IsValidLocalCoord_WithinBounds_ReturnsTrue" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="1903681977" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000085" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1073" name="Test_Unflatten3DIndex_LastIndex_ReturnsMaxCoordinates" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_Unflatten3DIndex_LastIndex_ReturnsMaxCoordinates" methodname="Test_Unflatten3DIndex_LastIndex_ReturnsMaxCoordinates" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="871993596" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000139" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1072" name="Test_Unflatten3DIndex_RoundTrip_ReturnsOriginalCoordinate" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_Unflatten3DIndex_RoundTrip_ReturnsOriginalCoordinate" methodname="Test_Unflatten3DIndex_RoundTrip_ReturnsOriginalCoordinate" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="1947906635" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000092" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1071" name="Test_Unflatten3DIndex_Zero_ReturnsOrigin" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_Unflatten3DIndex_Zero_ReturnsOrigin" methodname="Test_Unflatten3DIndex_Zero_ReturnsOrigin" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="1125715891" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000105" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1067" name="Test_VoxelCoordToWorld_OriginVoxel_ReturnsHalfVoxelSize" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_VoxelCoordToWorld_OriginVoxel_ReturnsHalfVoxelSize" methodname="Test_VoxelCoordToWorld_OriginVoxel_ReturnsHalfVoxelSize" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="250025523" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000212" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1066" name="Test_VoxelCoordToWorld_ReturnsVoxelCenter" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_VoxelCoordToWorld_ReturnsVoxelCenter" methodname="Test_VoxelCoordToWorld_ReturnsVoxelCenter" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="510127422" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000122" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1081" name="Test_VoxelToLocalCoord_NegativeGlobalCoord_ReturnsCorrectLocal" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_VoxelToLocalCoord_NegativeGlobalCoord_ReturnsCorrectLocal" methodname="Test_VoxelToLocalCoord_NegativeGlobalCoord_ReturnsCorrectLocal" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="1933724314" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000401" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1080" name="Test_VoxelToLocalCoord_PositiveGlobalCoord_ReturnsCorrectLocal" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_VoxelToLocalCoord_PositiveGlobalCoord_ReturnsCorrectLocal" methodname="Test_VoxelToLocalCoord_PositiveGlobalCoord_ReturnsCorrectLocal" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="1186170308" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000222" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1062" name="Test_WorldToChunkCoord_ChunkBoundary_ReturnsCorrectChunk" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_WorldToChunkCoord_ChunkBoundary_ReturnsCorrectChunk" methodname="Test_WorldToChunkCoord_ChunkBoundary_ReturnsCorrectChunk" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="1287826551" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000239" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1061" name="Test_WorldToChunkCoord_NegativeCoordinates_ReturnsCorrectChunk" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_WorldToChunkCoord_NegativeCoordinates_ReturnsCorrectChunk" methodname="Test_WorldToChunkCoord_NegativeCoordinates_ReturnsCorrectChunk" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="397054681" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000229" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1060" name="Test_WorldToChunkCoord_PositiveCoordinates_ReturnsCorrectChunk" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_WorldToChunkCoord_PositiveCoordinates_ReturnsCorrectChunk" methodname="Test_WorldToChunkCoord_PositiveCoordinates_ReturnsCorrectChunk" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="1677513834" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000140" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1077" name="Test_WorldToVoxelCoord_PositiveCoordinates_ReturnsCorrect" fullname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests.Test_WorldToVoxelCoord_PositiveCoordinates_ReturnsCorrect" methodname="Test_WorldToVoxelCoord_PositiveCoordinates_ReturnsCorrect" classname="TimeSurvivor.Voxel.Core.Tests.VoxelMathTests" runstate="Runnable" seed="1892646544" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000169" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+    <test-suite type="Assembly" id="1092" name="TimeSurvivor.Voxel.Terrain.Tests.dll" fullname="/Users/etherny/Documents/work/games/TimeSurvivorGame/Library/ScriptAssemblies/TimeSurvivor.Voxel.Terrain.Tests.dll" runstate="Runnable" testcasecount="4" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.096490" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="36925" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1093" name="TimeSurvivor" fullname="TimeSurvivor" runstate="Runnable" testcasecount="4" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.096017" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1094" name="Voxel" fullname="TimeSurvivor.Voxel" runstate="Runnable" testcasecount="4" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.095655" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1095" name="Terrain" fullname="TimeSurvivor.Voxel.Terrain" runstate="Runnable" testcasecount="4" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.095323" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1096" name="Tests" fullname="TimeSurvivor.Voxel.Terrain.Tests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.094983" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1087" name="SimplexNoise3DTests" fullname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests" classname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.094524" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1091" name="Test_Continuity" fullname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests.Test_Continuity" methodname="Test_Continuity" classname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests" runstate="Runnable" seed="469137244" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.018172" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1088" name="Test_Determinism" fullname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests.Test_Determinism" methodname="Test_Determinism" classname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests" runstate="Runnable" seed="1376839160" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.000939" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1090" name="Test_Performance" fullname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests.Test_Performance" methodname="Test_Performance" classname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests" runstate="Runnable" seed="2079996766" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.047689" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[SimplexNoise3D.MultiOctave (4 octaves) average execution time: 4416.85 ns
+Target: <300ns (Burst-compiled build), Measured: 4416.85 ns
 ]]></output>
                 </test-case>
-                <test-case id="1003" name="Test_Range" fullname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests.Test_Range" methodname="Test_Range" classname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests" runstate="Runnable" seed="724279728" result="Passed" start-time="2025-11-21 09:23:02Z" end-time="2025-11-21 09:23:02Z" duration="0.038129" asserts="0">
+                <test-case id="1089" name="Test_Range" fullname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests.Test_Range" methodname="Test_Range" classname="TimeSurvivor.Voxel.Terrain.Tests.SimplexNoise3DTests" runstate="Runnable" seed="229788005" result="Passed" start-time="2025-11-21 13:54:57Z" end-time="2025-11-21 13:54:57Z" duration="0.026037" asserts="0">
                   <properties>
                     <property name="retryIteration" value="0" />
                     <property name="repeatIteration" value="0" />

@@ -1,0 +1,21 @@
+{
+    "name": "TimeSurvivor.Demos.ColorfulCubes",
+    "rootNamespace": "TimeSurvivor.Demos.ColorfulCubes",
+    "references": [
+        "TimeSurvivor.Voxel.Core",
+        "TimeSurvivor.Voxel.Terrain",
+        "TimeSurvivor.Voxel.Rendering",
+        "Unity.Mathematics",
+        "Unity.Collections",
+        "Unity.Burst"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
