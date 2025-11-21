@@ -4,7 +4,10 @@
   "references": [
     "TimeSurvivor.Voxel.Core",
     "UnityEngine.TestRunner",
-    "UnityEditor.TestRunner"
+    "UnityEditor.TestRunner",
+    "Unity.Mathematics",
+    "Unity.Collections",
+    "Unity.Burst"
   ],
   "includePlatforms": [
     "Editor"

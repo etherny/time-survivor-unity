@@ -71,7 +71,8 @@ namespace TimeSurvivor.Voxel.Core
 
         /// <summary>
         /// Flatten 3D voxel coordinate to 1D array index.
-        /// Uses XYZ ordering (Z changes fastest).
+        /// Uses XYZ ordering (X changes fastest, then Y, then Z).
+        /// Formula: x + y*chunkSize + z*chunkSize*chunkSize
         /// </summary>
         /// <param name="x">X coordinate (0 to chunkSize-1)</param>
         /// <param name="y">Y coordinate (0 to chunkSize-1)</param>
