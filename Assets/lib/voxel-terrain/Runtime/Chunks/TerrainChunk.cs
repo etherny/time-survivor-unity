@@ -25,13 +25,16 @@ namespace TimeSurvivor.Voxel.Terrain
         private MeshRenderer _meshRenderer;
         private MeshCollider _meshCollider;
 
-        public TerrainChunk(ChunkCoord coord, Transform parent, Material material)
+        public TerrainChunk(ChunkCoord coord, Transform parent, Material material, float voxelSize = 1f)
         {
             Coord = coord;
 
             // Create GameObject for this chunk
             GameObject = new GameObject($"Chunk_{coord.X}_{coord.Y}_{coord.Z}");
             GameObject.transform.SetParent(parent);
+
+            // Scale GameObject by voxel size so mesh vertices (in voxel coords) map to world units
+            GameObject.transform.localScale = Vector3.one * voxelSize;
 
             // Add required components
             _meshFilter = GameObject.AddComponent<MeshFilter>();

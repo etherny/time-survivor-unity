@@ -2,3 +2,11 @@ Library/
 Logs/
 Temp/
 *.log
+UserSettings/Search.index
+UserSettings/Search.settings
+
+# Test and build logs
+test.log
+compile.log
+TestResults.xml
+TestResults.xml

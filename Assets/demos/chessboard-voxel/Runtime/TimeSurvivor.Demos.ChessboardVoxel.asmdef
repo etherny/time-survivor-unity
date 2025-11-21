@@ -1,0 +1,20 @@
+{
+    "name": "TimeSurvivor.Demos.ChessboardVoxel",
+    "rootNamespace": "TimeSurvivor.Demos.ChessboardVoxel",
+    "references": [
+        "TimeSurvivor.Voxel.Core",
+        "TimeSurvivor.Voxel.Terrain",
+        "TimeSurvivor.Voxel.Rendering",
+        "Unity.Collections",
+        "Unity.Mathematics"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
