@@ -89,5 +89,4 @@ Shader "Custom/VoxelTerrainVertexColor"
             ENDHLSL
         }
     }
-    FallBack "Universal Render Pipeline/Lit"
 }
