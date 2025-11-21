@@ -17,6 +17,164 @@ This project uses the following Unity setup:
 
 When writing shaders, materials, or rendering-related code, always ensure URP compatibility. Use URP shader graph or URP-compatible shader code (no legacy Built-in RP shaders).
 
+## CRITICAL RULE: Existing Voxel Engine Usage
+
+**MANDATORY**: You MUST ALWAYS use the existing voxel engine located in `Assets/lib/voxel-*` when implementing ANY voxel-related features, demos, or game code.
+
+**IMPORTANT DISTINCTION**:
+- **Working on demos/game features**: Use the voxel engine as-is, implement interfaces, compose existing components
+- **Working on the voxel engine itself**: You CAN and SHOULD modify/extend the code in `Assets/lib/voxel-*` to implement new features or improve existing ones
+
+### Available Voxel Engine Packages
+
+The project has a comprehensive voxel engine with 4 core packages in `Assets/lib/`:
+
+1. **voxel-core** (`Assets/lib/voxel-core/`)
+   - Core data structures: VoxelType, ChunkCoord, MacroVoxelData, MicroVoxelData
+   - Configuration system: VoxelConfiguration
+   - Interfaces: IChunkManager, IVoxelGenerator
+   - Utilities: VoxelMath
+   - Namespace: `TimeSurvivor.Voxel.Core`
+
+2. **voxel-terrain** (`Assets/lib/voxel-terrain/`)
+   - Chunk management: ChunkManager, TerrainChunk
+   - Streaming: ProceduralTerrainStreamer, LRUCache
+   - Generation: SimplexNoise3D, ProceduralTerrainGenerationJob
+   - Overlay system: DestructibleOverlayManager, OverlayChunk
+   - Namespace: `TimeSurvivor.Voxel.Terrain`
+
+3. **voxel-rendering** (`Assets/lib/voxel-rendering/`)
+   - Meshing algorithms: GreedyMeshingJob, AmortizedMeshingJob
+   - Mesh building: MeshBuilder
+   - Materials: VoxelMaterialAtlas
+   - Namespace: `TimeSurvivor.Voxel.Rendering`
+
+4. **voxel-physics** (`Assets/lib/voxel-physics/`)
+   - Raycasting: VoxelRaycast
+   - Collision: VoxelCollisionBaker, SpatialHash
+   - Namespace: `TimeSurvivor.Voxel.Physics`
+
+### Implementation Guidelines
+
+✅ **YOU MUST** (for demos and game features):
+- Use existing voxel engine components in ALL voxel implementations
+- Reference existing namespaces (`TimeSurvivor.Voxel.*`)
+- Implement IVoxelGenerator interface for custom terrain generation
+- Use ChunkManager from voxel-terrain for chunk operations
+- Leverage existing data structures (VoxelType, ChunkCoord, MacroVoxelData, MicroVoxelData)
+- Use GreedyMeshingJob or AmortizedMeshingJob for mesh generation
+- Compose solutions by combining existing voxel components
+
+✅ **YOU CAN** (when working on the voxel engine itself):
+- Modify and improve existing code in `Assets/lib/voxel-*`
+- Add new features to existing packages (voxel-core, voxel-terrain, etc.)
+- Create new packages in `Assets/lib/voxel-*` for genuinely new, reusable functionality
+- Refactor or optimize voxel engine components
+- Extend interfaces and data structures in the voxel engine
+- Implement new meshing algorithms or chunk management improvements
+
+❌ **YOU MUST NEVER**:
+- Recreate the voxel engine from scratch for demos or game features
+- Duplicate existing voxel functionality outside of `Assets/lib/voxel-*`
+- Ignore the existing voxel engine architecture when building demos/game features
+- Create voxel-related classes outside the `Assets/lib/voxel-*` structure for demos/game code
+
+### Implementation Workflow for Voxel Features
+
+When implementing voxel-related code:
+
+1. **IMPORT** the necessary voxel engine namespaces
+2. **USE** existing components (ChunkManager, TerrainChunk, etc.)
+3. **IMPLEMENT** interfaces (IVoxelGenerator, IChunkManager) when needed
+4. **EXTEND** existing systems rather than creating new ones
+5. **TEST** integration with the voxel engine components
+
+### Code Examples
+
+**Scenario 1: Working on a demo or game feature**
+
+❌ **INCORRECT Implementation**:
+```csharp
+using UnityEngine;
+
+// Creating a custom chunk system from scratch for a game feature
+public class MyChunkManager : MonoBehaviour
+{
+    private Dictionary<Vector3Int, GameObject> chunks;
+    // ... custom chunk management logic
+}
+```
+
+✅ **CORRECT Implementation**:
+```csharp
+using UnityEngine;
+using TimeSurvivor.Voxel.Core;
+using TimeSurvivor.Voxel.Terrain;
+
+// Using existing ChunkManager and implementing IVoxelGenerator
+public class CustomTerrainGenerator : MonoBehaviour, IVoxelGenerator
+{
+    [SerializeField] private ChunkManager chunkManager;
+
+    public void GenerateVoxels(ChunkCoord coord, MacroVoxelData data)
+    {
+        // Custom generation logic using existing data structures
+    }
+}
+```
+
+**Scenario 2: Working on the voxel engine itself**
+
+✅ **CORRECT Implementation** (adding a feature to the engine):
+```csharp
+// File: Assets/lib/voxel-terrain/Runtime/Chunks/ChunkManager.cs
+using UnityEngine;
+using TimeSurvivor.Voxel.Core;
+
+namespace TimeSurvivor.Voxel.Terrain
+{
+    public class ChunkManager : MonoBehaviour, IChunkManager
+    {
+        // Existing code...
+
+        // Adding new LOD support to the voxel engine
+        [SerializeField] private int maxLODLevel = 3;
+
+        public void UpdateChunkLOD(ChunkCoord coord, int lodLevel)
+        {
+            // New feature implementation in the engine itself
+        }
+    }
+}
+```
+
+✅ **ALSO CORRECT** (creating a new voxel engine package):
+```csharp
+// File: Assets/lib/voxel-physics-advanced/Runtime/ContinuousCollision.cs
+using UnityEngine;
+using TimeSurvivor.Voxel.Core;
+using TimeSurvivor.Voxel.Physics;
+
+namespace TimeSurvivor.Voxel.PhysicsAdvanced
+{
+    // New package extending the voxel engine capabilities
+    public class ContinuousVoxelCollision
+    {
+        // New engine functionality
+    }
+}
+```
+
+### Demos and Game Code
+
+For ALL demos and game features involving voxels:
+- Place demo-specific code in `Assets/demos/[demo-name]/`
+- Place game-specific code in `Assets/game/[feature-name]/`
+- Both MUST use the voxel engine from `Assets/lib/voxel-*` as dependencies
+- Never duplicate voxel engine functionality in demo or game code
+
+This rule is **NON-NEGOTIABLE** and applies to all code implementation involving voxels.
+
 ## Core Responsibilities:
 
 1. **Unity-Specific C# Development**: Write clean, performant C# code that follows Unity's conventions and best practices. Always consider Unity's execution order, the MonoBehaviour lifecycle (Awake, Start, Update, FixedUpdate, LateUpdate, OnEnable, OnDisable, OnDestroy), and the implications of each lifecycle method.

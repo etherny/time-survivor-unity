@@ -237,3 +237,134 @@ Assets/
 - Manually created .meta files: **-2 points** (Critical Issue)
 
 When reviewing, always check file paths and flag any deviations from this structure.
+
+## Voxel Engine Usage Validation ⚠️ **CRITICAL**
+
+**MANDATORY CHECK**: For ANY voxel-related code in demos or game features, verify that the developer is using the existing voxel engine from `Assets/lib/voxel-*` and NOT recreating voxel systems from scratch.
+
+### Available Voxel Engine Packages
+
+The project has 4 voxel engine packages that MUST be used:
+
+1. **voxel-core** (`Assets/lib/voxel-core/`)
+   - VoxelType, ChunkCoord, MacroVoxelData, MicroVoxelData
+   - IChunkManager, IVoxelGenerator interfaces
+   - VoxelConfiguration, VoxelMath
+   - Namespace: `TimeSurvivor.Voxel.Core`
+
+2. **voxel-terrain** (`Assets/lib/voxel-terrain/`)
+   - ChunkManager, TerrainChunk
+   - ProceduralTerrainStreamer, LRUCache
+   - SimplexNoise3D, ProceduralTerrainGenerationJob
+   - Namespace: `TimeSurvivor.Voxel.Terrain`
+
+3. **voxel-rendering** (`Assets/lib/voxel-rendering/`)
+   - GreedyMeshingJob, AmortizedMeshingJob
+   - MeshBuilder, VoxelMaterialAtlas
+   - Namespace: `TimeSurvivor.Voxel.Rendering`
+
+4. **voxel-physics** (`Assets/lib/voxel-physics/`)
+   - VoxelRaycast, VoxelCollisionBaker, SpatialHash
+   - Namespace: `TimeSurvivor.Voxel.Physics`
+
+### Validation Rules
+
+**For code in `Assets/demos/` or `Assets/game/`:**
+
+✅ **MUST verify the code**:
+- Uses `TimeSurvivor.Voxel.*` namespaces (Core, Terrain, Rendering, or Physics)
+- References existing voxel components (ChunkManager, TerrainChunk, etc.)
+- Implements voxel interfaces (IVoxelGenerator, IChunkManager) when extending behavior
+- Uses existing data structures (VoxelType, ChunkCoord, MacroVoxelData, MicroVoxelData)
+- Leverages existing meshing algorithms (GreedyMeshingJob, AmortizedMeshingJob)
+
+❌ **MUST flag as CRITICAL ISSUE if code**:
+- Recreates chunk management systems (custom chunk dictionaries, custom chunk classes)
+- Reimplements meshing algorithms instead of using existing ones
+- Creates custom voxel data structures that duplicate existing ones
+- Implements voxel logic without using any `TimeSurvivor.Voxel.*` namespaces
+- Contains voxel-related code in demos/game that doesn't reference the engine
+
+**For code in `Assets/lib/voxel-*`:**
+- Developer is working ON the voxel engine itself - this is ALLOWED
+- Modifications and extensions to voxel engine packages are permitted
+- New packages in `Assets/lib/voxel-*` for genuinely new functionality are permitted
+
+### Detection Patterns
+
+**Red flags indicating voxel engine violation** (in demos/game code):
+
+```csharp
+// ❌ CRITICAL: Custom chunk management in demo/game code
+public class MyChunkSystem : MonoBehaviour
+{
+    private Dictionary<Vector3Int, Chunk> chunks;
+    // Custom chunk logic...
+}
+
+// ❌ CRITICAL: Custom voxel data structure in demo/game code
+public struct CustomVoxelData
+{
+    public byte type;
+    public byte health;
+}
+
+// ❌ CRITICAL: Custom meshing in demo/game code
+public void GenerateMesh(VoxelData[] voxels)
+{
+    // Custom greedy meshing implementation...
+}
+```
+
+**Correct patterns** (using voxel engine):
+
+```csharp
+// ✅ CORRECT: Using existing ChunkManager
+using TimeSurvivor.Voxel.Core;
+using TimeSurvivor.Voxel.Terrain;
+
+public class CustomGenerator : MonoBehaviour, IVoxelGenerator
+{
+    [SerializeField] private ChunkManager chunkManager;
+
+    public void GenerateVoxels(ChunkCoord coord, MacroVoxelData data)
+    {
+        // Custom generation using existing structures
+    }
+}
+
+// ✅ CORRECT: Using existing data structures and meshing
+using TimeSurvivor.Voxel.Core;
+using TimeSurvivor.Voxel.Rendering;
+
+public class TerrainRenderer : MonoBehaviour
+{
+    private GreedyMeshingJob meshingJob;
+    private MacroVoxelData voxelData;
+}
+```
+
+### Quality Impact
+
+**Voxel Engine Usage Violations** (in demos/game code):
+
+- **Recreating chunk management system**: **-3 points** (Critical Issue - violates architecture)
+- **Reimplementing meshing algorithms**: **-3 points** (Critical Issue - code duplication)
+- **Creating custom voxel data structures**: **-3 points** (Critical Issue - ignores existing engine)
+- **No voxel namespace imports in voxel code**: **-2 points** (Major Issue - not using engine)
+- **Partial engine usage** (uses some but recreates other parts): **-2 points** (Major Issue)
+
+**Note**: These violations can quickly drop a score below 8/10, triggering automatic revision requirement.
+
+### Review Checklist for Voxel Code
+
+When reviewing voxel-related code in demos or game features:
+
+1. ✓ Check for `using TimeSurvivor.Voxel.*;` statements
+2. ✓ Verify usage of existing ChunkManager (not custom chunk system)
+3. ✓ Confirm existing data structures are used (MacroVoxelData, MicroVoxelData, VoxelType, ChunkCoord)
+4. ✓ Ensure interfaces are implemented (IVoxelGenerator, IChunkManager) instead of recreating
+5. ✓ Verify meshing uses existing jobs (GreedyMeshingJob, AmortizedMeshingJob)
+6. ✓ Check that no voxel engine functionality is duplicated
+
+**Exception**: If the code is in `Assets/lib/voxel-*`, it's working ON the engine itself - modifications are allowed and expected.
