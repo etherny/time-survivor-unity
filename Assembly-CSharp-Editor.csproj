@@ -1428,6 +1428,7 @@
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp.csproj" />
     <ProjectReference Include="TimeSurvivor.Demos.MinecraftTerrain.Editor.csproj" />
+    <ProjectReference Include="TimeSurvivor.Demos.GreedyMeshing.csproj" />
     <ProjectReference Include="TimeSurvivor.Voxel.Core.csproj" />
     <ProjectReference Include="TimeSurvivor.Demos.ChessboardVoxel.csproj" />
     <ProjectReference Include="TimeSurvivor.Voxel.Terrain.csproj" />

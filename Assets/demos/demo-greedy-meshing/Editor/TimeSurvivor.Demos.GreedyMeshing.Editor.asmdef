@@ -1,0 +1,22 @@
+{
+    "name": "TimeSurvivor.Demos.GreedyMeshing.Editor",
+    "rootNamespace": "TimeSurvivor.Demos.GreedyMeshing.Editor",
+    "references": [
+        "TimeSurvivor.Demos.GreedyMeshing",
+        "TimeSurvivor.Voxel.Core",
+        "TimeSurvivor.Voxel.Rendering",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

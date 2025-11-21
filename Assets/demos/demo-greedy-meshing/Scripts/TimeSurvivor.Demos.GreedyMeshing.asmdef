@@ -1,0 +1,22 @@
+{
+    "name": "TimeSurvivor.Demos.GreedyMeshing",
+    "rootNamespace": "TimeSurvivor.Demos.GreedyMeshing",
+    "references": [
+        "TimeSurvivor.Voxel.Core",
+        "TimeSurvivor.Voxel.Rendering",
+        "Unity.TextMeshPro",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
