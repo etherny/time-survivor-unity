@@ -159,7 +159,7 @@ namespace TimeSurvivor.Demos.ProceduralTerrain
                 // === STEP 1: Generate voxel data ===
                 var terrainJob = new ProceduralTerrainGenerationJob
                 {
-                    ChunkCoord = new ChunkCoord(0, Mathf.RoundToInt(offsetY), 0),
+                    ChunkCoord = new ChunkCoord(0, 0, 0), // Origin chunk
                     ChunkSize = chunkSize,
                     VoxelSize = voxelSize,
                     Seed = seed,
@@ -167,6 +167,7 @@ namespace TimeSurvivor.Demos.ProceduralTerrain
                     NoiseOctaves = noiseOctaves,
                     Lacunarity = lacunarity,
                     Persistence = persistence,
+                    TerrainOffsetY = offsetY, // Use offsetY as terrain base altitude
                     VoxelData = voxelData
                 };
 

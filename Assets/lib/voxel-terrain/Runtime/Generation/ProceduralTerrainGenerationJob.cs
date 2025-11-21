@@ -45,6 +45,9 @@ namespace TimeSurvivor.Voxel.Terrain
         /// <summary>Amplitude multiplier per octave. Default: 0.5f (ADR-007).</summary>
         [ReadOnly] public float Persistence;
 
+        /// <summary>Vertical offset for terrain generation (shifts terrain up/down). Default: 0f.</summary>
+        [ReadOnly] public float TerrainOffsetY;
+
         // ========== Output (Write-Only) ==========
 
         /// <summary>
@@ -106,18 +109,20 @@ namespace TimeSurvivor.Voxel.Terrain
             // Calculate altitude-based threshold: decreases with height for natural terrain profile
             // Lower Y (underground) = easier to be solid, Higher Y (sky) = easier to be air
             // Using a base threshold of -0.2 to allow for 40% air at sea level
-            float threshold = -0.2f - worldPos.y * 0.02f;
+            // Apply TerrainOffsetY to normalize altitude relative to terrain base
+            float relativeAltitude = worldPos.y - TerrainOffsetY;
+            float threshold = -0.2f - relativeAltitude * 0.02f;
 
             // Determine if this voxel is solid or empty
             if (density > threshold)
             {
-                // Solid voxel: determine type based on altitude
-                return DetermineSolidVoxelType(worldPos, density);
+                // Solid voxel: determine type based on relative altitude
+                return DetermineSolidVoxelType(relativeAltitude, density);
             }
             else
             {
-                // Empty voxel: Air or Water based on altitude
-                if (worldPos.y < -2f)
+                // Empty voxel: Air or Water based on relative altitude
+                if (relativeAltitude < -2f)
                     return VoxelType.Water; // Underground water caverns
                 else
                     return VoxelType.Air; // Open air
@@ -128,12 +133,11 @@ namespace TimeSurvivor.Voxel.Terrain
         /// Determines the solid voxel type based on altitude and surface detection.
         /// Creates natural terrain layers: Grass surface, Dirt underground, Stone deep/mountains.
         /// </summary>
-        /// <param name="worldPos">World position of the voxel</param>
+        /// <param name="altitude">Relative altitude from terrain base (adjusted with TerrainOffsetY)</param>
         /// <param name="density">Noise density value at this position</param>
         /// <returns>Solid VoxelType (Grass, Dirt, or Stone)</returns>
-        private VoxelType DetermineSolidVoxelType(float3 worldPos, float density)
+        private VoxelType DetermineSolidVoxelType(float altitude, float density)
         {
-            float altitude = worldPos.y;
 
             // Use a combination of altitude and density for deterministic type selection
             // This ensures adjacent chunks generate identical voxels at borders
