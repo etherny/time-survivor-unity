@@ -48,6 +48,7 @@
     <Analyzer Include="/Applications/Unity/Hub/Editor/6000.2.12f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets/lib/voxel-terrain/Tests/Runtime/ProceduralTerrainGenerationJobTests.cs" />
     <Compile Include="Assets/lib/voxel-terrain/Tests/Runtime/SimplexNoise3DTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1068,6 +1069,18 @@
     </Reference>
     <Reference Include="netstandard">
       <HintPath>/Applications/Unity/Hub/Editor/6000.2.12f1/Unity.app/Contents/UnityReferenceAssemblies/unity-4.8-api/Facades/netstandard.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Mathematics">
+      <HintPath>Library/ScriptAssemblies/Unity.Mathematics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Collections">
+      <HintPath>Library/ScriptAssemblies/Unity.Collections.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Burst">
+      <HintPath>Library/ScriptAssemblies/Unity.Burst.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.TestRunner">

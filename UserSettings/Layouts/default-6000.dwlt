@@ -3138,7 +3138,7 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 36.746143, y: 19.554972, z: 30.565386}
+    m_Target: {x: 12.511544, y: -13.997671, z: 12.267609}
     speed: 2
     m_Value: {x: 36.746143, y: 19.554972, z: 30.565386}
   m_RenderMode: 0
@@ -3186,11 +3186,11 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
+    m_Target: {x: 0.35077637, y: 0.3354627, z: -0.13625349, w: 0.86363095}
     speed: 2
     m_Value: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
   m_Size:
-    m_Target: 12.124355
+    m_Target: 14.9723835
     speed: 2
     m_Value: 12.124355
   m_Ortho:
@@ -3375,7 +3375,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/demos/colorful-cubes-basic/Resources
+    - Assets/demos
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -3394,7 +3394,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 41.999268}
     m_SelectedIDs: ccca0000
     m_LastClickedID: 51916
-    m_ExpandedIDs: 00000000d6c90000d8c90000dac90000dcc90000dec90000e0c90000e2c90000
+    m_ExpandedIDs: 00000000dcc90000dec90000e0c90000e2c90000e4c90000e6c90000e8c90000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -3423,7 +3423,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000d6c90000d8c90000dac90000dcc90000dec90000e0c90000e2c90000
+    m_ExpandedIDs: 00000000dcc90000dec90000e0c90000e2c90000e4c90000e6c90000e8c90000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace TimeSurvivor.Demos.ProceduralTerrain
 {
@@ -69,12 +70,15 @@ namespace TimeSurvivor.Demos.ProceduralTerrain
         // ========== Input Handling ==========
 
         /// <summary>
-        /// Handles mouse input for orbiting and zooming.
+        /// Handles mouse input for orbiting and zooming using the new Input System.
         /// </summary>
         private void HandleInput()
         {
+            // Check if mouse is available
+            if (Mouse.current == null) return;
+
             // Zoom with mouse wheel
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            float scroll = Mouse.current.scroll.ReadValue().y / 120f; // Normalize scroll value
             if (Mathf.Abs(scroll) > 0.01f)
             {
                 distance -= scroll * zoomSpeed;
@@ -82,20 +86,21 @@ namespace TimeSurvivor.Demos.ProceduralTerrain
             }
 
             // Orbit with left mouse button
-            if (Input.GetMouseButtonDown(0))
+            if (Mouse.current.leftButton.wasPressedThisFrame)
             {
                 isDragging = true;
-                lastMousePosition = Input.mousePosition;
+                lastMousePosition = Mouse.current.position.ReadValue();
             }
-            else if (Input.GetMouseButtonUp(0))
+            else if (Mouse.current.leftButton.wasReleasedThisFrame)
             {
                 isDragging = false;
             }
 
             if (isDragging)
             {
-                Vector3 mouseDelta = Input.mousePosition - lastMousePosition;
-                lastMousePosition = Input.mousePosition;
+                Vector2 currentMousePosition = Mouse.current.position.ReadValue();
+                Vector3 mouseDelta = currentMousePosition - (Vector2)lastMousePosition;
+                lastMousePosition = currentMousePosition;
 
                 currentYaw += mouseDelta.x * orbitSpeed;
                 currentPitch -= mouseDelta.y * orbitSpeed;
