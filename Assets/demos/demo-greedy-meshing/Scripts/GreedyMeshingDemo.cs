@@ -202,7 +202,7 @@ namespace TimeSurvivor.Demos.GreedyMeshing
         private NativeArray<VoxelType> CreateEmptyChunk(int chunkSize)
         {
             int totalVoxels = chunkSize * chunkSize * chunkSize;
-            var voxels = new NativeArray<VoxelType>(totalVoxels, Allocator.Temp);
+            var voxels = new NativeArray<VoxelType>(totalVoxels, Allocator.TempJob);
 
             for (int i = 0; i < totalVoxels; i++)
             {

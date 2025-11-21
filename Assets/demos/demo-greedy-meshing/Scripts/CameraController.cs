@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace TimeSurvivor.Demos.GreedyMeshing
 {
@@ -18,7 +19,6 @@ namespace TimeSurvivor.Demos.GreedyMeshing
 
         private float _currentX = 0f;
         private float _currentY = 0f;
-        private bool _isOrbiting = false;
 
         private void Start()
         {
@@ -36,35 +36,27 @@ namespace TimeSurvivor.Demos.GreedyMeshing
         {
             if (Target == null) return;
 
-            // Handle orbit input (right mouse button)
-            if (Input.GetMouseButtonDown(1))
+            // Handle orbit input (right mouse button) - New Input System
+            if (Mouse.current != null && Mouse.current.rightButton.isPressed)
             {
-                _isOrbiting = true;
-            }
+                Vector2 mouseDelta = Mouse.current.delta.ReadValue();
 
-            if (Input.GetMouseButtonUp(1))
-            {
-                _isOrbiting = false;
-            }
-
-            if (_isOrbiting)
-            {
-                float mouseX = Input.GetAxis("Mouse X");
-                float mouseY = Input.GetAxis("Mouse Y");
-
-                _currentX += mouseX * OrbitSpeed * Time.deltaTime;
-                _currentY -= mouseY * OrbitSpeed * Time.deltaTime;
+                _currentX += mouseDelta.x * OrbitSpeed * Time.deltaTime * 0.1f;
+                _currentY -= mouseDelta.y * OrbitSpeed * Time.deltaTime * 0.1f;
 
                 // Clamp vertical rotation to avoid flipping
                 _currentY = Mathf.Clamp(_currentY, -89f, 89f);
             }
 
-            // Handle zoom input (mouse wheel)
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (Mathf.Abs(scroll) > 0.01f)
+            // Handle zoom input (mouse wheel) - New Input System
+            if (Mouse.current != null)
             {
-                Distance -= scroll * ZoomSpeed;
-                Distance = Mathf.Clamp(Distance, MinDistance, MaxDistance);
+                float scroll = Mouse.current.scroll.ReadValue().y;
+                if (Mathf.Abs(scroll) > 0.01f)
+                {
+                    Distance -= scroll * ZoomSpeed * 0.01f;
+                    Distance = Mathf.Clamp(Distance, MinDistance, MaxDistance);
+                }
             }
 
             // Update camera position

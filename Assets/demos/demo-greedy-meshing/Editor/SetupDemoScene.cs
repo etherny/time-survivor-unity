@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering.Universal;
 using TMPro;
 using TimeSurvivor.Demos.GreedyMeshing;
 
@@ -31,6 +32,17 @@ namespace TimeSurvivor.Demos.GreedyMeshing.Editor
             // Position camera
             cameraObj.transform.position = new Vector3(40, 30, 40);
             cameraObj.transform.LookAt(new Vector3(0, 16, 0));
+
+            // Add URP Additional Camera Data component
+            var camera = cameraObj.GetComponent<Camera>();
+            if (camera != null)
+            {
+                var urpCameraData = cameraObj.GetComponent<UniversalAdditionalCameraData>();
+                if (urpCameraData == null)
+                {
+                    cameraObj.AddComponent<UniversalAdditionalCameraData>();
+                }
+            }
 
             // Add CameraController
             var cameraController = cameraObj.GetComponent<CameraController>();
