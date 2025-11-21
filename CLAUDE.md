@@ -66,7 +66,41 @@ agent unity-csharp-developer
 
 ---
 
-## Workflow Recommandé : Architecture → Réalisation
+### 3. Code Quality Reviewer (Réviseur Qualité)
+agent code-quality-reviewer
+
+**Rôle**: Expert en revue de code, SOLID principles, clean code et architecture decision records (ADRs).
+
+**Responsabilités**:
+- Évaluer la qualité du code selon les principes SOLID
+- Vérifier le respect du clean code (nommage, complexité, responsabilités)
+- Valider la conformité avec les ADRs (Architecture Decision Records)
+- Identifier les violations des bonnes pratiques
+- Fournir une note de qualité /10 avec justification détaillée
+- Proposer des améliorations concrètes et actionnables
+- Vérifier la testabilité et maintenabilité du code
+
+**Quand l'utiliser**:
+- **SYSTÉMATIQUEMENT** après chaque implémentation de code par le Développeur
+- Avant de valider qu'une tâche est terminée
+- Après un refactoring majeur
+- Lors de reviews de pull requests
+- Quand le code doit respecter des ADRs spécifiques
+
+**Livrable attendu**:
+- Note de qualité /10 (≥8 requis pour passer)
+- Rapport détaillé des violations
+- Recommandations d'amélioration
+- Code corrigé si note <8
+
+**Quality Gate**:
+- **Note minimale requise**: 8/10
+- **Si note <8**: Retour au Développeur pour corrections obligatoires
+- **Itération**: Continuer jusqu'à atteindre ≥8/10
+
+---
+
+## Workflow Recommandé : Architecture → Réalisation → Quality Gate
 
 ### Phase 1 : Architecture et Conception
 1. **Délégation à l'Architecte** (`unity-voxel-engine-architect`)
@@ -88,16 +122,31 @@ agent unity-csharp-developer
    - Respecter les patterns définis
    - Optimiser au niveau implémentation
 
-4. **Intégration et Test**
+4. **Quality Gate - Revue de Code** (`code-quality-reviewer`) ⚠️ **OBLIGATOIRE**
+   - Délégation SYSTÉMATIQUE au Code Quality Reviewer
+   - Évaluation selon SOLID, Clean Code, ADRs
+   - Obtention d'une note /10
+
+   **Si note ≥ 8/10** ✅
+   - Passer à la phase suivante (Intégration et Test)
+
+   **Si note < 8/10** ❌
+   - Retour au Développeur avec le rapport de revue
+   - Corrections des violations identifiées
+   - Nouvelle soumission au Code Quality Reviewer
+   - **Boucle jusqu'à atteindre ≥ 8/10**
+
+5. **Intégration et Test**
    - Vérifier la conformité avec les specs
    - Tester les performances
    - Valider le fonctionnement
 
 ### Phase 3 : Itération
-5. **Feedback Loop**
-   - Si problèmes → retour à l'Architecte pour ajustements
-   - Si bugs/optimisations → retour au Développeur
-   - Itérer jusqu'à satisfaction
+6. **Feedback Loop**
+   - Si problèmes architecturaux → retour à l'Architecte
+   - Si bugs/optimisations → retour au Développeur + Quality Reviewer
+   - Si qualité insuffisante → retour au Développeur (Quality Gate)
+   - Itérer jusqu'à satisfaction (specs + qualité ≥8)
 
 ---
 
@@ -117,11 +166,19 @@ agent unity-csharp-developer
 - Création de composants Unity spécifiques
 - Optimisations au niveau code
 
+### Quand déléguer au Code Quality Reviewer
+- **SYSTÉMATIQUEMENT** après chaque implémentation par le Développeur
+- Avant de considérer une tâche comme terminée
+- Après corrections suite à une revue précédente (note <8)
+- Lors de refactoring majeur
+- Quand des ADRs spécifiques doivent être respectés
+
 ### Important
 - **Ne jamais coder directement** si la tâche nécessite une expertise spécialisée
 - **Toujours attendre le résultat** des agents avant de passer à l'étape suivante
-- **L'Architecte fournit les specs**, le **Développeur écrit le code**
-- **Respecter l'ordre** : Architecture → Implémentation
+- **L'Architecte fournit les specs**, le **Développeur écrit le code**, le **Reviewer valide la qualité**
+- **Respecter l'ordre** : Architecture → Implémentation → **Quality Gate (≥8/10)** → Intégration
+- **Quality Gate obligatoire** : Pas de code en production sans note ≥8/10
 
 ---
 
@@ -140,7 +197,20 @@ Orchestrateur:
 3. Délègue à unity-csharp-developer avec les specs
    → Obtient le code C# complet et optimisé
 
-4. Présente le résultat final à l'utilisateur
+4. QUALITY GATE - Délègue à code-quality-reviewer
+   → Évaluation selon SOLID, Clean Code, ADR-003 (Greedy Meshing)
+   → Note obtenue : 7/10 ❌
+   → Violations : Méthode trop longue (150 lignes), responsabilités mixées
+
+5. Retour au unity-csharp-developer avec rapport
+   → Corrections : Extraction de méthodes, SRP appliqué
+   → Nouvelle soumission
+
+6. QUALITY GATE - Nouvelle revue code-quality-reviewer
+   → Note obtenue : 9/10 ✅
+   → Passe la quality gate
+
+7. Présente le résultat final à l'utilisateur (code validé qualité ≥8)
 ```
 
 ### Exemple 2 : Bug de Performance
@@ -154,9 +224,14 @@ Orchestrateur:
 2. Présente l'analyse et recommandations à l'utilisateur
 
 3. Délègue à unity-csharp-developer
-   → Implémente les optimisations recommandées
+   → Implémente les optimisations recommandées (Burst, Jobs, Object Pooling)
 
-4. Présente le code optimisé à l'utilisateur
+4. QUALITY GATE - Délègue à code-quality-reviewer
+   → Note obtenue : 8/10 ✅
+   → Optimisations correctes, SOLID respecté, Burst bien utilisé
+   → Passe la quality gate
+
+5. Présente le code optimisé à l'utilisateur (validé qualité)
 ```
 
 ### Exemple 3 : Simple Bug Fix
@@ -167,7 +242,12 @@ Orchestrateur:
 1. Délègue directement à unity-csharp-developer
    → Corrige le bug (pas besoin d'architecture pour un simple fix)
 
-2. Présente la correction à l'utilisateur
+2. QUALITY GATE - Délègue à code-quality-reviewer
+   → Note obtenue : 9/10 ✅
+   → Fix propre, null checks ajoutés, logs appropriés
+   → Passe la quality gate
+
+3. Présente la correction à l'utilisateur (validée qualité)
 ```
 
 ---
@@ -177,5 +257,7 @@ Orchestrateur:
 - **Claude Code** = Orchestrateur et coordinateur
 - **Architecte** = Conception, spécifications, analyse système
 - **Développeur** = Implémentation, code, bugs, optimisations
-- **Workflow** = Architecture → Validation → Implémentation → Test → Itération
+- **Code Quality Reviewer** = Validation qualité, SOLID, Clean Code, ADRs (Quality Gate ≥8/10)
+- **Workflow** = Architecture → Validation → Implémentation → **Quality Gate (≥8/10)** → Test → Itération
 - **Règle d'or** = Déléguer aux experts, attendre leurs résultats, ne pas faire leur travail
+- **Quality Gate obligatoire** = Aucun code ne passe sans note ≥8/10 du Code Quality Reviewer
