@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.InputSystem.UI;
 
 namespace TimeSurvivor.Demos.ProceduralTerrain.Editor
 {
@@ -89,11 +90,29 @@ namespace TimeSurvivor.Demos.ProceduralTerrain.Editor
             mainCamera.transform.position = new Vector3(32f, 48f, -48f);
             mainCamera.transform.LookAt(new Vector3(32f, 32f, 32f));
 
+            // Add URP Additional Camera Data (silences warning)
+            var urpCameraData = mainCamera.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+            if (urpCameraData == null)
+            {
+                mainCamera.gameObject.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+            }
+
             // Add orbit controller
             CameraOrbitController orbitController = mainCamera.GetComponent<CameraOrbitController>();
             if (orbitController == null)
             {
                 orbitController = mainCamera.gameObject.AddComponent<CameraOrbitController>();
+            }
+
+            // Set target for orbit controller
+            GameObject targetObj = new GameObject("CameraTarget");
+            targetObj.transform.position = new Vector3(32f, 32f, 32f); // Center of 64³ chunk
+
+            var targetField = typeof(CameraOrbitController).GetField("target",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (targetField != null)
+            {
+                targetField.SetValue(orbitController, targetObj.transform);
             }
 
             return mainCamera.gameObject;
@@ -134,12 +153,12 @@ namespace TimeSurvivor.Demos.ProceduralTerrain.Editor
             canvasObj.AddComponent<CanvasScaler>();
             canvasObj.AddComponent<GraphicRaycaster>();
 
-            // Create EventSystem if not exists
+            // Create EventSystem if not exists (using new Input System)
             if (Object.FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
             {
                 GameObject eventSystemObj = new GameObject("EventSystem");
                 eventSystemObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
-                eventSystemObj.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+                eventSystemObj.AddComponent<InputSystemUIInputModule>(); // New Input System module
             }
 
             // Create UI panels
