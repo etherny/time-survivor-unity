@@ -5,6 +5,10 @@
     "TimeSurvivor.Voxel.Core",
     "TimeSurvivor.Voxel.Rendering",
     "TimeSurvivor.Voxel.Terrain",
+    "Unity.Mathematics",
+    "Unity.Collections",
+    "Unity.Jobs",
+    "Unity.Burst",
     "UnityEngine.TestRunner",
     "UnityEditor.TestRunner"
   ],

@@ -174,6 +174,7 @@ namespace TimeSurvivor.Voxel.Terrain
             else
             {
                 // Use default procedural generation
+                int totalVoxels = _config.ChunkSize * _config.ChunkSize * _config.ChunkSize;
                 var job = new ProceduralTerrainGenerationJob
                 {
                     ChunkCoord = chunk.Coord,
@@ -182,11 +183,13 @@ namespace TimeSurvivor.Voxel.Terrain
                     Seed = _config.Seed == 0 ? UnityEngine.Random.Range(1, 1000000) : _config.Seed,
                     NoiseFrequency = _config.NoiseFrequency,
                     NoiseOctaves = _config.NoiseOctaves,
+                    Lacunarity = 2.0f, // ADR-007 default
+                    Persistence = 0.5f, // ADR-007 default
                     VoxelData = chunk.VoxelData
                 };
 
-                // Schedule job
-                var handle = job.Schedule();
+                // Schedule parallel job with batch size 64 (ADR-007 recommended)
+                var handle = job.Schedule(totalVoxels, 64);
                 handle.Complete(); // TODO: Make async with job handles
             }
 
