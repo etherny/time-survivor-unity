@@ -66,10 +66,7 @@ make build-with-tests
 **Alternative: Manual Unity compilation:**
 ```bash
 # Compile the Unity project to check for compilation errors
-/Applications/Unity/Hub/Editor/6000.2.12f1/Unity.app/Contents/MacOS/Unity \
-  -quit -batchmode -nographics \
-  -projectPath "/Users/etherny/Documents/work/games/TimeSurvivorGame" \
-  -logFile compile.log
+make build
 ```
 
 **Test Results Location:**

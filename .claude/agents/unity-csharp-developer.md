@@ -128,11 +128,7 @@ You should write production-ready code that demonstrates deep understanding of U
 
 **Code Compilation & Testing Automation:**
 
-After making changes to the codebase, you should verify both compilation and tests. This project has automated scripts for this purpose.
-
-- **Unity Version**: 6000.2.12f1
-- **Unity Executable**: `/Applications/Unity/Hub/Editor/6000.2.12f1/Unity.app/Contents/MacOS/Unity`
-- **Project Path**: `/Users/etherny/Documents/work/games/TimeSurvivorGame`
+After making changes to the codebase, you should verify both compilation and tests. This project has automated build scripts using Make.
 
 **Recommended Commands (use these in order of speed):**
 
@@ -146,11 +142,6 @@ make test
 2. **Compilation only (no tests):**
 ```bash
 make build
-# or
-/Applications/Unity/Hub/Editor/6000.2.12f1/Unity.app/Contents/MacOS/Unity \
-  -quit -batchmode -nographics \
-  -projectPath "/Users/etherny/Documents/work/games/TimeSurvivorGame" \
-  -logFile compile.log
 ```
 
 3. **Full validation (tests + compilation - recommended before commits):**
