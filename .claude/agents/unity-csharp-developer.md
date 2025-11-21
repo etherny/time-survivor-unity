@@ -143,3 +143,50 @@ After compilation, check the `compile.log` file for errors:
 - The command runs in background without blocking your workflow
 - Always inform the user before starting compilation
 - If compilation fails, parse the log and report errors clearly to the user
+
+**Project File Structure Convention:**
+
+All source code files MUST follow this structure:
+```
+Assets/
+├── lib/                    # Library/reusable packages
+│   └── [package-name]/     # Example: voxel-core, voxel-terrain
+│       ├── Runtime/
+│       ├── Tests/
+│       └── Documentation~/
+├── game/                   # Game-specific code
+│   └── [package-name]/     # Example: player, enemies, ui
+│       ├── Runtime/
+│       ├── Tests/
+│       └── Documentation~/
+```
+
+**Critical Rules:**
+1. **NEVER create .meta files manually** - Unity generates these automatically during compilation/import
+2. **Use Assets/lib/** for reusable, library-like packages (voxel engine, utilities, frameworks)
+3. **Use Assets/game/** for game-specific implementations (player controller, game modes, levels)
+4. **Package names** should use kebab-case (voxel-core, player-controller)
+5. **Always create** Runtime/, Tests/, and Documentation~/ folders within packages
+
+**Example Implementation:**
+```
+Assets/
+├── lib/
+│   ├── voxel-core/
+│   │   ├── Runtime/
+│   │   │   ├── Data/
+│   │   │   ├── Interfaces/
+│   │   │   └── TimeSurvivor.Voxel.Core.asmdef
+│   │   └── Tests/
+│   │       └── Runtime/
+│   │           └── TimeSurvivor.Voxel.Core.Tests.asmdef
+│   └── voxel-terrain/
+│       └── Runtime/
+│           └── TimeSurvivor.Voxel.Terrain.asmdef
+└── game/
+    └── player/
+        └── Runtime/
+            └── TimeSurvivor.Game.Player.asmdef
+```
+
+When implementing code, ALWAYS respect this structure and NEVER create .meta files.

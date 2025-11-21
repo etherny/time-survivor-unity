@@ -1,0 +1,10 @@
+prompts: 
+
+Corriger les tests de ce projet. Ne pas mettre de ignore sur les tests que tu n'arrives pas a fixer. Ne pas supprimer les tests non plus que tu n'arrives pas a fixer, passe au suivant si tu n'y arrive pas et
+  laisse le test en erreur. Ceux que tu n'arrives pas a faire consigne les dans un petit document. Tu n'as pas de limite de temps ni de tokens. tu peux modifier le code de production dans des proportions
+  raisonnables tout en suivant les consignes de @CLAUDE.md en cas de changement dans le code de production. Ne pas lancer les tests a grandeur du projet, lancer seulement les tests que tu veux corriger. voici
+  la liste des tests à fixer :
+
+faire issue #1, travailler dans une branche dédiée, tu peux avancer de facon autonome sans limite de temps ou de token, respecte bien la méthode @CLAUDE.md et les ADR d'architecture et travaille iteration par iteration, tu n'es pas
+  obligé de revenir vers moi pour valider manuellement, tu peux commit et push au fur et a mesure sans me demander mon autorisation. Ne prends pas de racourcis, favorise toujours la solution la plus clean.
+  
