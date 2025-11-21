@@ -92,13 +92,14 @@ namespace TimeSurvivor.Voxel.Terrain
         /// <summary>
         /// Determines the voxel type at a given world position using 2D heightmap approach (Minecraft-style).
         /// Generates flat terrain with natural layers: Grass surface, Dirt below, Stone deep underground.
+        /// Water fills valleys below TerrainOffsetY.
         /// </summary>
         /// <param name="worldPos">World position of voxel to generate</param>
         /// <returns>VoxelType for this position (Air, Grass, Dirt, Stone, Water)</returns>
         private VoxelType GenerateVoxelAt(float3 worldPos)
         {
-            // Generate 2D heightmap using noise on X-Z plane (ignore Y for surface height calculation)
-            // This creates a flat terrain surface with hills and valleys
+            // STEP 1: Generate 2D heightmap using noise on X-Z plane (ignore Y for surface height)
+            // This creates a terrain surface with hills and valleys
             float heightNoise = SimplexNoise3D.MultiOctave(
                 worldPos.x, 0f, worldPos.z, // Use Y=0 for 2D heightmap
                 Seed,
@@ -107,35 +108,38 @@ namespace TimeSurvivor.Voxel.Terrain
                 Lacunarity,
                 Persistence);
 
-            // Convert noise [-1, 1] to surface height around TerrainOffsetY
-            // Amplitude controls hill height variation
-            // Example: noise=0 → surfaceHeight = TerrainOffsetY
-            //          noise=1 → surfaceHeight = TerrainOffsetY + (ChunkSize * 0.3)
-            //          noise=-1 → surfaceHeight = TerrainOffsetY - (ChunkSize * 0.3)
-            float heightVariation = heightNoise * (ChunkSize * 0.3f); // 30% of chunk height
-            float surfaceHeight = TerrainOffsetY + heightVariation;
+            // BUG FIX #1: Reduce amplitude from 30% to 25% for better terrain visibility
+            // Amplitude controls hill height variation (±25% = ±16 blocks for ChunkSize=64)
+            // Example: noise=0  → surfaceHeight = TerrainOffsetY
+            //          noise=1  → surfaceHeight = TerrainOffsetY + 16 blocks
+            //          noise=-1 → surfaceHeight = TerrainOffsetY - 16 blocks
+            float heightAmplitude = ChunkSize * 0.25f; // ±25% of chunk height
+            float surfaceHeight = TerrainOffsetY + (heightNoise * heightAmplitude);
 
+            // STEP 2: Define water level at base terrain height (fills valleys only)
+            float waterLevel = TerrainOffsetY;
             float voxelY = worldPos.y;
 
-            // Determine voxel type based on depth below surface
+            // STEP 3: Determine voxel type based on position relative to surface
             if (voxelY > surfaceHeight)
             {
-                // Above surface
-                float waterLevel = TerrainOffsetY - (ChunkSize * 0.2f); // Water level 20% below offset
-                if (voxelY < waterLevel)
-                    return VoxelType.Water; // Fill low areas with water
+                // Above terrain surface
+                // BUG FIX #2: Water only in valleys (voxelY <= waterLevel), not floating in air
+                if (voxelY <= waterLevel)
+                    return VoxelType.Water; // Lakes in valleys below TerrainOffsetY
                 else
-                    return VoxelType.Air; // Open air
+                    return VoxelType.Air; // Sky above water level
             }
             else
             {
-                // Below surface - apply layering
+                // Inside terrain - apply horizontal layering (Minecraft-style)
                 float depthBelowSurface = surfaceHeight - voxelY;
 
-                if (depthBelowSurface < 0.5f)
-                    return VoxelType.Grass; // Top layer: grass
-                else if (depthBelowSurface < 4f)
-                    return VoxelType.Dirt; // Next 3-4 blocks: dirt
+                // BUG FIX #3: Increase grass layer from 0.5 blocks to 1.0 block for visibility
+                if (depthBelowSurface < 1.0f)
+                    return VoxelType.Grass; // Surface layer: 1 full block of grass
+                else if (depthBelowSurface < 4.0f)
+                    return VoxelType.Dirt; // Subsurface: 3 blocks of dirt
                 else
                     return VoxelType.Stone; // Deep underground: stone
             }
