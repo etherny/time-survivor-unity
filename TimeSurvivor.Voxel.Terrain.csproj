@@ -48,13 +48,18 @@
     <Analyzer Include="/Applications/Unity/Hub/Editor/6000.2.12f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets/lib/voxel-terrain/Runtime/Minecraft/MinecraftTerrainConfiguration.cs" />
     <Compile Include="Assets/lib/voxel-terrain/Runtime/Streaming/LRUCache.cs" />
+    <Compile Include="Assets/lib/voxel-terrain/Runtime/Generation/MinecraftTerrainCustomGenerator.cs" />
     <Compile Include="Assets/lib/voxel-terrain/Runtime/Generation/ProceduralTerrainGenerationJob.cs" />
     <Compile Include="Assets/lib/voxel-terrain/Runtime/Chunks/TerrainChunk.cs" />
     <Compile Include="Assets/lib/voxel-terrain/Runtime/Generation/SimplexNoise3D.cs" />
+    <Compile Include="Assets/lib/voxel-terrain/Runtime/Minecraft/MinecraftTerrainGenerator.cs" />
     <Compile Include="Assets/lib/voxel-terrain/Runtime/Chunks/ChunkManager.cs" />
     <Compile Include="Assets/lib/voxel-terrain/Runtime/Overlay/DestructibleOverlayManager.cs" />
     <Compile Include="Assets/lib/voxel-terrain/Runtime/Streaming/ProceduralTerrainStreamer.cs" />
+    <Compile Include="Assets/lib/voxel-terrain/Runtime/Generation/SimpleCheckerboardGenerator.cs" />
+    <Compile Include="Assets/lib/voxel-terrain/Runtime/Generation/MinecraftHeightmapGenerator.cs" />
     <Compile Include="Assets/lib/voxel-terrain/Runtime/Overlay/OverlayChunk.cs" />
   </ItemGroup>
   <ItemGroup>

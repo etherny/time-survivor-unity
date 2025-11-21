@@ -1,0 +1,21 @@
+{
+    "name": "TimeSurvivor.Demos.MinecraftTerrain.Editor",
+    "rootNamespace": "TimeSurvivor.Demos.MinecraftTerrain.Editor",
+    "references": [
+        "GUID:8e5ef2a3b92be45a89fc3a8ee2df15a2",
+        "GUID:e68ee3d0141d54358a158fea199613a9",
+        "GUID:cb530158dcf314bb8bca2217f1b5012e",
+        "GUID:271c2863bea304a25bf33512e0428dcc"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

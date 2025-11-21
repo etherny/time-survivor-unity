@@ -1,0 +1,121 @@
+================================================================================
+                   MINECRAFT TERRAIN DEMO - START HERE
+================================================================================
+
+Welcome! This is your entry point to the Minecraft Terrain Demo.
+
+================================================================================
+QUICK START (10 MINUTES)
+================================================================================
+
+1. Open Unity Editor (6000.2.12f1)
+
+2. Run Setup Tool:
+   Unity Menu → Tools → TimeSurvivor → Setup Minecraft Terrain Demo
+
+3. Follow Guide:
+   Open: QUICK_START.md
+   (Located in this folder)
+
+4. Press Play!
+
+================================================================================
+DOCUMENTATION FILES
+================================================================================
+
+📖 START HERE:
+   → INDEX.md              Navigation hub for all documentation
+   → QUICK_START.md        10-minute setup guide (RECOMMENDED)
+
+📚 DETAILED HELP:
+   → UNITY_SETUP_GUIDE.md  Comprehensive step-by-step instructions
+
+📋 REFERENCE:
+   → Configurations/CONFIGURATIONS_REFERENCE.md  Parameter explanations
+   → README.md                                   Main documentation
+   → DEMO_ASSETS_SUMMARY.md                      Asset inventory
+
+📊 STATUS:
+   → SETUP_STATUS.md       Current setup progress
+   → FILES_CREATED.txt     All files summary
+
+================================================================================
+FIRST-TIME SETUP STEPS
+================================================================================
+
+Step 1: Automated Setup (2 minutes)
+   • Open Unity Editor
+   • Tools → TimeSurvivor → Setup Minecraft Terrain Demo
+   • Wait for "Demo setup complete!" in Console
+
+Step 2: Create Scene (5-10 minutes)
+   • Follow QUICK_START.md Step 2
+   • Create MinecraftTerrainDemoScene.unity
+   • Configure camera, lights, terrain manager
+
+Step 3: Test (1-2 minutes)
+   • Press Play
+   • Watch terrain generate
+   • See Minecraft-style voxel world!
+
+Total Time: 10-15 minutes
+
+================================================================================
+WHAT YOU'LL GET
+================================================================================
+
+✅ Minecraft-style voxel terrain generation
+✅ Configurable world sizes (Small/Medium/Large)
+✅ Realistic layering (Grass, Dirt, Stone, Water)
+✅ Performance optimized (Burst + Jobs)
+✅ Fully documented and production-ready code
+
+================================================================================
+NEED HELP?
+================================================================================
+
+Quick Reference:
+   → QUICK_START.md > Troubleshooting Quick Fix
+
+Detailed Help:
+   → UNITY_SETUP_GUIDE.md > Troubleshooting section
+
+Still Stuck?
+   → Check Console for error messages
+   → Verify all prerequisites (Unity 6000.2.12f1, URP)
+   → Start with Small configuration
+
+================================================================================
+FILE LOCATIONS
+================================================================================
+
+This Demo:
+   /Users/etherny/Documents/work/games/TimeSurvivorGame/
+   └── Assets/demos/demo-minecraft-terrain/
+
+Documentation:
+   (All .md and .txt files in the demo folder)
+
+Scripts:
+   Assets/demos/demo-minecraft-terrain/Scripts/
+
+Configurations (after setup):
+   Assets/demos/demo-minecraft-terrain/Configurations/
+   Assets/lib/voxel-core/Configurations/
+
+================================================================================
+RECOMMENDED READING ORDER
+================================================================================
+
+1. START_HERE.txt (this file) ← You are here
+2. INDEX.md (navigation hub)
+3. QUICK_START.md (setup guide)
+4. README.md (main documentation)
+
+================================================================================
+
+Ready to start? Open QUICK_START.md and follow the guide!
+
+Good luck! 🎮
+
+================================================================================

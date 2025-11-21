@@ -13,6 +13,10 @@ namespace TimeSurvivor.Voxel.Terrain
     /// Performance: Targets less than 0.3ms per 64^3 chunk (262,144 voxels).
     /// Algorithm: Multi-octave fractal noise with altitude-based thresholds for natural terrain.
     ///
+    /// Supports two generation modes:
+    /// 1. 3D Noise Mode (default): Uses 3D Simplex noise for terrain generation (legacy behavior)
+    /// 2. Heightmap Mode (Minecraft-style): Uses pre-generated 2D heightmap for flat terrain with layers
+    ///
     /// Conforms to ADR-007: Procedural Terrain Generation Specifications.
     /// </summary>
     [BurstCompile(CompileSynchronously = true, FloatMode = FloatMode.Fast)]
@@ -48,6 +52,37 @@ namespace TimeSurvivor.Voxel.Terrain
         /// <summary>Vertical offset for terrain generation (shifts terrain up/down). Default: 0f.</summary>
         [ReadOnly] public float TerrainOffsetY;
 
+        // ========== Heightmap Mode Parameters (Optional) ==========
+
+        /// <summary>
+        /// Optional 2D heightmap for Minecraft-style terrain generation.
+        /// If Length > 0, uses heightmap mode. If Length == 0, uses 3D noise mode (legacy).
+        /// Format: Row-major (X changes fastest), size = HeightmapWidth × HeightmapHeight.
+        /// </summary>
+        [ReadOnly] public NativeArray<float> Heightmap;
+
+        /// <summary>Width of heightmap in voxels (world X dimension).</summary>
+        [ReadOnly] public int HeightmapWidth;
+
+        /// <summary>Height of heightmap in voxels (world Z dimension).</summary>
+        [ReadOnly] public int HeightmapHeight;
+
+        /// <summary>
+        /// Chunk offset in world voxel coordinates (ChunkCoord × ChunkSize).
+        /// Used to map chunk-local coordinates to world heightmap coordinates.
+        /// Example: Chunk (2, 0, 3) with ChunkSize 64 → Offset (128, 0, 192).
+        /// </summary>
+        [ReadOnly] public int3 ChunkOffsetVoxels;
+
+        /// <summary>Thickness of grass layer on surface (voxels). Default: 1.</summary>
+        [ReadOnly] public int GrassLayerThickness;
+
+        /// <summary>Thickness of dirt layer below grass (voxels). Default: 3.</summary>
+        [ReadOnly] public int DirtLayerThickness;
+
+        /// <summary>Water level in world voxels. Water fills air below this level. Default: 0 (disabled).</summary>
+        [ReadOnly] public int WaterLevel;
+
         // ========== Output (Write-Only) ==========
 
         /// <summary>
@@ -62,6 +97,7 @@ namespace TimeSurvivor.Voxel.Terrain
         /// <summary>
         /// Execute method called in parallel for each voxel in the chunk.
         /// Converts flat index to 3D coordinate, calculates world position, and generates voxel type.
+        /// Supports both 3D noise mode (legacy) and heightmap mode (Minecraft-style).
         /// </summary>
         /// <param name="index">Flat array index in range [0, chunkSize^3 - 1]</param>
         public void Execute(int index)
@@ -74,25 +110,93 @@ namespace TimeSurvivor.Voxel.Terrain
             int y = remainder / ChunkSize;
             int x = remainder % ChunkSize;
 
-            // Step 2: Convert chunk coordinate to world origin
-            float3 chunkOrigin = VoxelMath.ChunkCoordToWorld(ChunkCoord, ChunkSize, VoxelSize);
+            // Step 2: Check generation mode (heightmap vs 3D noise)
+            VoxelType voxelType;
 
-            // Step 3: Convert local 3D coordinate to world position
-            float3 worldPos = chunkOrigin + new float3(x, y, z) * VoxelSize;
+            if (Heightmap.IsCreated && Heightmap.Length > 0)
+            {
+                // HEIGHTMAP MODE: Use pre-generated 2D heightmap
+                voxelType = GenerateVoxelFromHeightmap(x, y, z);
+            }
+            else
+            {
+                // 3D NOISE MODE (LEGACY): Use 3D Simplex noise
+                float3 chunkOrigin = VoxelMath.ChunkCoordToWorld(ChunkCoord, ChunkSize, VoxelSize);
+                float3 worldPos = chunkOrigin + new float3(x, y, z) * VoxelSize;
+                voxelType = GenerateVoxelAt(worldPos);
+            }
 
-            // Step 4: Generate voxel type at this world position using noise
-            VoxelType voxelType = GenerateVoxelAt(worldPos);
-
-            // Step 5: Write result to output array
+            // Step 3: Write result to output array
             VoxelData[index] = voxelType;
         }
 
         // ========== Private Helper Methods ==========
 
         /// <summary>
+        /// Generate voxel type using pre-generated 2D heightmap (Minecraft-style).
+        /// Uses heightmap to determine terrain surface, then applies horizontal layering:
+        /// - Grass (surface, configurable thickness)
+        /// - Dirt (subsurface, configurable thickness)
+        /// - Stone (deep underground)
+        /// - Water (fills air below water level)
+        /// </summary>
+        /// <param name="localX">Local X coordinate within chunk (0 to ChunkSize-1)</param>
+        /// <param name="localY">Local Y coordinate within chunk (0 to ChunkSize-1)</param>
+        /// <param name="localZ">Local Z coordinate within chunk (0 to ChunkSize-1)</param>
+        /// <returns>VoxelType for this position</returns>
+        private VoxelType GenerateVoxelFromHeightmap(int localX, int localY, int localZ)
+        {
+            // STEP 1: Convert local chunk coordinates to world voxel coordinates
+            int worldVoxelX = ChunkOffsetVoxels.x + localX;
+            int worldVoxelY = ChunkOffsetVoxels.y + localY;
+            int worldVoxelZ = ChunkOffsetVoxels.z + localZ;
+
+            // STEP 2: Lookup terrain height from heightmap (clamp to bounds)
+            int hmX = math.clamp(worldVoxelX, 0, HeightmapWidth - 1);
+            int hmZ = math.clamp(worldVoxelZ, 0, HeightmapHeight - 1);
+            int heightmapIndex = hmZ * HeightmapWidth + hmX;
+            float terrainHeight = Heightmap[heightmapIndex];
+
+            // STEP 3: Determine voxel type based on position relative to terrain surface
+            if (worldVoxelY > terrainHeight)
+            {
+                // Above terrain surface
+                if (WaterLevel > 0 && worldVoxelY <= WaterLevel)
+                {
+                    // Water fills air below water level (lakes in valleys)
+                    return VoxelType.Water;
+                }
+                else
+                {
+                    // Sky/air above water level
+                    return VoxelType.Air;
+                }
+            }
+            else
+            {
+                // Inside terrain - apply horizontal layering (Minecraft-style)
+                float depthBelowSurface = terrainHeight - worldVoxelY;
+
+                // Grass layer (surface)
+                if (depthBelowSurface < GrassLayerThickness)
+                    return VoxelType.Grass;
+
+                // Dirt layer (subsurface)
+                float dirtLayerEnd = GrassLayerThickness + DirtLayerThickness;
+                if (depthBelowSurface < dirtLayerEnd)
+                    return VoxelType.Dirt;
+
+                // Stone (deep underground)
+                return VoxelType.Stone;
+            }
+        }
+
+        /// <summary>
         /// Determines the voxel type at a given world position using 2D heightmap approach (Minecraft-style).
         /// Generates flat terrain with natural layers: Grass surface, Dirt below, Stone deep underground.
         /// Water fills valleys below TerrainOffsetY.
+        ///
+        /// NOTE: This method is used in legacy 3D noise mode. For heightmap mode, use GenerateVoxelFromHeightmap.
         /// </summary>
         /// <param name="worldPos">World position of voxel to generate</param>
         /// <returns>VoxelType for this position (Air, Grass, Dirt, Stone, Water)</returns>

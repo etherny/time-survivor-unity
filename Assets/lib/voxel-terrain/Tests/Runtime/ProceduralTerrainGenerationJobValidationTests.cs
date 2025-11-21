@@ -541,5 +541,332 @@ namespace TimeSurvivor.Voxel.Terrain.Tests
                 voxelData.Dispose();
             }
         }
+
+        #region Heightmap Mode Tests
+
+        /// <summary>
+        /// Helper method to create a simple flat heightmap for testing.
+        /// </summary>
+        private NativeArray<float> CreateFlatHeightmap(int width, int height, float terrainHeight)
+        {
+            var heightmap = new NativeArray<float>(width * height, Allocator.TempJob);
+            for (int i = 0; i < heightmap.Length; i++)
+            {
+                heightmap[i] = terrainHeight;
+            }
+            return heightmap;
+        }
+
+        /// <summary>
+        /// Helper method to create a simple heightmap with variation (hill in center).
+        /// </summary>
+        private NativeArray<float> CreateVariedHeightmap(int width, int height, float baseHeight, float variation)
+        {
+            var heightmap = new NativeArray<float>(width * height, Allocator.TempJob);
+            int centerX = width / 2;
+            int centerZ = height / 2;
+
+            for (int z = 0; z < height; z++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    // Calculate distance from center
+                    float dx = x - centerX;
+                    float dz = z - centerZ;
+                    float distanceFromCenter = math.sqrt(dx * dx + dz * dz);
+                    float maxDistance = math.sqrt(centerX * centerX + centerZ * centerZ);
+
+                    // Create hill: higher in center, lower at edges
+                    float heightFactor = 1.0f - math.clamp(distanceFromCenter / maxDistance, 0f, 1f);
+                    float terrainHeight = baseHeight + (heightFactor * variation);
+
+                    int index = z * width + x;
+                    heightmap[index] = terrainHeight;
+                }
+            }
+
+            return heightmap;
+        }
+
+        /// <summary>
+        /// Test 7: Verifies that heightmap mode generates correct horizontal layers (Grass > Dirt > Stone).
+        /// Uses a flat heightmap at Y=32 and verifies layering below surface.
+        /// </summary>
+        [Test]
+        public void HeightmapMode_ShouldGenerateCorrectLayers()
+        {
+            // Arrange
+            int totalVoxels = ChunkSize * ChunkSize * ChunkSize;
+            NativeArray<VoxelType> voxelData = new NativeArray<VoxelType>(totalVoxels, Allocator.TempJob);
+            NativeArray<float> heightmap = CreateFlatHeightmap(ChunkSize, ChunkSize, 32f);
+
+            try
+            {
+                var job = new ProceduralTerrainGenerationJob
+                {
+                    ChunkCoord = new ChunkCoord(0, 0, 0),
+                    ChunkSize = ChunkSize,
+                    VoxelSize = VoxelSize,
+                    Seed = Seed,
+                    VoxelData = voxelData,
+                    // Heightmap mode parameters
+                    Heightmap = heightmap,
+                    HeightmapWidth = ChunkSize,
+                    HeightmapHeight = ChunkSize,
+                    ChunkOffsetVoxels = new int3(0, 0, 0),
+                    GrassLayerThickness = 1,
+                    DirtLayerThickness = 3,
+                    WaterLevel = 0 // No water for this test
+                };
+
+                // Act
+                job.Schedule(totalVoxels, 64).Complete();
+
+                // Assert: Check center column for proper layering
+                int centerX = ChunkSize / 2;
+                int centerZ = ChunkSize / 2;
+
+                // Y=33+ should be Air (above terrain)
+                Assert.AreEqual(VoxelType.Air, GetVoxel(voxelData, centerX, 33, centerZ), "Above terrain should be Air");
+                Assert.AreEqual(VoxelType.Air, GetVoxel(voxelData, centerX, 40, centerZ), "Above terrain should be Air");
+
+                // Y=32 should be Grass (surface)
+                Assert.AreEqual(VoxelType.Grass, GetVoxel(voxelData, centerX, 32, centerZ), "Surface should be Grass");
+
+                // Y=29-31 should be Dirt (3 voxels thick)
+                Assert.AreEqual(VoxelType.Dirt, GetVoxel(voxelData, centerX, 31, centerZ), "Subsurface should be Dirt");
+                Assert.AreEqual(VoxelType.Dirt, GetVoxel(voxelData, centerX, 30, centerZ), "Subsurface should be Dirt");
+                Assert.AreEqual(VoxelType.Dirt, GetVoxel(voxelData, centerX, 29, centerZ), "Subsurface should be Dirt");
+
+                // Y=28 and below should be Stone
+                Assert.AreEqual(VoxelType.Stone, GetVoxel(voxelData, centerX, 28, centerZ), "Deep should be Stone");
+                Assert.AreEqual(VoxelType.Stone, GetVoxel(voxelData, centerX, 20, centerZ), "Deep should be Stone");
+                Assert.AreEqual(VoxelType.Stone, GetVoxel(voxelData, centerX, 10, centerZ), "Deep should be Stone");
+                Assert.AreEqual(VoxelType.Stone, GetVoxel(voxelData, centerX, 0, centerZ), "Deep should be Stone");
+
+                Debug.Log("SUCCESS: Heightmap mode generates correct horizontal layers (Grass > Dirt > Stone)");
+            }
+            finally
+            {
+                voxelData.Dispose();
+                heightmap.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Test 8: Verifies that heightmap mode generates water in valleys below water level.
+        /// </summary>
+        [Test]
+        public void HeightmapMode_ShouldGenerateWater()
+        {
+            // Arrange
+            int totalVoxels = ChunkSize * ChunkSize * ChunkSize;
+            NativeArray<VoxelType> voxelData = new NativeArray<VoxelType>(totalVoxels, Allocator.TempJob);
+            // Create heightmap with valley: terrain at Y=20, water level at Y=30
+            NativeArray<float> heightmap = CreateFlatHeightmap(ChunkSize, ChunkSize, 20f);
+
+            try
+            {
+                var job = new ProceduralTerrainGenerationJob
+                {
+                    ChunkCoord = new ChunkCoord(0, 0, 0),
+                    ChunkSize = ChunkSize,
+                    VoxelSize = VoxelSize,
+                    Seed = Seed,
+                    VoxelData = voxelData,
+                    // Heightmap mode parameters
+                    Heightmap = heightmap,
+                    HeightmapWidth = ChunkSize,
+                    HeightmapHeight = ChunkSize,
+                    ChunkOffsetVoxels = new int3(0, 0, 0),
+                    GrassLayerThickness = 1,
+                    DirtLayerThickness = 3,
+                    WaterLevel = 30 // Water fills Y=21 to Y=30
+                };
+
+                // Act
+                job.Schedule(totalVoxels, 64).Complete();
+
+                // Assert: Check center column
+                int centerX = ChunkSize / 2;
+                int centerZ = ChunkSize / 2;
+
+                // Y=31+ should be Air (above water level)
+                Assert.AreEqual(VoxelType.Air, GetVoxel(voxelData, centerX, 31, centerZ), "Above water level should be Air");
+
+                // Y=21-30 should be Water (above terrain, below water level)
+                Assert.AreEqual(VoxelType.Water, GetVoxel(voxelData, centerX, 30, centerZ), "Valley should be filled with Water");
+                Assert.AreEqual(VoxelType.Water, GetVoxel(voxelData, centerX, 25, centerZ), "Valley should be filled with Water");
+                Assert.AreEqual(VoxelType.Water, GetVoxel(voxelData, centerX, 21, centerZ), "Valley should be filled with Water");
+
+                // Y=20 should be Grass (terrain surface)
+                Assert.AreEqual(VoxelType.Grass, GetVoxel(voxelData, centerX, 20, centerZ), "Terrain surface should be Grass");
+
+                // Y=19 and below should be Dirt/Stone
+                VoxelType y19 = GetVoxel(voxelData, centerX, 19, centerZ);
+                Assert.IsTrue(y19 == VoxelType.Dirt || y19 == VoxelType.Stone, "Below surface should be Dirt or Stone");
+
+                Debug.Log("SUCCESS: Heightmap mode generates water in valleys below water level");
+            }
+            finally
+            {
+                voxelData.Dispose();
+                heightmap.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Test 9: Verifies that chunks maintain continuity at borders when using heightmap.
+        /// Adjacent chunks with same heightmap should have seamless borders (no gaps/overlaps).
+        /// </summary>
+        [Test]
+        public void HeightmapMode_ChunkBordersShouldBeContinuous()
+        {
+            // Arrange: Create two adjacent chunks (0,0,0) and (1,0,0) with same heightmap
+            int totalVoxels = ChunkSize * ChunkSize * ChunkSize;
+            NativeArray<VoxelType> chunk1Data = new NativeArray<VoxelType>(totalVoxels, Allocator.TempJob);
+            NativeArray<VoxelType> chunk2Data = new NativeArray<VoxelType>(totalVoxels, Allocator.TempJob);
+
+            // Create heightmap covering 2 chunks in X direction (128×64)
+            int worldWidth = ChunkSize * 2;
+            int worldHeight = ChunkSize;
+            NativeArray<float> heightmap = CreateVariedHeightmap(worldWidth, worldHeight, 32f, 16f);
+
+            try
+            {
+                // Generate chunk (0,0,0)
+                var job1 = new ProceduralTerrainGenerationJob
+                {
+                    ChunkCoord = new ChunkCoord(0, 0, 0),
+                    ChunkSize = ChunkSize,
+                    VoxelSize = VoxelSize,
+                    Seed = Seed,
+                    VoxelData = chunk1Data,
+                    Heightmap = heightmap,
+                    HeightmapWidth = worldWidth,
+                    HeightmapHeight = worldHeight,
+                    ChunkOffsetVoxels = new int3(0, 0, 0), // Chunk starts at world voxel (0,0,0)
+                    GrassLayerThickness = 1,
+                    DirtLayerThickness = 3,
+                    WaterLevel = 0
+                };
+                job1.Schedule(totalVoxels, 64).Complete();
+
+                // Generate chunk (1,0,0) (adjacent in X direction)
+                var job2 = new ProceduralTerrainGenerationJob
+                {
+                    ChunkCoord = new ChunkCoord(1, 0, 0),
+                    ChunkSize = ChunkSize,
+                    VoxelSize = VoxelSize,
+                    Seed = Seed,
+                    VoxelData = chunk2Data,
+                    Heightmap = heightmap,
+                    HeightmapWidth = worldWidth,
+                    HeightmapHeight = worldHeight,
+                    ChunkOffsetVoxels = new int3(ChunkSize, 0, 0), // Chunk starts at world voxel (64,0,0)
+                    GrassLayerThickness = 1,
+                    DirtLayerThickness = 3,
+                    WaterLevel = 0
+                };
+                job2.Schedule(totalVoxels, 64).Complete();
+
+                // Assert: Check border continuity (X=63 in chunk1 should match X=0 in chunk2)
+                int borderMatchCount = 0;
+                int totalBorderSamples = 0;
+
+                for (int z = 0; z < ChunkSize; z++)
+                {
+                    for (int y = 0; y < ChunkSize; y++)
+                    {
+                        VoxelType chunk1Border = GetVoxel(chunk1Data, ChunkSize - 1, y, z); // X=63
+                        VoxelType chunk2Border = GetVoxel(chunk2Data, 0, y, z);            // X=0
+
+                        totalBorderSamples++;
+
+                        // Borders should match (same voxel type at boundary)
+                        if (chunk1Border == chunk2Border)
+                        {
+                            borderMatchCount++;
+                        }
+                        else if (totalBorderSamples <= 5) // Log first few mismatches
+                        {
+                            Debug.LogWarning($"Border mismatch at Y={y}, Z={z}: Chunk1={chunk1Border}, Chunk2={chunk2Border}");
+                        }
+                    }
+                }
+
+                float matchPercentage = (float)borderMatchCount / totalBorderSamples;
+                Debug.Log($"Border continuity: {borderMatchCount}/{totalBorderSamples} voxels match ({matchPercentage * 100:F2}%)");
+
+                // At least 95% of border voxels should match (allow minor floating-point differences)
+                Assert.GreaterOrEqual(matchPercentage, 0.95f,
+                    $"Chunk borders should be continuous. Found: {matchPercentage * 100:F2}% match");
+
+                Debug.Log("SUCCESS: Chunk borders are continuous with heightmap mode");
+            }
+            finally
+            {
+                chunk1Data.Dispose();
+                chunk2Data.Dispose();
+                heightmap.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Test 10: Verifies backward compatibility - job works with empty heightmap (3D noise mode).
+        /// </summary>
+        [Test]
+        public void HeightmapMode_BackwardCompatibility_NoHeightmap()
+        {
+            // Arrange
+            int totalVoxels = ChunkSize * ChunkSize * ChunkSize;
+            NativeArray<VoxelType> voxelData = new NativeArray<VoxelType>(totalVoxels, Allocator.TempJob);
+
+            try
+            {
+                // Create job WITHOUT heightmap (should fallback to 3D noise mode)
+                var job = new ProceduralTerrainGenerationJob
+                {
+                    ChunkCoord = new ChunkCoord(0, 0, 0),
+                    ChunkSize = ChunkSize,
+                    VoxelSize = VoxelSize,
+                    Seed = Seed,
+                    NoiseFrequency = NoiseFrequency,
+                    NoiseOctaves = NoiseOctaves,
+                    Lacunarity = Lacunarity,
+                    Persistence = Persistence,
+                    TerrainOffsetY = TerrainOffsetY,
+                    VoxelData = voxelData,
+                    // Heightmap parameters left default (empty NativeArray)
+                    Heightmap = new NativeArray<float>(), // Empty = use 3D noise mode
+                    HeightmapWidth = 0,
+                    HeightmapHeight = 0,
+                    ChunkOffsetVoxels = new int3(0, 0, 0),
+                    GrassLayerThickness = 1,
+                    DirtLayerThickness = 3,
+                    WaterLevel = 0
+                };
+
+                // Act: Should work without errors (fallback to 3D noise mode)
+                job.Schedule(totalVoxels, 64).Complete();
+
+                // Assert: Should generate varied terrain (not empty or all one type)
+                var counts = CountVoxelsByType(voxelData);
+                LogVoxelDistribution(counts, totalVoxels);
+
+                Assert.Greater(counts[VoxelType.Air], 0, "Should have Air voxels");
+                Assert.Greater(counts[VoxelType.Grass], 0, "Should have Grass voxels");
+                Assert.Greater(counts[VoxelType.Dirt], 0, "Should have Dirt voxels");
+                Assert.Greater(counts[VoxelType.Stone], 0, "Should have Stone voxels");
+
+                Debug.Log("SUCCESS: Backward compatibility maintained - 3D noise mode works without heightmap");
+            }
+            finally
+            {
+                voxelData.Dispose();
+            }
+        }
+
+        #endregion
     }
 }
