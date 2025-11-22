@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using TMPro;
 using System.Collections.Generic;
 using VoxelStreamer = TimeSurvivor.Voxel.Streaming.ProceduralTerrainStreamer;
@@ -18,9 +19,9 @@ namespace TimeSurvivor.Demos.ProceduralTerrainStreamer
         [SerializeField] private TextMeshProUGUI instructionsText;
 
         [Header("Debug Visualization")]
-        [SerializeField] private bool showGizmos = true;
-        [SerializeField] private Color loadRadiusColor = Color.green;
-        [SerializeField] private Color unloadRadiusColor = Color.red;
+        [SerializeField] public bool showGizmos = true;
+        [SerializeField] public Color loadRadiusColor = Color.green;
+        [SerializeField] public Color unloadRadiusColor = Color.red;
 
         [Header("FPS Calculation")]
         [SerializeField] private float fpsUpdateInterval = 1f;
@@ -148,7 +149,8 @@ Gizmos: {(showGizmos ? "ON (G to toggle)" : "OFF (G to toggle)")}";
 
         private void HandleInput()
         {
-            if (Input.GetKeyDown(KeyCode.G))
+            // Use new Input System
+            if (Keyboard.current != null && Keyboard.current.gKey.wasPressedThisFrame)
             {
                 showGizmos = !showGizmos;
                 Debug.Log($"[DemoController] Gizmos debug: {(showGizmos ? "ON" : "OFF")}");

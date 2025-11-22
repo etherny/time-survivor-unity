@@ -3,7 +3,8 @@
     "rootNamespace": "TimeSurvivor.Demos.ProceduralTerrainStreamer",
     "references": [
         "TimeSurvivor.Voxel.Streaming",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

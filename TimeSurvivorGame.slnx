@@ -15,6 +15,7 @@
   <Project Path="TimeSurvivor.Voxel.Physics.csproj" />
   <Project Path="TimeSurvivor.Demos.ProceduralTerrainStreamer.csproj" />
   <Project Path="TimeSurvivor.Demos.MinecraftTerrain.Editor.csproj" />
+  <Project Path="TimeSurvivor.Demos.ProceduralTerrainStreamer.Editor.csproj" />
   <Project Path="TimeSurvivor.Demos.GreedyMeshing.Editor.csproj" />
   <Project Path="TimeSurvivor.Demos.GreedyMeshing.csproj" />
 </Solution>

@@ -22,21 +22,21 @@ namespace TimeSurvivor.Voxel.Streaming
         [Header("Player Tracking")]
         [SerializeField]
         [Tooltip("Player transform to track for streaming")]
-        private Transform playerTransform;
+        public Transform playerTransform;
 
         [Header("Configuration")]
         [SerializeField]
         [Tooltip("Voxel configuration asset")]
-        private VoxelConfiguration voxelConfig;
+        public VoxelConfiguration voxelConfig;
 
         [SerializeField]
         [Tooltip("Streaming configuration asset")]
-        private StreamingConfiguration streamingConfig;
+        public StreamingConfiguration streamingConfig;
 
         [Header("Rendering")]
         [SerializeField]
         [Tooltip("Material for chunk rendering (URP/Lit)")]
-        private Material chunkMaterial;
+        public Material chunkMaterial;
 
         [SerializeField]
         [Tooltip("Enable mesh colliders for physics")]
@@ -45,7 +45,7 @@ namespace TimeSurvivor.Voxel.Streaming
         [Header("Performance Budget")]
         [SerializeField]
         [Tooltip("Maximum chunks to load per frame")]
-        private int maxChunksPerFrame = 1;
+        public int maxChunksPerFrame = 1;
 
         [SerializeField]
         [Tooltip("Maximum time budget per frame (milliseconds)")]
