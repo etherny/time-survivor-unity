@@ -97,8 +97,9 @@ namespace TimeSurvivor.Voxel.Terrain
 
         private void Awake()
         {
-            // Only initialize from Inspector if not already initialized programmatically
-            if (!_isInitialized)
+            // Only validate if config was assigned via Inspector
+            // Programmatic initialization via Initialize() is also valid
+            if (_config != null && !_isInitialized)
             {
                 ValidateAndInitialize();
             }
@@ -106,10 +107,10 @@ namespace TimeSurvivor.Voxel.Terrain
 
         private void Start()
         {
-            // Final validation check before streaming begins
+            // Final validation: at this point we must be initialized either via Inspector or Initialize()
             if (!_isInitialized)
             {
-                Debug.LogError("[ProceduralTerrainStreamer] Failed to initialize. Disabling component.");
+                Debug.LogError("[ProceduralTerrainStreamer] Component not initialized! Either assign VoxelConfiguration in Inspector or call Initialize() method.");
                 enabled = false;
             }
         }

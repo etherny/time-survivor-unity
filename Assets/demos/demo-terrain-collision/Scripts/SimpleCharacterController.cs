@@ -161,7 +161,22 @@ namespace TimeSurvivor.Demos.TerrainCollision
             Vector3 rayStart = transform.position;
             float rayDistance = groundCheckDistance + (characterController.height / 2f);
 
-            isGrounded = Physics.Raycast(rayStart, Vector3.down, rayDistance, groundLayer);
+            // Use groundLayer if assigned, otherwise use all layers except Ignore Raycast
+            if (groundLayer != 0)
+            {
+                isGrounded = Physics.Raycast(rayStart, Vector3.down, rayDistance, groundLayer);
+            }
+            else
+            {
+                // Fallback: detect ground on any layer (except Ignore Raycast)
+                isGrounded = Physics.Raycast(rayStart, Vector3.down, rayDistance, ~LayerMask.GetMask("Ignore Raycast"));
+
+                // Log warning once on first frame
+                if (Time.frameCount == 1)
+                {
+                    Debug.LogWarning("[SimpleCharacterController] groundLayer not assigned! Using all layers for ground detection. This may cause performance issues.");
+                }
+            }
 
             // Debug visualization
             Debug.DrawRay(rayStart, Vector3.down * rayDistance, isGrounded ? Color.green : Color.red);

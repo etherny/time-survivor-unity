@@ -217,6 +217,13 @@ namespace TimeSurvivor.Voxel.Physics
             /// </summary>
             public void Dispose()
             {
+                // Force job completion before disposing (safety measure)
+                if (!JobHandle.IsCompleted)
+                {
+                    JobHandle.Complete();
+                }
+
+                // Dispose NativeCollections
                 if (Vertices.IsCreated) Vertices.Dispose();
                 if (Triangles.IsCreated) Triangles.Dispose();
             }
@@ -236,8 +243,9 @@ namespace TimeSurvivor.Voxel.Physics
             int resolutionDivider = 2)
         {
             // Allocate output buffers
-            var vertices = new NativeList<float3>(Allocator.TempJob);
-            var triangles = new NativeList<int>(Allocator.TempJob);
+            // Use Persistent allocator for async jobs that may exceed 4 frames
+            var vertices = new NativeList<float3>(Allocator.Persistent);
+            var triangles = new NativeList<int>(Allocator.Persistent);
 
             // Create and schedule job
             var job = new CollisionBakingJob

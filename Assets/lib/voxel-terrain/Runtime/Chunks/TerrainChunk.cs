@@ -127,6 +127,7 @@ namespace TimeSurvivor.Voxel.Terrain
         /// <summary>
         /// Set the collision mesh for this chunk and assign to specified physics layer.
         /// Creates MeshCollider if needed.
+        /// IMPORTANT: Also adds a kinematic Rigidbody to ensure CharacterController can detect the collision.
         /// </summary>
         /// <param name="collisionMesh">Collision mesh to assign</param>
         /// <param name="layerName">Physics layer name (e.g., "TerrainStatic")</param>
@@ -142,6 +143,18 @@ namespace TimeSurvivor.Voxel.Terrain
             if (_meshCollider == null)
             {
                 _meshCollider = GameObject.AddComponent<MeshCollider>();
+            }
+
+            // Add Rigidbody (kinematic) if not present
+            // This is REQUIRED for CharacterController to detect the MeshCollider
+            // CharacterController only collides with colliders that have a Rigidbody component
+            var rigidbody = GameObject.GetComponent<Rigidbody>();
+            if (rigidbody == null)
+            {
+                rigidbody = GameObject.AddComponent<Rigidbody>();
+                rigidbody.isKinematic = true;  // No physics simulation (static terrain)
+                rigidbody.useGravity = false;   // No gravity
+                rigidbody.constraints = RigidbodyConstraints.FreezeAll; // Freeze all movement/rotation
             }
 
             _meshCollider.sharedMesh = collisionMesh;
@@ -165,6 +178,7 @@ namespace TimeSurvivor.Voxel.Terrain
         /// <summary>
         /// Remove collision from this chunk.
         /// Destroys MeshCollider component and clears collision mesh.
+        /// Also removes the Rigidbody component if present.
         /// </summary>
         public void RemoveCollision()
         {
@@ -183,6 +197,22 @@ namespace TimeSurvivor.Voxel.Terrain
                 _meshCollider = null;
             }
 
+            // Clean up Rigidbody if present
+            var rigidbody = GameObject.GetComponent<Rigidbody>();
+            if (rigidbody != null)
+            {
+                #if UNITY_EDITOR
+                if (!UnityEngine.Application.isPlaying)
+                {
+                    Object.DestroyImmediate(rigidbody);
+                }
+                else
+                #endif
+                {
+                    Object.Destroy(rigidbody);
+                }
+            }
+
             HasCollision = false;
             IsCollisionPending = false;
         }
@@ -198,6 +228,7 @@ namespace TimeSurvivor.Voxel.Terrain
 
         /// <summary>
         /// Dispose of native resources.
+        /// Cleans up Rigidbody, MeshCollider, and GameObject.
         /// </summary>
         public void Dispose()
         {
@@ -208,6 +239,22 @@ namespace TimeSurvivor.Voxel.Terrain
 
             if (GameObject != null)
             {
+                // Clean up Rigidbody if present
+                var rigidbody = GameObject.GetComponent<Rigidbody>();
+                if (rigidbody != null)
+                {
+                    #if UNITY_EDITOR
+                    if (!UnityEngine.Application.isPlaying)
+                    {
+                        Object.DestroyImmediate(rigidbody);
+                    }
+                    else
+                    #endif
+                    {
+                        Object.Destroy(rigidbody);
+                    }
+                }
+
                 #if UNITY_EDITOR
                 if (!UnityEngine.Application.isPlaying)
                 {

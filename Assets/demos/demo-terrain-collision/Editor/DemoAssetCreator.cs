@@ -201,8 +201,8 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
             // Add Rigidbody
             var rb = sphere.AddComponent<Rigidbody>();
             rb.mass = 1f;
-            rb.drag = 0.1f;
-            rb.angularDrag = 0.05f;
+            rb.linearDamping = 0.1f;
+            rb.angularDamping = 0.05f;
 
             // Assign material
             var material = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIALS_PATH}/PhysicsObjectMaterial.mat");
@@ -233,8 +233,8 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
             // Add Rigidbody
             var rb = cube.AddComponent<Rigidbody>();
             rb.mass = 1f;
-            rb.drag = 0.1f;
-            rb.angularDrag = 0.05f;
+            rb.linearDamping = 0.1f;
+            rb.angularDamping = 0.05f;
 
             // Assign material
             var material = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIALS_PATH}/PhysicsObjectMaterial.mat");
@@ -248,14 +248,66 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
             Debug.Log($"[DemoAssetCreator] Created PhysicsCube prefab at {path}");
         }
 
-        private static void CreateDemoCamera()
+        private static GameObject CreateDemoCamera()
         {
             string path = $"{PREFABS_PATH}/DemoCamera.prefab";
 
-            if (AssetDatabase.LoadAssetAtPath<GameObject>(path) != null)
+            // Check if prefab exists and update it if needed
+            GameObject existingPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (existingPrefab != null)
             {
-                Debug.Log("[DemoAssetCreator] DemoCamera prefab already exists");
-                return;
+                // Load prefab for editing
+                GameObject prefabContents = PrefabUtility.LoadPrefabContents(path);
+
+                bool needsUpdate = false;
+
+                #if UNITY_PIPELINE_URP
+                // Check if URP component is missing on Camera child
+                Transform cameraTransform = prefabContents.transform.Find("Camera");
+                if (cameraTransform != null)
+                {
+                    var urpCameraData = cameraTransform.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+                    if (urpCameraData == null)
+                    {
+                        urpCameraData = cameraTransform.gameObject.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+                        urpCameraData.renderType = UnityEngine.Rendering.Universal.CameraRenderType.Base;
+                        urpCameraData.antialiasing = UnityEngine.Rendering.Universal.AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+                        urpCameraData.antialiasingQuality = UnityEngine.Rendering.Universal.AntialiasingQuality.Medium;
+                        needsUpdate = true;
+                        Debug.Log("[DemoAssetCreator] Added URP camera component to existing DemoCamera prefab");
+                    }
+                }
+                #endif
+
+                // Check if groundLayer is assigned on SimpleCharacterController
+                var existingPlayerController = prefabContents.GetComponent<SimpleCharacterController>();
+                if (existingPlayerController != null)
+                {
+                    SerializedObject existingPlayerControllerSO = new SerializedObject(existingPlayerController);
+                    SerializedProperty existingGroundLayerProp = existingPlayerControllerSO.FindProperty("groundLayer");
+
+                    if (existingGroundLayerProp != null && existingGroundLayerProp.intValue == 0)
+                    {
+                        int terrainLayer = LayerMask.NameToLayer("TerrainStatic");
+                        if (terrainLayer >= 0)
+                        {
+                            existingGroundLayerProp.intValue = 1 << terrainLayer;
+                            existingPlayerControllerSO.ApplyModifiedProperties();
+                            needsUpdate = true;
+                            Debug.Log("[DemoAssetCreator] Updated groundLayer on existing DemoCamera prefab");
+                        }
+                    }
+                }
+
+                if (needsUpdate)
+                {
+                    PrefabUtility.SaveAsPrefabAsset(prefabContents, path);
+                }
+
+                PrefabUtility.UnloadPrefabContents(prefabContents);
+
+                Debug.Log($"[DemoAssetCreator] ✓ DemoCamera prefab validated/updated: {path}");
+                return existingPrefab;
             }
 
             // Create player GameObject
@@ -267,8 +319,33 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
             charController.height = 1.8f;
             charController.center = new Vector3(0, 0.9f, 0);
 
+            // CharacterController physics settings
+            charController.skinWidth = 0.08f;  // Default Unity value
+            charController.minMoveDistance = 0.001f;  // Minimum distance for collision detection
+            charController.slopeLimit = 45f;  // Maximum slope angle
+            charController.stepOffset = 0.3f;  // Maximum step height
+
             // Add SimpleCharacterController
             var playerController = player.AddComponent<SimpleCharacterController>();
+
+            // Configure ground layer for collision detection
+            SerializedObject playerControllerSO = new SerializedObject(playerController);
+            SerializedProperty groundLayerProp = playerControllerSO.FindProperty("groundLayer");
+            if (groundLayerProp != null)
+            {
+                // Set groundLayer to "TerrainStatic" layer
+                int terrainLayer = LayerMask.NameToLayer("TerrainStatic");
+                if (terrainLayer >= 0)
+                {
+                    groundLayerProp.intValue = 1 << terrainLayer; // Convert layer to LayerMask
+                    playerControllerSO.ApplyModifiedProperties();
+                    Debug.Log($"[DemoAssetCreator] Assigned groundLayer (TerrainStatic) to SimpleCharacterController");
+                }
+                else
+                {
+                    Debug.LogWarning("[DemoAssetCreator] TerrainStatic layer not found! Ground detection may not work.");
+                }
+            }
 
             // Create camera as child
             var cameraObj = new GameObject("Camera");
@@ -294,9 +371,10 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
             // Add AudioListener
             cameraObj.AddComponent<AudioListener>();
 
-            PrefabUtility.SaveAsPrefabAsset(player, path);
+            GameObject prefabAsset = PrefabUtility.SaveAsPrefabAsset(player, path);
             Object.DestroyImmediate(player);
             Debug.Log($"[DemoAssetCreator] Created DemoCamera prefab at {path}");
+            return prefabAsset;
         }
 
         /// <summary>
