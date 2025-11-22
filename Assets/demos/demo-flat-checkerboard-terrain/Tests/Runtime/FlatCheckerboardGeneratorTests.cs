@@ -1,6 +1,10 @@
 using NUnit.Framework;
 using Unity.Collections;
+using UnityEngine;
+using UnityEngine.TestTools;
+using System.Collections;
 using TimeSurvivor.Voxel.Core;
+using TimeSurvivor.Voxel.Terrain;
 
 namespace TimeSurvivor.Demos.FlatCheckerboardTerrain.Tests
 {
@@ -273,6 +277,100 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain.Tests
 
             // Cleanup
             voxels.Dispose();
+        }
+
+        /// <summary>
+        /// Test 9: Verify that generated meshes contain correct vertex colors for checkerboard pattern.
+        /// Tests that Grass voxels have green vertex colors and Dirt voxels have brown vertex colors.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator Generate_AssignsCorrectVertexColors_InMesh()
+        {
+            // Arrange
+            GameObject parentObject = new GameObject("TestVertexColorParent");
+            var coord = new ChunkCoord(0, 0, 0);
+            var config = ScriptableObject.CreateInstance<VoxelConfiguration>();
+            config.ChunkSize = 32;
+            config.MacroVoxelSize = 0.2f;
+            config.UseAmortizedMeshing = false;
+
+            var material = new Material(Shader.Find("Standard"));
+            var chunkManager = new ChunkManager(config, parentObject.transform, material, generator);
+
+            // Act: Generate chunk and mesh
+            chunkManager.LoadChunk(coord);
+
+            // Process generation and meshing queues
+            for (int i = 0; i < 20; i++)
+            {
+                chunkManager.ProcessGenerationQueue();
+                chunkManager.ProcessMeshingQueue(Time.deltaTime);
+                yield return null;
+            }
+
+            var chunk = chunkManager.GetChunk(coord);
+            Assert.IsNotNull(chunk, "Chunk should exist");
+            Assert.IsNotNull(chunk.GameObject, "Chunk should have GameObject");
+
+            // Get mesh from MeshFilter
+            MeshFilter meshFilter = chunk.GameObject.GetComponent<MeshFilter>();
+            Assert.IsNotNull(meshFilter, "Chunk should have MeshFilter");
+            Assert.IsNotNull(meshFilter.sharedMesh, "Chunk should have mesh");
+
+            // Get mesh colors
+            Color[] colors = meshFilter.sharedMesh.colors;
+            Assert.Greater(colors.Length, 0, "Mesh should have vertex colors");
+
+            // Verify colors exist for Grass and Dirt (from VoxelMaterialAtlas)
+            Color grassColor = new Color(0.2f, 0.8f, 0.2f, 1.0f); // Green
+            Color dirtColor = new Color(0.6f, 0.4f, 0.2f, 1.0f);  // Brown
+
+            bool foundGrass = false;
+            bool foundDirt = false;
+
+            foreach (Color color in colors)
+            {
+                if (ColorEquals(color, grassColor, 0.01f)) foundGrass = true;
+                if (ColorEquals(color, dirtColor, 0.01f)) foundDirt = true;
+            }
+
+            Assert.IsTrue(foundGrass, "Mesh should contain Grass vertex colors (green)");
+            Assert.IsTrue(foundDirt, "Mesh should contain Dirt vertex colors (brown)");
+
+            // Cleanup - Use same pattern as FlatTerrainIntegrationTests
+            if (parentObject != null)
+            {
+                // Manually clean up all chunk GameObjects to avoid Destroy() error in Edit Mode
+                var chunks = parentObject.GetComponentsInChildren<Transform>();
+                foreach (var chunkTransform in chunks)
+                {
+                    if (chunkTransform != null && chunkTransform.gameObject != parentObject)
+                    {
+                        Object.DestroyImmediate(chunkTransform.gameObject);
+                    }
+                }
+                Object.DestroyImmediate(parentObject);
+            }
+
+            // Dispose ChunkManager resources (GameObjects already destroyed above)
+            if (chunkManager != null)
+            {
+                chunkManager.Dispose();
+            }
+
+            Object.DestroyImmediate(config);
+            Object.DestroyImmediate(material);
+        }
+
+        /// <summary>
+        /// Helper method to compare two colors with a tolerance.
+        /// </summary>
+        private bool ColorEquals(Color a, Color b, float tolerance)
+        {
+            return Mathf.Abs(a.r - b.r) < tolerance &&
+                   Mathf.Abs(a.g - b.g) < tolerance &&
+                   Mathf.Abs(a.b - b.b) < tolerance &&
+                   Mathf.Abs(a.a - b.a) < tolerance;
         }
     }
 }

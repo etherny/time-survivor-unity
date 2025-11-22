@@ -6,6 +6,7 @@ using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 using TMPro;
 using TimeSurvivor.Voxel.Core;
+using System.IO;
 
 namespace TimeSurvivor.Demos.FlatCheckerboardTerrain.Editor
 {
@@ -20,13 +21,15 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain.Editor
     /// - Demo Controller with FlatTerrainDemoController
     /// - UI Canvas with stats and instructions
     /// - EventSystem with InputSystemUIInputModule (new Input System)
+    /// - VoxelMaterial with VoxelVertexColor shader (created programmatically)
     ///
     /// All references are automatically assigned via direct field assignment - no reflection needed!
     /// </summary>
     public static class DemoSceneSetup
     {
         private const string SCENE_PATH = "Assets/demos/demo-flat-checkerboard-terrain/Scenes/DemoScene.unity";
-        private const string VOXEL_MATERIAL_PATH = "Assets/demos/demo-procedural-terrain-streamer/Materials/TerrainMaterial.mat";
+        private const string VOXEL_MATERIAL_PATH = "Assets/demos/demo-flat-checkerboard-terrain/Materials/VoxelMaterial.mat";
+        private const string VOXEL_SHADER_PATH = "Assets/demos/demo-flat-checkerboard-terrain/Shaders/VoxelVertexColor.shader";
         private const string PLAYER_MATERIAL_PATH = "Assets/demos/demo-procedural-terrain-streamer/Materials/PlayerMaterial.mat";
         private const string VOXEL_CONFIG_PATH = "Assets/Resources/VoxelConfiguration.asset";
 
@@ -48,8 +51,16 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain.Editor
         {
             Debug.Log("[DemoSceneSetup] Starting Flat Checkerboard Terrain demo scene creation...");
 
+            // Create voxel material FIRST (before creating scene objects)
+            Material voxelMaterial = CreateVoxelMaterial();
+            if (voxelMaterial == null)
+            {
+                Debug.LogError("[DemoSceneSetup] Failed to create voxel material. Aborting scene setup.");
+                return;
+            }
+
             Scene newScene = CreateNewScene();
-            GameObject demoController = SetupSceneObjects(newScene);
+            GameObject demoController = SetupSceneObjects(newScene, voxelMaterial);
             SaveAndSelectScene(newScene, demoController);
         }
 
@@ -58,15 +69,61 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain.Editor
             return EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
         }
 
-        private static GameObject SetupSceneObjects(Scene scene)
+        private static GameObject SetupSceneObjects(Scene scene, Material voxelMaterial)
         {
             CreateLighting();
             GameObject player = CreatePlayer();
             GameObject camera = CreateCamera(player);
-            GameObject demoController = CreateDemoController(player);
+            GameObject demoController = CreateDemoController(player, voxelMaterial);
             GameObject uiCanvas = CreateUI(demoController);
 
             return demoController;
+        }
+
+        /// <summary>
+        /// Creates the VoxelMaterial with VoxelVertexColor shader programmatically.
+        /// This material supports vertex colors for the checkerboard pattern.
+        /// </summary>
+        private static Material CreateVoxelMaterial()
+        {
+            Debug.Log("[DemoSceneSetup] Creating VoxelMaterial with VoxelVertexColor shader...");
+
+            // Create Materials directory if it doesn't exist
+            string materialDir = Path.GetDirectoryName(VOXEL_MATERIAL_PATH);
+            if (!AssetDatabase.IsValidFolder(materialDir))
+            {
+                string parentDir = Path.GetDirectoryName(materialDir);
+                string folderName = Path.GetFileName(materialDir);
+                AssetDatabase.CreateFolder(parentDir, folderName);
+                Debug.Log($"[DemoSceneSetup] Created folder: {materialDir}");
+            }
+
+            // Load the VoxelVertexColor shader
+            Shader shader = AssetDatabase.LoadAssetAtPath<Shader>(VOXEL_SHADER_PATH);
+            if (shader == null)
+            {
+                Debug.LogError($"[DemoSceneSetup] Shader not found at: {VOXEL_SHADER_PATH}");
+                Debug.LogError("[DemoSceneSetup] Please ensure VoxelVertexColor.shader exists in the Shaders folder.");
+                return null;
+            }
+
+            // Create material
+            Material material = new Material(shader);
+            material.name = "VoxelMaterial";
+
+            // Configure material properties for better visual quality
+            material.SetFloat("_Glossiness", 0.2f);
+            material.SetFloat("_Metallic", 0.0f);
+
+            // Save material asset
+            AssetDatabase.CreateAsset(material, VOXEL_MATERIAL_PATH);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log($"[DemoSceneSetup] ✅ VoxelMaterial created successfully at: {VOXEL_MATERIAL_PATH}");
+            Debug.Log("[DemoSceneSetup] ✅ Material configured with VoxelVertexColor shader (supports vertex colors)");
+
+            return material;
         }
 
         private static void SaveAndSelectScene(Scene scene, GameObject demoController)
@@ -196,7 +253,7 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain.Editor
             return mainCamera.gameObject;
         }
 
-        private static GameObject CreateDemoController(GameObject player)
+        private static GameObject CreateDemoController(GameObject player, Material voxelMaterial)
         {
             Debug.Log("[DemoSceneSetup] Creating demo controller...");
 
@@ -213,18 +270,16 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain.Editor
                 Debug.LogError($"[DemoSceneSetup] VoxelConfiguration not found at {VOXEL_CONFIG_PATH}. Please create it first.");
             }
 
-            // Load voxel material
-            Material voxelMaterial = AssetDatabase.LoadAssetAtPath<Material>(VOXEL_MATERIAL_PATH);
-            if (voxelMaterial == null)
-            {
-                Debug.LogWarning($"[DemoSceneSetup] Voxel material not found at {VOXEL_MATERIAL_PATH}");
-            }
-
             // Configure demo controller (direct assignment of public fields)
             controller.voxelConfig = voxelConfig;
-            controller.chunkMaterial = voxelMaterial;
+            controller.chunkMaterial = voxelMaterial; // Use the passed material (already validated)
             controller.player = player.transform;
             controller.fpsUpdateInterval = 1f;
+
+            // Streaming configuration (default values)
+            controller.loadRadius = 2;
+            controller.unloadRadius = 3;
+            controller.updateInterval = 0.5f;
 
             Debug.Log("[DemoSceneSetup] ✅ FlatTerrainDemoController created (UI references will be assigned next)");
             return controllerObj;

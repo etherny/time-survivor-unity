@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Assets/demos/demo-flat-checkerboard-terrain/Tests/Runtime/FlatTerrainIntegrationTests.cs" />
     <Compile Include="Assets/demos/demo-flat-checkerboard-terrain/Tests/Runtime/FlatCheckerboardGeneratorTests.cs" />
+    <Compile Include="Assets/demos/demo-flat-checkerboard-terrain/Tests/Runtime/StreamingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets/demos/demo-flat-checkerboard-terrain/Tests/Runtime/TimeSurvivor.Demos.FlatCheckerboardTerrain.Tests.asmdef" />

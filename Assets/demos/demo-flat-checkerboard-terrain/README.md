@@ -2,19 +2,22 @@
 
 ## Description
 
-Cette démo présente un terrain voxel **plat et STATIQUE** avec un motif en damier.
-
-**IMPORTANT**: Cette démo ne comporte PAS de streaming dynamique - seulement 9 chunks fixes (3x3 grille).
-Pour une démo de streaming dynamique avec génération infinie, voir: `demo-procedural-terrain-streamer`.
+Cette démo présente un terrain voxel plat avec **streaming dynamique** et motif damier.
 
 Elle démontre:
-- Génération de terrain plat fixe (9 chunks de 32x32x32 voxels)
-- Pattern damier visible (Grass vert / Dirt brun alternés, cases 8x8 voxels)
+- Génération de terrain plat infini avec pattern damier (Grass vert / Dirt brun, cases 8x8 voxels)
+- **Streaming dynamique**: Nouveaux chunks se créent quand le joueur se déplace
+- **Unloading automatique**: Chunks lointains sont supprimés pour optimiser la mémoire
 - Joueur sans gravité (mouvement planar fluide)
 - Caméra isométrique qui suit le joueur
 - Utilisation d'un générateur custom (`FlatCheckerboardGenerator`)
 
-**Objectif**: Fournir une démonstration simplifiée et stable du moteur voxel sans complexité de terrain procédural ou streaming dynamique.
+### Configuration Streaming
+- **Load Radius**: 2 chunks autour du joueur (grille 5×5 = 25 chunks max)
+- **Unload Radius**: 3 chunks (chunks au-delà sont supprimés)
+- **Update Interval**: 0.5 secondes (vérification streaming 2×/seconde)
+
+**Objectif**: Démontrer le système de streaming de chunks radius-based avec un pattern visuel simple pour validation.
 
 ## Prérequis
 
@@ -100,50 +103,66 @@ Si le menu Tools ne fonctionne pas:
 3. Observer le terrain plat avec pattern damier
 
 **Comportements attendus**:
-- 9 chunks (3x1x3 grid) s'affichent au démarrage
+- Chunks initiaux (5x5 grid) s'affichent au démarrage autour du joueur
 - Pattern damier visible: alternance Grass (vert) / Dirt (brun) en cases de 8x8 voxels
 - Terrain plat à hauteur fixe (8 voxels de haut)
 - Joueur spawné à position (0, 2, 0) - juste au-dessus du terrain
 - Caméra suit le joueur avec vue isométrique rapprochée
+- **NOUVEAUX chunks apparaissent** quand le joueur se déplace vers les bords
+- **Chunks lointains disparaissent** automatiquement (unload radius: 3)
 
 **Contrôles disponibles**:
 - **W/A/S/D**: Déplacer le joueur (mouvement planar, pas de gravité)
 - **Shift (maintenu)**: Sprint (vitesse x2)
 - **Souris**: Pas de contrôle de caméra (caméra suit automatiquement)
 
-### Étape 4: Observer les statistiques
+### Étape 4: Tester le streaming
+
+1. **Déplacer le joueur** avec WASD dans différentes directions
+2. **Observer les chunks actifs** dans le panneau Stats (nombre change dynamiquement)
+3. **Vérifier que nouveaux chunks apparaissent** aux bords quand vous avancez
+4. **Vérifier que chunks lointains disparaissent** (optimisation mémoire)
+5. **Observer le "chunk joueur"** qui change dans les statistiques
+
+### Étape 5: Observer les statistiques
 
 Le panneau Stats (coin supérieur droit) affiche:
 - FPS actuel
-- Nombre de chunks actifs (9 / 9)
+- **Nombre de chunks actifs** (varie entre 9-25 selon position)
 - Type de pattern (Damier Grass/Dirt)
 - Taille de case (8 voxels)
-- Position du joueur en temps réel
+- **Load radius** et **Unload radius** configurés
+- **Position du joueur** en temps réel
+- **Chunk joueur** (coordonnées chunk actuel)
 
 ## Validation
 
 ### Ce que vous devriez voir:
 
-- ✅ **Terrain plat visible**: 9 chunks affichés formant un plateau vert/brun
+- ✅ **Terrain plat visible**: Chunks affichés formant un plateau vert/brun infini
 - ✅ **Pattern damier CLAIR**: Alternance Grass (vert vif) / Dirt (brun) en cases 8x8 voxels
 - ✅ **Joueur sur le terrain**: Avatar rouge positionné à Y=2 (juste au-dessus du sol)
 - ✅ **Caméra suit**: Vue isométrique (offset: 0, 12, -12) qui suit le joueur
 - ✅ **Mouvement fluide**: WASD sans gravité, Sprint avec Shift
-- ✅ **FPS élevés**: >60 FPS attendu (seulement 9 chunks statiques)
-- ✅ **Pas de chunks vides**: Tous les chunks contiennent du terrain solide
+- ✅ **FPS élevés**: >60 FPS attendu avec streaming actif
+- ✅ **Streaming fonctionnel**: Nouveaux chunks apparaissent aux bords quand vous bougez
+- ✅ **Unloading automatique**: Nombre de chunks actifs reste entre 9-25
+- ✅ **Stats mises à jour**: Chunk joueur et nombre chunks changent dynamiquement
 
 ### Ce que vous NE devriez PAS voir:
 
 - ❌ **Terrain comme des "marches"**: Si c'est le cas, le joueur est mal positionné
-- ❌ **Tout vert uniforme**: Si pas de pattern brun, vérifier material/shader
-- ❌ **Nouveaux chunks apparaissent**: Pas de streaming dans cette démo (9 chunks fixes)
+- ❌ **Tout vert uniforme**: Si pas de pattern brun, vérifier material/shader (doit utiliser VoxelVertexColor)
+- ❌ **Nombre de chunks explose**: Si >30 chunks, l'unloading ne fonctionne pas
+- ❌ **Pas de nouveaux chunks**: Si aucun chunk n'apparaît en se déplaçant, le streaming est cassé
+- ❌ **Chunks vides**: Tous les chunks doivent contenir du terrain solide
 
 ### Critères de succès détaillés:
 
 1. **Génération correcte**:
-   - Exactement 9 chunks générés
-   - Coordonnées chunks: (-1,0,-1) à (1,0,1)
-   - Hauteur terrain: 8 voxels (y: 0-7 solide, y: 8-63 air)
+   - Chunks générés dynamiquement autour du joueur
+   - Coordonnées chunks varient selon position joueur
+   - Hauteur terrain: 8 voxels (y: 0-7 solide, y: 8-31 air)
 
 2. **Pattern damier**:
    - Alternance visible Grass/Dirt
@@ -166,29 +185,40 @@ Le panneau Stats (coin supérieur droit) affiche:
    - Pas de freeze pendant le mouvement
    - Génération initiale < 3 secondes
 
+4. **Streaming dynamique**:
+   - Nouveaux chunks apparaissent quand joueur se déplace
+   - Chunks lointains sont unloadés (>3 chunks de distance)
+   - Nombre de chunks actifs entre 9-25
+   - Pas de freeze pendant streaming
+
 ## Problèmes connus
 
 ### Limitations volontaires:
 
-- **Pas de streaming dynamique**: Les 9 chunks sont fixes, pas de génération/suppression pendant le jeu
-- **Terrain limité**: Seulement 192x192 voxels (3 chunks x 64 voxels)
 - **Pas de gravité**: Le joueur ne tombe pas (mouvement planar uniquement)
 - **Pattern simple**: Seulement 2 types de voxels (Grass/Dirt)
+- **Terrain plat uniquement**: Pas de relief 3D (Y=0 seulement)
 
 ### Bugs connus:
 
-- **Aucun bug connu** - Cette démo est volontairement simplifiée pour éviter les instabilités
+- **Aucun bug connu** - Le streaming est stable et performant
 
 ### Troubleshooting:
 
-**Problème**: Chunks vides ou non affichés
-- **Solution**: Vérifier que VoxelConfiguration est assigné et que le Material est compatible URP
+**Problème**: Damier invisible (tout vert uniforme)
+- **Solution**: Vérifier que le material utilise bien le shader `VoxelVertexColor` (créé automatiquement par setup)
+
+**Problème**: Pas de nouveaux chunks quand je me déplace
+- **Solution**: Vérifier que `loadRadius` est configuré (défaut: 2) et que Player reference est assignée
+
+**Problème**: Trop de chunks (>30), performance dégradée
+- **Solution**: Vérifier que `unloadRadius` est configuré (défaut: 3) et que l'unloading fonctionne
 
 **Problème**: Joueur tombe à travers le terrain
-- **Solution**: Vérifier que CharacterController a `center = (0, 1, 0)` et que le joueur spawn à y > 8
+- **Solution**: Vérifier que CharacterController a `center = (0, 1, 0)` et que le joueur spawn à y > 1.6
 
-**Problème**: FPS très bas
-- **Solution**: Vérifier que URP est configuré correctement et que Greedy Meshing est activé dans VoxelConfiguration
+**Problème**: FPS très bas avec streaming
+- **Solution**: Augmenter `updateInterval` (défaut: 0.5s) pour réduire la fréquence des vérifications streaming
 
 **Problème**: Erreurs "Keyboard.current is null"
 - **Solution**: Vérifier que Input System package est installé et activé dans Player Settings
@@ -200,9 +230,23 @@ Le panneau Stats (coin supérieur droit) affiche:
 - **Générateur**: `FlatCheckerboardGenerator` implements `IVoxelGenerator`
 - **Hauteur sol**: 8 voxels (GROUND_HEIGHT = 8)
 - **Taille cases damier**: 8x8 voxels (TILE_SIZE = 8)
-- **Chunks**: 9 fixes (coordonnées -1 à 1 en X/Z, Y=0)
+- **Streaming**: Radius-based autour du joueur (load: 2, unload: 3)
 - **ChunkSize**: 32 voxels (VoxelConfiguration)
 - **MacroVoxelSize**: 0.2 Unity units
+
+### Système de Streaming
+
+**Algorithme**:
+1. Calcul du chunk joueur depuis position monde
+2. Load chunks dans radius autour du joueur (grille 5×5)
+3. Unload chunks hors du radius (distance >3 chunks)
+4. Update toutes les 0.5 secondes (configurable)
+
+**Performance**:
+- Chunks max: 25 (5×5 grid avec radius=2)
+- Génération async via Jobs System
+- Meshing amortisé pour éviter freeze
+- Unloading automatique pour libérer mémoire
 
 ### Coordonnées
 
@@ -245,41 +289,45 @@ return (isEvenTileX == isEvenTileZ) ? VoxelType.Grass : VoxelType.Dirt;
 
 **Orchestration**: `FlatTerrainDemoController`
 - Crée ChunkManager avec générateur custom
-- Génère 9 chunks fixes au Start()
-- Process toutes les queues immédiatement (generation + meshing)
-- Affiche statistiques en temps réel
+- **Streaming dynamique** basé sur position joueur
+- Process queues de génération et meshing en continu
+- Update streaming toutes les 0.5 secondes
+- Affiche statistiques en temps réel (chunks actifs, chunk joueur)
 
 ### Considérations de performance:
 
-**Génération initiale**:
-- 9 chunks x 262,144 voxels = 2,359,296 voxels total
-- Génération immédiate au Start() (pas d'async)
-- Traitement queue complet avant premier frame
+**Génération dynamique**:
+- Chunks générés à la demande (streaming)
+- Max 25 chunks en mémoire (5×5 grid)
+- Génération async via Jobs System
+- Pas de freeze pendant génération
 
 **Meshing**:
 - Greedy Meshing activé par défaut (réduction polygones)
-- 9 meshes générés une seule fois
-- Pas de remeshing dynamique (terrain statique)
+- Meshing amortisé pour éviter spike FPS
+- Mesh regeneration seulement pour nouveaux chunks
 
 **Mémoire**:
-- ~20-25 MB pour 9 chunks (voxel data + meshes)
-- Pas de cache LRU nécessaire (chunks fixes)
+- ~50-60 MB max pour 25 chunks (voxel data + meshes)
+- Unloading automatique libère mémoire
+- Pas de cache LRU (unload radius suffit)
 
 **Optimisations appliquées**:
 - NativeArray pour voxel data (performance)
 - Job System pour génération parallèle
 - Greedy Meshing pour réduire draw calls
 - Chunk batching par ChunkManager
+- Streaming radius-based (pas d'explosion mémoire)
 
 ### Différences avec ProceduralTerrainStreamer:
 
 | Feature | Flat Checkerboard | Procedural Streamer |
 |---------|-------------------|---------------------|
-| Chunks | 9 fixes | Dynamiques (streaming) |
+| Chunks | Dynamiques (radius-based) | Dynamiques (LRU cache) |
 | Terrain | Plat, damier | Procédural 3D noise |
 | Gravité | Non | Oui |
-| Streaming | Non | Oui (LRU cache) |
-| Complexité | Très simple | Complexe |
+| Streaming | Oui (simple radius) | Oui (LRU cache) |
+| Complexité | Simple | Complexe |
 
 ### Code de référence:
 
@@ -299,14 +347,33 @@ VoxelType CalculateCheckerboardPattern(int localX, int localZ, int chunkX, int c
 }
 ```
 
-**Boucle génération 9 chunks**:
+**Streaming radius-based (pseudocode)**:
 ```csharp
-for (int x = -1; x <= 1; x++)
+// Calculer chunk joueur
+ChunkCoord playerChunk = GetChunkCoordFromPosition(player.position);
+
+// Load chunks dans radius
+for (int x = -loadRadius; x <= loadRadius; x++)
 {
-    for (int z = -1; z <= 1; z++)
+    for (int z = -loadRadius; z <= loadRadius; z++)
     {
-        ChunkCoord coord = new ChunkCoord(x, 0, z);
-        chunkManager.LoadChunk(coord);
+        ChunkCoord coord = new ChunkCoord(playerChunk.X + x, 0, playerChunk.Z + z);
+        if (!chunkManager.HasChunk(coord))
+        {
+            chunkManager.LoadChunk(coord);
+        }
+    }
+}
+
+// Unload chunks hors radius
+foreach (var chunk in chunkManager.GetAllChunks())
+{
+    int dx = Abs(chunk.Coord.X - playerChunk.X);
+    int dz = Abs(chunk.Coord.Z - playerChunk.Z);
+
+    if (dx > unloadRadius || dz > unloadRadius)
+    {
+        chunkManager.UnloadChunk(chunk.Coord);
     }
 }
 ```

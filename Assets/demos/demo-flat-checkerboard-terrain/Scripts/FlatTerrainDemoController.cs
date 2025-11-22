@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
@@ -8,7 +9,7 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain
 {
     /// <summary>
     /// Orchestrates the Flat Checkerboard Terrain demonstration.
-    /// Generates 9 fixed chunks (3x1x3 grid) with checkerboard pattern.
+    /// Features dynamic chunk streaming based on player position.
     /// Displays real-time statistics and instructions.
     /// </summary>
     public class FlatTerrainDemoController : MonoBehaviour
@@ -29,6 +30,11 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain
         [Header("FPS Calculation")]
         [SerializeField] public float fpsUpdateInterval = 1f;
 
+        [Header("Streaming Settings")]
+        [SerializeField] public int loadRadius = 2;        // Chunks to load around player
+        [SerializeField] public int unloadRadius = 3;      // Chunks to unload if too far
+        [SerializeField] public float updateInterval = 0.5f; // Streaming update frequency (seconds)
+
         private ChunkManager chunkManager;
         private FlatCheckerboardGenerator generator;
 
@@ -36,7 +42,10 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain
         private int frameCount = 0;
         private float currentFps = 0f;
 
-        private const int TOTAL_CHUNKS = 9; // 3x1x3 grid
+        // Streaming state
+        private ChunkCoord lastPlayerChunkCoord;
+        private float streamingTimer = 0f;
+        private bool isValid = false;
 
         private const string INSTRUCTIONS_TEXT = @"=== CONTROLES ===
 WASD: Deplacer le joueur
@@ -45,19 +54,24 @@ Shift: Sprint (2x vitesse)
 === VALIDATION ===
 [OK] Terrain plat visible
 [OK] Pattern damier Grass/Dirt
-[OK] Pas de chunks vides
-[OK] Camera suit le joueur";
+[OK] Streaming dynamique actif
+[OK] Nouveaux chunks apparaissent
+[OK] Chunks lointains se dechargeant";
 
         void Start()
         {
             ValidateSetup();
+
+            if (!isValid) return;
+
             InitializeGenerator();
             InitializeChunkManager();
-            GenerateFixedChunks();
-            ProcessAllQueues();
             InitializeUI();
 
-            Debug.Log("[FlatTerrainDemoController] Demo initialized successfully.");
+            // Generate initial chunks around player with streaming
+            UpdateStreaming(forceUpdate: true);
+
+            Debug.Log("[FlatTerrainDemoController] Demo initialized successfully with dynamic streaming.");
         }
 
         void Update()
@@ -65,6 +79,7 @@ Shift: Sprint (2x vitesse)
             UpdateFPS();
             UpdateStatistics();
             ProcessChunkQueues();
+            UpdateStreaming(forceUpdate: false);
         }
 
         void OnDestroy()
@@ -74,7 +89,7 @@ Shift: Sprint (2x vitesse)
 
         private void ValidateSetup()
         {
-            bool isValid = true;
+            isValid = true;
 
             if (voxelConfig == null)
             {
@@ -90,7 +105,7 @@ Shift: Sprint (2x vitesse)
 
             if (player == null)
             {
-                Debug.LogWarning("[FlatTerrainDemoController] Player Transform reference is missing. Stats will show (0,0,0).");
+                Debug.LogWarning("[FlatTerrainDemoController] Player Transform reference is missing. Streaming will not work properly.");
             }
 
             if (statsText == null)
@@ -137,53 +152,85 @@ Shift: Sprint (2x vitesse)
         }
 
         /// <summary>
-        /// Generates 9 fixed chunks in a 3x1x3 grid (y=0 only).
-        /// Chunk coordinates: from (-1, 0, -1) to (1, 0, 1).
+        /// Update chunk streaming based on player position.
+        /// Loads chunks within loadRadius and unloads chunks beyond unloadRadius.
         /// </summary>
-        private void GenerateFixedChunks()
+        private void UpdateStreaming(bool forceUpdate)
         {
-            if (chunkManager == null)
-            {
-                Debug.LogError("[FlatTerrainDemoController] Cannot generate chunks: ChunkManager is null.");
-                return;
-            }
+            if (player == null || chunkManager == null) return;
 
-            Debug.Log("[FlatTerrainDemoController] Generating 9 fixed chunks (3x1x3 grid)...");
+            // Timer to avoid too frequent updates
+            streamingTimer += Time.deltaTime;
+            if (!forceUpdate && streamingTimer < updateInterval) return;
+            streamingTimer = 0f;
 
-            for (int x = -1; x <= 1; x++)
-            {
-                for (int z = -1; z <= 1; z++)
-                {
-                    ChunkCoord coord = new ChunkCoord(x, 0, z);
-                    chunkManager.LoadChunk(coord);
-                }
-            }
+            // Calculate chunk coordinate of player
+            ChunkCoord playerChunk = GetChunkCoordFromPosition(player.position);
 
-            Debug.Log("[FlatTerrainDemoController] 9 chunks queued for generation.");
+            // If player hasn't changed chunks, nothing to do
+            if (!forceUpdate && playerChunk.Equals(lastPlayerChunkCoord)) return;
+
+            lastPlayerChunkCoord = playerChunk;
+
+            // Load chunks around player
+            LoadChunksInRadius(playerChunk, loadRadius);
+
+            // Unload chunks too far away
+            UnloadChunksOutsideRadius(playerChunk, unloadRadius);
         }
 
         /// <summary>
-        /// Process all queues immediately at startup to ensure chunks are ready.
+        /// Calculate the chunk coordinate from a world position.
         /// </summary>
-        private void ProcessAllQueues()
+        private ChunkCoord GetChunkCoordFromPosition(Vector3 worldPosition)
         {
-            if (chunkManager == null) return;
+            int chunkSize = voxelConfig.ChunkSize;
+            float voxelSize = voxelConfig.MacroVoxelSize;
+            float chunkWorldSize = chunkSize * voxelSize;
 
-            Debug.Log("[FlatTerrainDemoController] Processing generation and meshing queues...");
+            int chunkX = Mathf.FloorToInt(worldPosition.x / chunkWorldSize);
+            int chunkY = 0; // Flat terrain, always Y=0
+            int chunkZ = Mathf.FloorToInt(worldPosition.z / chunkWorldSize);
 
-            // Process generation queue until empty
-            for (int i = 0; i < 100; i++) // Safety limit
+            return new ChunkCoord(chunkX, chunkY, chunkZ);
+        }
+
+        /// <summary>
+        /// Load all chunks within the specified radius around the center chunk.
+        /// </summary>
+        private void LoadChunksInRadius(ChunkCoord center, int radius)
+        {
+            for (int x = -radius; x <= radius; x++)
             {
-                chunkManager.ProcessGenerationQueue();
-            }
+                for (int z = -radius; z <= radius; z++)
+                {
+                    ChunkCoord coord = new ChunkCoord(center.X + x, 0, center.Z + z);
 
-            // Process meshing queue until empty
-            for (int i = 0; i < 100; i++) // Safety limit
+                    if (!chunkManager.HasChunk(coord))
+                    {
+                        chunkManager.LoadChunk(coord);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Unload chunks that are beyond the specified radius from the center chunk.
+        /// </summary>
+        private void UnloadChunksOutsideRadius(ChunkCoord center, int radius)
+        {
+            var allChunks = chunkManager.GetAllChunks();
+
+            foreach (var chunk in allChunks.ToArray()) // ToArray to avoid modification during iteration
             {
-                chunkManager.ProcessMeshingQueue(Time.deltaTime);
-            }
+                int dx = Mathf.Abs(chunk.Coord.X - center.X);
+                int dz = Mathf.Abs(chunk.Coord.Z - center.Z);
 
-            Debug.Log("[FlatTerrainDemoController] All queues processed.");
+                if (dx > radius || dz > radius)
+                {
+                    chunkManager.UnloadChunk(chunk.Coord);
+                }
+            }
         }
 
         /// <summary>
@@ -230,14 +277,19 @@ Shift: Sprint (2x vitesse)
             if (statsText == null) return;
 
             Vector3 playerPos = player != null ? player.position : Vector3.zero;
+            ChunkCoord playerChunk = GetChunkCoordFromPosition(playerPos);
+            int activeChunks = chunkManager != null ? chunkManager.ActiveChunkCount : 0;
 
             statsText.text = $@"=== FLAT CHECKERBOARD TERRAIN ===
 FPS: {currentFps:F0}
-Chunks actifs: {TOTAL_CHUNKS} / {TOTAL_CHUNKS}
+Chunks actifs: {activeChunks} (streaming actif)
 Pattern: Damier (Grass/Dirt)
 Taille de case: 8 voxels
+Load radius: {loadRadius} chunks
+Unload radius: {unloadRadius} chunks
 
-Position joueur: ({playerPos.x:F1}, {playerPos.y:F1}, {playerPos.z:F1})";
+Position joueur: ({playerPos.x:F1}, {playerPos.y:F1}, {playerPos.z:F1})
+Chunk joueur: ({playerChunk.X}, {playerChunk.Y}, {playerChunk.Z})";
         }
     }
 }

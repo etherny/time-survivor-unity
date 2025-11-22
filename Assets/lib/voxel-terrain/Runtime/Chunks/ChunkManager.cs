@@ -89,6 +89,19 @@ namespace TimeSurvivor.Voxel.Terrain
         }
 
         /// <summary>
+        /// Check if a chunk exists at the specified coordinate (alias for IsChunkLoaded).
+        /// </summary>
+        public bool HasChunk(ChunkCoord coord)
+        {
+            return IsChunkLoaded(coord);
+        }
+
+        /// <summary>
+        /// Get the number of currently active (loaded) chunks.
+        /// </summary>
+        public int ActiveChunkCount => _chunks.Count;
+
+        /// <summary>
         /// Mark a chunk as dirty (needs remeshing).
         /// </summary>
         public void MarkDirty(ChunkCoord coord)
