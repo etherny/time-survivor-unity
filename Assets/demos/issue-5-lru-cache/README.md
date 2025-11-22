@@ -51,64 +51,24 @@ Assets/demos/issue-5-lru-cache/
 └── README.md (this file)
 ```
 
-### Step 3: Setup UI in Unity Editor (First Time Only)
+### Step 3: Setup UI in Unity Editor (Automatic - One Click)
 
-Since Unity scene files cannot include complete UI hierarchies programmatically, you need to manually setup the UI canvas:
+The demo includes an automated setup tool that creates the complete UI hierarchy with one click:
 
 1. Open `Assets/demos/issue-5-lru-cache/Scenes/DemoScene.unity`
-2. **Create Canvas**:
-   - Right-click in Hierarchy → UI → Canvas
-   - Set Canvas Scaler to "Scale With Screen Size"
-   - Reference Resolution: 1920x1080
+2. In Unity menu bar, go to: **Tools → LRU Cache Demo → Setup Demo Scene**
+3. Click "OK" in the confirmation dialog
+4. The tool will automatically:
+   - Create the complete Canvas with proper settings
+   - Create Stats Panel (upper left) with all text components and hit rate bar
+   - Create Control Panel (lower left) with sliders, buttons, and toggles
+   - Create Cache Visualization Panel (right side) with scroll view
+   - Assign ALL references to the DemoController automatically
+   - Save the scene
 
-3. **Create Stats Panel** (Upper Left):
-   - Create Panel: Right-click Canvas → UI → Panel
-   - Name: "StatsPanel"
-   - RectTransform: Anchor to top-left
-     - Position: X=150, Y=-100
-     - Width: 280, Height: 180
-   - Add Text components (children of StatsPanel):
-     - `CountText` - "Count: 0/20"
-     - `HitRateText` - "Hit Rate: 0%"
-     - `HitsText` - "Hits: 0"
-     - `MissesText` - "Misses: 0"
-     - `EvictionsText` - "Evictions: 0"
-   - Add Slider: `HitRateBar` (non-interactable, visual only)
+**Note**: If you run the setup tool on an already-configured scene, it will ask if you want to recreate the UI. This is useful if you want to reset to the default UI layout.
 
-4. **Create Control Panel** (Lower Left):
-   - Create Panel: Right-click Canvas → UI → Panel
-   - Name: "ControlPanel"
-   - RectTransform: Anchor to bottom-left
-     - Position: X=150, Y=150
-     - Width: 280, Height: 280
-   - Add UI elements (children of ControlPanel):
-     - `CapacitySlider` - Slider (Min: 5, Max: 50, Value: 20)
-     - `CapacityValueText` - Text showing slider value
-     - `SimulateButton` - Button ("Simulate Random Access")
-     - `ClearButton` - Button ("Clear Cache")
-     - `ResetStatsButton` - Button ("Reset Statistics")
-     - `AutoSimulateToggle` - Toggle ("Auto Simulate")
-     - `AutoSimulateSpeedSlider` - Slider (Min: 0.1, Max: 2.0, Value: 0.5)
-     - `AutoSimulateSpeedText` - Text showing operations/sec
-
-5. **Create Cache Visualization Panel** (Right Side):
-   - Create Panel: Right-click Canvas → UI → Panel
-   - Name: "VisualizationPanel"
-   - RectTransform: Anchor to right side
-     - Position: X=-200, Y=0
-     - Width: 380, Height: 900
-   - Add ScrollView (child of VisualizationPanel):
-     - Add Vertical Layout Group component
-     - Content Size Fitter: Vertical Fit = Preferred Size
-     - Note the Content Transform - this will be assigned to DemoController
-
-6. **Assign References to DemoController**:
-   - Select the `DemoController` GameObject in Hierarchy
-   - In Inspector, drag and drop all UI elements to their corresponding fields:
-     - Stats Panel: countText, hitRateText, hitsText, missesText, evictionsText, hitRateBar
-     - Control Panel: capacitySlider, capacityValueText, simulateButton, clearButton, resetStatsButton, autoSimulateToggle, autoSimulateSpeedSlider, autoSimulateSpeedText
-     - Visualization: cacheContentParent (Content transform from ScrollView)
-     - Prefab: chunkCacheItemPrefab (drag from Prefabs folder)
+**Manual Setup (Alternative)**: If you prefer to create the UI manually or need to customize it, see the detailed instructions in the [Manual Setup Guide](#manual-setup-guide) at the end of this document.
 
 ## Utilisation
 
@@ -368,3 +328,65 @@ If you encounter issues:
 4. Verify Unity version compatibility (6000.2.12f1+)
 
 For questions or bug reports, refer to the project issue tracker (Issue #5: LRU Cache Implementation).
+
+---
+
+## Manual Setup Guide
+
+If you prefer to manually create the UI or need to customize it, follow these detailed instructions:
+
+### Manual Canvas Setup
+
+1. **Create Canvas**:
+   - Right-click in Hierarchy → UI → Canvas
+   - Set Canvas Scaler to "Scale With Screen Size"
+   - Reference Resolution: 1920x1080
+
+2. **Create Stats Panel** (Upper Left):
+   - Create Panel: Right-click Canvas → UI → Panel
+   - Name: "StatsPanel"
+   - RectTransform: Anchor to top-left
+     - Position: X=150, Y=-100
+     - Width: 280, Height: 180
+   - Add Text components (children of StatsPanel):
+     - `CountText` - "Count: 0/20"
+     - `HitRateText` - "Hit Rate: 0%"
+     - `HitsText` - "Hits: 0"
+     - `MissesText` - "Misses: 0"
+     - `EvictionsText` - "Evictions: 0"
+   - Add Slider: `HitRateBar` (non-interactable, visual only)
+
+3. **Create Control Panel** (Lower Left):
+   - Create Panel: Right-click Canvas → UI → Panel
+   - Name: "ControlPanel"
+   - RectTransform: Anchor to bottom-left
+     - Position: X=150, Y=150
+     - Width: 280, Height: 280
+   - Add UI elements (children of ControlPanel):
+     - `CapacitySlider` - Slider (Min: 5, Max: 50, Value: 20)
+     - `CapacityValueText` - Text showing slider value
+     - `SimulateButton` - Button ("Simulate Random Access")
+     - `ClearButton` - Button ("Clear Cache")
+     - `ResetStatsButton` - Button ("Reset Statistics")
+     - `AutoSimulateToggle` - Toggle ("Auto Simulate")
+     - `AutoSimulateSpeedSlider` - Slider (Min: 0.1, Max: 2.0, Value: 0.5)
+     - `AutoSimulateSpeedText` - Text showing operations/sec
+
+4. **Create Cache Visualization Panel** (Right Side):
+   - Create Panel: Right-click Canvas → UI → Panel
+   - Name: "VisualizationPanel"
+   - RectTransform: Anchor to right side
+     - Position: X=-200, Y=0
+     - Width: 380, Height: 900
+   - Add ScrollView (child of VisualizationPanel):
+     - Add Vertical Layout Group component
+     - Content Size Fitter: Vertical Fit = Preferred Size
+     - Note the Content Transform - this will be assigned to DemoController
+
+5. **Assign References to DemoController**:
+   - Select the `DemoController` GameObject in Hierarchy
+   - In Inspector, drag and drop all UI elements to their corresponding fields:
+     - Stats Panel: countText, hitRateText, hitsText, missesText, evictionsText, hitRateBar
+     - Control Panel: capacitySlider, capacityValueText, simulateButton, clearButton, resetStatsButton, autoSimulateToggle, autoSimulateSpeedSlider, autoSimulateSpeedText
+     - Visualization: cacheContentParent (Content transform from ScrollView)
+     - Prefab: chunkCacheItemPrefab (drag from Prefabs folder)
