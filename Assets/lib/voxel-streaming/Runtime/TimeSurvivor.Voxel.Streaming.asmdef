@@ -1,0 +1,19 @@
+{
+    "name": "TimeSurvivor.Voxel.Streaming",
+    "rootNamespace": "TimeSurvivor.Voxel.Streaming",
+    "references": [
+        "TimeSurvivor.Voxel.Core",
+        "Unity.Mathematics",
+        "Unity.Collections",
+        "Unity.Profiling.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

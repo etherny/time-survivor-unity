@@ -1,0 +1,27 @@
+{
+    "name": "TimeSurvivor.Voxel.Streaming.Tests",
+    "rootNamespace": "TimeSurvivor.Voxel.Streaming.Tests",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "TimeSurvivor.Voxel.Streaming",
+        "TimeSurvivor.Voxel.Core",
+        "Unity.Mathematics",
+        "Unity.Collections"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
