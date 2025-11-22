@@ -63,8 +63,14 @@ namespace TimeSurvivor.Demos.TerrainCollision
 
         private void Update()
         {
+            // Validate input manager
+            if (DemoInputManager.Instance == null)
+            {
+                return;
+            }
+
             // Spawn on 'O' key press
-            if (Input.GetKeyDown(KeyCode.O))
+            if (DemoInputManager.Instance.SpawnObjectPressed)
             {
                 SpawnRandomObject();
             }

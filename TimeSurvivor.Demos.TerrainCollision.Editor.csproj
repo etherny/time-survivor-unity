@@ -15,9 +15,9 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EnableDefaultItems>false</EnableDefaultItems>
     <LangVersion>9.0</LangVersion>
-    <RootNamespace>TimeSurvivor.Demos.MinecraftTerrain.Editor</RootNamespace>
+    <RootNamespace>TimeSurvivor.Demos.TerrainCollision.Editor</RootNamespace>
     <OutputType>Library</OutputType>
-    <AssemblyName>TimeSurvivor.Demos.MinecraftTerrain.Editor</AssemblyName>
+    <AssemblyName>TimeSurvivor.Demos.TerrainCollision.Editor</AssemblyName>
     <TargetFramework>netstandard2.1</TargetFramework>
     <BaseDirectory>.</BaseDirectory>
   </PropertyGroup>
@@ -48,10 +48,10 @@
     <Analyzer Include="/Applications/Unity/Hub/Editor/6000.2.12f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets/demos/demo-minecraft-terrain/Editor/MinecraftTerrainDemoSetup.cs" />
+    <Compile Include="Assets/demos/demo-terrain-collision/Editor/DemoAssetCreator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets/demos/demo-minecraft-terrain/Editor/TimeSurvivor.Demos.MinecraftTerrain.Editor.asmdef" />
+    <None Include="Assets/demos/demo-terrain-collision/Editor/TimeSurvivor.Demos.TerrainCollision.Editor.asmdef" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -1140,8 +1140,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="TimeSurvivor.Demos.TerrainCollision.csproj" />
     <ProjectReference Include="TimeSurvivor.Voxel.Core.csproj" />
     <ProjectReference Include="TimeSurvivor.Voxel.Terrain.csproj" />
+    <ProjectReference Include="TimeSurvivor.Voxel.Physics.csproj" />
+    <ProjectReference Include="TimeSurvivor.Voxel.Rendering.csproj" />
+    <ProjectReference Include="TimeSurvivor.Demos.FlatCheckerboardTerrain.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <ItemGroup>

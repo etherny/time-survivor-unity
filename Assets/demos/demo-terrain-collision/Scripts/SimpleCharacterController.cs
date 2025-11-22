@@ -60,15 +60,22 @@ namespace TimeSurvivor.Demos.TerrainCollision
 
         private void Update()
         {
+            // Validate input manager
+            if (DemoInputManager.Instance == null)
+            {
+                Debug.LogWarning("[SimpleCharacterController] DemoInputManager not found. Input disabled.");
+                return;
+            }
+
             // Allow ESC to unlock cursor
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (DemoInputManager.Instance.UnlockCursorPressed)
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
             }
 
             // Re-lock cursor on mouse click
-            if (Input.GetMouseButtonDown(0) && Cursor.lockState == CursorLockMode.None)
+            if (DemoInputManager.Instance.MouseLeftPressed && Cursor.lockState == CursorLockMode.None)
             {
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
@@ -85,13 +92,16 @@ namespace TimeSurvivor.Demos.TerrainCollision
         private void HandleMouseLook()
         {
             if (Cursor.lockState != CursorLockMode.Locked) return;
+            if (DemoInputManager.Instance == null) return;
+
+            Vector2 lookDelta = DemoInputManager.Instance.LookInput;
 
             // Horizontal rotation (Y-axis)
-            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+            float mouseX = lookDelta.x * mouseSensitivity * Time.deltaTime;
             transform.Rotate(Vector3.up * mouseX);
 
             // Vertical rotation (X-axis) - clamped
-            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+            float mouseY = lookDelta.y * mouseSensitivity * Time.deltaTime;
             verticalRotation -= mouseY;
             verticalRotation = Mathf.Clamp(verticalRotation, -verticalLookLimit, verticalLookLimit);
 
@@ -106,9 +116,12 @@ namespace TimeSurvivor.Demos.TerrainCollision
         /// </summary>
         private void HandleMovement()
         {
-            // Get input
-            float horizontal = Input.GetAxis("Horizontal"); // A/D
-            float vertical = Input.GetAxis("Vertical");     // W/S
+            if (DemoInputManager.Instance == null) return;
+
+            // Get input from new Input System
+            Vector2 moveInput = DemoInputManager.Instance.MoveInput;
+            float horizontal = moveInput.x; // A/D
+            float vertical = moveInput.y;   // W/S
 
             // Calculate movement direction (relative to player rotation)
             Vector3 moveDirection = transform.right * horizontal + transform.forward * vertical;
@@ -116,7 +129,7 @@ namespace TimeSurvivor.Demos.TerrainCollision
             moveDirection = moveDirection.normalized * moveSpeed;
 
             // Handle jumping
-            if (isGrounded && Input.GetButtonDown("Jump"))
+            if (isGrounded && DemoInputManager.Instance.JumpPressed)
             {
                 velocity.y = jumpVelocity;
             }

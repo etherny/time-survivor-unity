@@ -1,0 +1,26 @@
+{
+    "name": "TimeSurvivor.Demos.TerrainCollision.Tests.Editor",
+    "rootNamespace": "TimeSurvivor.Demos.TerrainCollision.Tests.Editor",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "TimeSurvivor.Demos.TerrainCollision",
+        "TimeSurvivor.Voxel.Core",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

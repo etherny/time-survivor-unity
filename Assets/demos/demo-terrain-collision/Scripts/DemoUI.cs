@@ -51,10 +51,14 @@ namespace TimeSurvivor.Demos.TerrainCollision
 
         private void Update()
         {
-            // Toggle UI with H key
-            if (Input.GetKeyDown(toggleUIKey))
+            // Validate input manager
+            if (DemoInputManager.Instance != null)
             {
-                showUI = !showUI;
+                // Toggle UI with H key
+                if (DemoInputManager.Instance.ToggleUIPressed)
+                {
+                    showUI = !showUI;
+                }
             }
 
             // Calculate FPS

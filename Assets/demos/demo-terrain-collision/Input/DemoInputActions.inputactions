@@ -1,0 +1,198 @@
+{
+    "name": "DemoInputActions",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "a5e9c3b2-3d3e-4f8a-9c7e-5f8b9d3c4a1e",
+            "actions": [
+                {
+                    "name": "Move",
+                    "type": "Value",
+                    "id": "b6f8d4c3-4e3f-5f9b-ad8f-6f9c8e4d5b2f",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Look",
+                    "type": "Value",
+                    "id": "c7g9e5d4-5f4g-6gac-be9g-7gad9f5e6c3g",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "d8h0f6e5-6g5h-7hbd-cf0h-8hbe0g6f7d4h",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SpawnObject",
+                    "type": "Button",
+                    "id": "e9i1g7f6-7h6i-8ice-dg1i-9icf1h7g8e5i",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleVisualization",
+                    "type": "Button",
+                    "id": "f0j2h8g7-8i7j-9jdf-eh2j-0jdg2i8h9f6j",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleUI",
+                    "type": "Button",
+                    "id": "g1k3i9h8-9j8k-0keg-fi3k-1keh3j9i0g7k",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "UnlockCursor",
+                    "type": "Button",
+                    "id": "h2l4j0i9-0k9l-1lfh-gj4l-2lfi4k0j1h8l",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "WASD",
+                    "id": "i3m5k1j0-1l0m-2mgi-hk5m-3mgj5l1k2i9m",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "j4n6l2k1-2m1n-3nhj-il6n-4nhk6m2l3j0n",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "k5o7m3l2-3n2o-4oik-jm7o-5oil7n3m4k1o",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "l6p8n4m3-4o3p-5pjl-kn8p-6pjm8o4n5l2p",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "m7q9o5n4-5p4q-6qkm-lo9q-7qkn9p5o6m3q",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "n8r0p6o5-6q5r-7rln-mp0r-8rlo0q6p7n4r",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "o9s1q7p6-7r6s-8smo-nq1s-9smp1r7q8o5s",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "p0t2r8q7-8s7t-9tnp-or2t-0tnq2s8r9p6t",
+                    "path": "<Keyboard>/o",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SpawnObject",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "q1u3s9r8-9t8u-0uoq-ps3u-1uor3t9s0q7u",
+                    "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleVisualization",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "r2v4t0s9-0u9v-1vpr-qt4v-2vps4u0t1r8v",
+                    "path": "<Keyboard>/h",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleUI",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "s3w5u1t0-1v0w-2wqs-ru5w-3wqt5v1u2s9w",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UnlockCursor",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

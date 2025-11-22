@@ -23,6 +23,17 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
         {
             Debug.Log("[DemoAssetCreator] Creating demo assets...");
 
+            // Validate prerequisites before creating anything
+            if (!ValidatePrerequisites())
+            {
+                EditorUtility.DisplayDialog(
+                    "Prerequisites Missing",
+                    "Cannot create demo assets. Please check console for details.",
+                    "OK"
+                );
+                return;
+            }
+
             // Ensure directories exist
             EnsureDirectoriesExist();
 
@@ -35,7 +46,23 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
+            // Validate created scene
+            if (!ValidateCreatedScene())
+            {
+                EditorUtility.DisplayDialog(
+                    "Scene Validation Failed",
+                    "Demo assets created but scene validation failed. Please check console for details.",
+                    "OK"
+                );
+                return;
+            }
+
             Debug.Log("[DemoAssetCreator] Demo assets created successfully!");
+            EditorUtility.DisplayDialog(
+                "Success",
+                "Demo assets created and validated successfully!",
+                "OK"
+            );
         }
 
         private static void EnsureDirectoriesExist()
@@ -279,9 +306,10 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
 
             // Load and instantiate player prefab
             var playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{PREFABS_PATH}/DemoCamera.prefab");
+            GameObject player = null;
             if (playerPrefab != null)
             {
-                var player = PrefabUtility.InstantiatePrefab(playerPrefab) as GameObject;
+                player = PrefabUtility.InstantiatePrefab(playerPrefab) as GameObject;
                 player.transform.position = new Vector3(32, 10, 32); // Center of terrain, elevated
             }
 
@@ -289,40 +317,57 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
             var terrainManager = new GameObject("TerrainManager");
             var demoController = terrainManager.AddComponent<CollisionDemoController>();
 
-            // Assign configuration
+            // Load assets
             var config = AssetDatabase.LoadAssetAtPath<VoxelConfiguration>($"{CONFIG_PATH}/TerrainCollisionDemoConfig.asset");
-            if (config != null)
-            {
-                var configField = typeof(CollisionDemoController).GetField("config", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                configField?.SetValue(demoController, config);
-            }
-
-            // Assign terrain material
             var terrainMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIALS_PATH}/TerrainMaterial.mat");
-            if (terrainMat != null)
-            {
-                var matField = typeof(CollisionDemoController).GetField("terrainMaterial", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                matField?.SetValue(demoController, terrainMat);
-            }
-
-            // Add PhysicsObjectSpawner
-            var spawner = terrainManager.AddComponent<PhysicsObjectSpawner>();
             var spherePrefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{PREFABS_PATH}/PhysicsSphere.prefab");
             var cubePrefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{PREFABS_PATH}/PhysicsCube.prefab");
 
-            if (spherePrefab != null && cubePrefab != null)
+            // Assign CollisionDemoController references using SerializedObject
+            AssignSerializedField(demoController, "config", config);
+            AssignSerializedField(demoController, "terrainMaterial", terrainMat);
+            if (player != null)
             {
-                var sphereField = typeof(PhysicsObjectSpawner).GetField("spherePrefab", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                var cubeField = typeof(PhysicsObjectSpawner).GetField("cubePrefab", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                sphereField?.SetValue(spawner, spherePrefab);
-                cubeField?.SetValue(spawner, cubePrefab);
+                AssignSerializedField(demoController, "playerTransform", player.transform);
+            }
+
+            // Add PhysicsObjectSpawner and assign references
+            var spawner = terrainManager.AddComponent<PhysicsObjectSpawner>();
+            AssignSerializedField(spawner, "spherePrefab", spherePrefab);
+            AssignSerializedField(spawner, "cubePrefab", cubePrefab);
+            if (player != null)
+            {
+                AssignSerializedField(spawner, "playerTransform", player.transform);
             }
 
             // Add CollisionVisualizer
-            terrainManager.AddComponent<CollisionVisualizer>();
+            var visualizer = terrainManager.AddComponent<CollisionVisualizer>();
 
-            // Add DemoUI
-            terrainManager.AddComponent<DemoUI>();
+            // Add DemoUI and assign all references
+            var demoUI = terrainManager.AddComponent<DemoUI>();
+            if (player != null)
+            {
+                var playerController = player.GetComponent<SimpleCharacterController>();
+                AssignSerializedField(demoUI, "playerController", playerController);
+            }
+            AssignSerializedField(demoUI, "objectSpawner", spawner);
+            AssignSerializedField(demoUI, "visualizer", visualizer);
+            AssignSerializedField(demoUI, "demoController", demoController);
+
+            // Create InputManager GameObject
+            var inputManager = new GameObject("InputManager");
+            var demoInputManager = inputManager.AddComponent<DemoInputManager>();
+
+            // Load and assign Input Actions asset
+            var inputActionsAsset = AssetDatabase.LoadAssetAtPath<UnityEngine.InputSystem.InputActionAsset>($"{DEMO_PATH}/Input/DemoInputActions.inputactions");
+            if (inputActionsAsset != null)
+            {
+                AssignSerializedField(demoInputManager, "inputActions", inputActionsAsset);
+            }
+            else
+            {
+                Debug.LogError("[DemoAssetCreator] Failed to load DemoInputActions.inputactions asset!");
+            }
 
             // Save scene
             EditorSceneManager.SaveScene(scene, scenePath);
@@ -358,6 +403,257 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
             }
 
             Debug.LogWarning("[DemoAssetCreator] No empty layer slots available!");
+        }
+
+        /// <summary>
+        /// Assigns a value to a SerializeField using Unity's serialization system.
+        /// This is the proper way to assign references in editor scripts.
+        /// </summary>
+        /// <typeparam name="T">Type of the value to assign (must be a UnityEngine.Object)</typeparam>
+        /// <param name="component">The component containing the field</param>
+        /// <param name="fieldName">The name of the field to assign</param>
+        /// <param name="value">The value to assign</param>
+        private static void AssignSerializedField<T>(Component component, string fieldName, T value) where T : Object
+        {
+            SerializedObject so = new SerializedObject(component);
+            SerializedProperty prop = so.FindProperty(fieldName);
+            if (prop != null)
+            {
+                prop.objectReferenceValue = value;
+                so.ApplyModifiedProperties();
+                EditorUtility.SetDirty(component);
+                Debug.Log($"[DemoAssetCreator] Assigned {fieldName} = {value?.name ?? "null"} on {component.GetType().Name}");
+            }
+            else
+            {
+                Debug.LogWarning($"[DemoAssetCreator] Field '{fieldName}' not found on {component.GetType().Name}");
+            }
+        }
+
+        /// <summary>
+        /// Validates that all prerequisites are met before creating demo assets.
+        /// </summary>
+        /// <returns>True if all prerequisites are met, false otherwise</returns>
+        private static bool ValidatePrerequisites()
+        {
+            bool isValid = true;
+
+            Debug.Log("[DemoAssetCreator] Validating prerequisites...");
+
+            // Check for URP
+            var urpAsset = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline;
+            if (urpAsset == null)
+            {
+                Debug.LogError("[DemoAssetCreator] Universal Render Pipeline (URP) is not configured! This demo requires URP.");
+                isValid = false;
+            }
+            else
+            {
+                Debug.Log("[DemoAssetCreator] ✓ URP is configured");
+            }
+
+            // Check for voxel packages (check if key types exist)
+            if (System.Type.GetType("TimeSurvivor.Voxel.Core.VoxelConfiguration, TimeSurvivor.Voxel.Core") == null)
+            {
+                Debug.LogError("[DemoAssetCreator] voxel-core package not found! Cannot create demo.");
+                isValid = false;
+            }
+            else
+            {
+                Debug.Log("[DemoAssetCreator] ✓ voxel-core package found");
+            }
+
+            if (System.Type.GetType("TimeSurvivor.Voxel.Terrain.ProceduralTerrainStreamer, TimeSurvivor.Voxel.Terrain") == null)
+            {
+                Debug.LogError("[DemoAssetCreator] voxel-terrain package not found! Cannot create demo.");
+                isValid = false;
+            }
+            else
+            {
+                Debug.Log("[DemoAssetCreator] ✓ voxel-terrain package found");
+            }
+
+            // Check for TerrainStatic layer
+            int layerIndex = LayerMask.NameToLayer("TerrainStatic");
+            if (layerIndex < 0)
+            {
+                Debug.LogError("[DemoAssetCreator] TerrainStatic layer not found! Run 'Tools > Terrain Collision Demo > Create TerrainStatic Layer' first.");
+                isValid = false;
+            }
+            else
+            {
+                Debug.Log($"[DemoAssetCreator] ✓ TerrainStatic layer exists (index: {layerIndex})");
+            }
+
+            // Check for Input System package
+            if (System.Type.GetType("UnityEngine.InputSystem.InputAction, Unity.InputSystem") == null)
+            {
+                Debug.LogError("[DemoAssetCreator] Input System package not found! This demo requires the new Input System.");
+                isValid = false;
+            }
+            else
+            {
+                Debug.Log("[DemoAssetCreator] ✓ Input System package found");
+            }
+
+            if (isValid)
+            {
+                Debug.Log("[DemoAssetCreator] ✓ All prerequisites validated successfully");
+            }
+            else
+            {
+                Debug.LogError("[DemoAssetCreator] ✗ Prerequisites validation failed");
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Validates the created scene to ensure all references are properly assigned.
+        /// </summary>
+        /// <returns>True if scene is valid, false otherwise</returns>
+        private static bool ValidateCreatedScene()
+        {
+            bool isValid = true;
+
+            Debug.Log("[DemoAssetCreator] Validating created scene...");
+
+            string scenePath = $"{SCENES_PATH}/TerrainCollisionDemo.unity";
+            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+
+            if (scene.path != scenePath)
+            {
+                Debug.LogWarning($"[DemoAssetCreator] Current scene is not the demo scene. Validation skipped.");
+                return true; // Not an error, just skip validation
+            }
+
+            // Find Player
+            var playerController = Object.FindObjectOfType<SimpleCharacterController>();
+            if (playerController == null)
+            {
+                Debug.LogError("[DemoAssetCreator] Player with SimpleCharacterController not found in scene!");
+                isValid = false;
+            }
+            else
+            {
+                Debug.Log("[DemoAssetCreator] ✓ Player found");
+            }
+
+            // Find TerrainManager
+            var demoController = Object.FindObjectOfType<CollisionDemoController>();
+            if (demoController == null)
+            {
+                Debug.LogError("[DemoAssetCreator] TerrainManager with CollisionDemoController not found in scene!");
+                isValid = false;
+            }
+            else
+            {
+                Debug.Log("[DemoAssetCreator] ✓ TerrainManager found");
+
+                // Validate CollisionDemoController references
+                SerializedObject demoControllerSO = new SerializedObject(demoController);
+                if (demoControllerSO.FindProperty("config").objectReferenceValue == null)
+                {
+                    Debug.LogError("[DemoAssetCreator] CollisionDemoController.config is not assigned!");
+                    isValid = false;
+                }
+
+                if (demoControllerSO.FindProperty("terrainMaterial").objectReferenceValue == null)
+                {
+                    Debug.LogError("[DemoAssetCreator] CollisionDemoController.terrainMaterial is not assigned!");
+                    isValid = false;
+                }
+
+                if (demoControllerSO.FindProperty("playerTransform").objectReferenceValue == null)
+                {
+                    Debug.LogError("[DemoAssetCreator] CollisionDemoController.playerTransform is not assigned!");
+                    isValid = false;
+                }
+            }
+
+            // Validate PhysicsObjectSpawner
+            var spawner = Object.FindObjectOfType<PhysicsObjectSpawner>();
+            if (spawner != null)
+            {
+                SerializedObject spawnerSO = new SerializedObject(spawner);
+                if (spawnerSO.FindProperty("spherePrefab").objectReferenceValue == null)
+                {
+                    Debug.LogError("[DemoAssetCreator] PhysicsObjectSpawner.spherePrefab is not assigned!");
+                    isValid = false;
+                }
+
+                if (spawnerSO.FindProperty("cubePrefab").objectReferenceValue == null)
+                {
+                    Debug.LogError("[DemoAssetCreator] PhysicsObjectSpawner.cubePrefab is not assigned!");
+                    isValid = false;
+                }
+
+                if (spawnerSO.FindProperty("playerTransform").objectReferenceValue == null)
+                {
+                    Debug.LogError("[DemoAssetCreator] PhysicsObjectSpawner.playerTransform is not assigned!");
+                    isValid = false;
+                }
+            }
+
+            // Validate DemoUI
+            var demoUI = Object.FindObjectOfType<DemoUI>();
+            if (demoUI != null)
+            {
+                SerializedObject demoUISO = new SerializedObject(demoUI);
+                if (demoUISO.FindProperty("playerController").objectReferenceValue == null)
+                {
+                    Debug.LogError("[DemoAssetCreator] DemoUI.playerController is not assigned!");
+                    isValid = false;
+                }
+
+                if (demoUISO.FindProperty("objectSpawner").objectReferenceValue == null)
+                {
+                    Debug.LogError("[DemoAssetCreator] DemoUI.objectSpawner is not assigned!");
+                    isValid = false;
+                }
+
+                if (demoUISO.FindProperty("visualizer").objectReferenceValue == null)
+                {
+                    Debug.LogError("[DemoAssetCreator] DemoUI.visualizer is not assigned!");
+                    isValid = false;
+                }
+
+                if (demoUISO.FindProperty("demoController").objectReferenceValue == null)
+                {
+                    Debug.LogError("[DemoAssetCreator] DemoUI.demoController is not assigned!");
+                    isValid = false;
+                }
+            }
+
+            // Validate DemoInputManager
+            var inputManager = Object.FindObjectOfType<DemoInputManager>();
+            if (inputManager == null)
+            {
+                Debug.LogError("[DemoAssetCreator] DemoInputManager not found in scene!");
+                isValid = false;
+            }
+            else
+            {
+                Debug.Log("[DemoAssetCreator] ✓ DemoInputManager found");
+
+                SerializedObject inputManagerSO = new SerializedObject(inputManager);
+                if (inputManagerSO.FindProperty("inputActions").objectReferenceValue == null)
+                {
+                    Debug.LogError("[DemoAssetCreator] DemoInputManager.inputActions is not assigned!");
+                    isValid = false;
+                }
+            }
+
+            if (isValid)
+            {
+                Debug.Log("[DemoAssetCreator] ✓ Scene validation passed");
+            }
+            else
+            {
+                Debug.LogError("[DemoAssetCreator] ✗ Scene validation failed");
+            }
+
+            return isValid;
         }
     }
 }

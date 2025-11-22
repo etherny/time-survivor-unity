@@ -37,8 +37,14 @@ namespace TimeSurvivor.Demos.TerrainCollision
 
         private void Update()
         {
+            // Validate input manager
+            if (DemoInputManager.Instance == null)
+            {
+                return;
+            }
+
             // Toggle visualization with 'V' key
-            if (Input.GetKeyDown(KeyCode.V))
+            if (DemoInputManager.Instance.ToggleVisualizationPressed)
             {
                 showColliders = !showColliders;
                 Debug.Log($"[CollisionVisualizer] Collision visualization: {(showColliders ? "ON" : "OFF")}");
