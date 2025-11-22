@@ -25,8 +25,99 @@ namespace TimeSurvivor.Voxel.Terrain
         private ChunkManager _chunkManager;
         private LRUCache<ChunkCoord, TerrainChunk> _chunkCache;
         private ChunkCoord _lastPlayerChunk;
+        private bool _isInitialized = false;
+
+        /// <summary>
+        /// Programmatically initialize the terrain streamer with all parameters.
+        /// This method allows runtime configuration without using Inspector assignment.
+        /// The streamer will create its own ChunkManager internally.
+        /// </summary>
+        /// <param name="config">VoxelConfiguration defining chunk size, render distance, etc.</param>
+        /// <param name="chunkMaterial">Material to apply to chunk meshes</param>
+        /// <param name="streamingTarget">Transform to stream chunks around (e.g., player)</param>
+        /// <param name="useMainCamera">If true, uses Camera.main as streaming target (overrides streamingTarget parameter)</param>
+        /// <param name="showDebugInfo">If true, displays debug UI with streaming statistics</param>
+        public void Initialize(
+            VoxelConfiguration config,
+            Material chunkMaterial,
+            Transform streamingTarget,
+            bool useMainCamera = false,
+            bool showDebugInfo = false)
+        {
+            if (_isInitialized)
+            {
+                Debug.LogWarning("[ProceduralTerrainStreamer] Already initialized. Ignoring duplicate Initialize() call.");
+                return;
+            }
+
+            // Assign parameters
+            _config = config;
+            _chunkMaterial = chunkMaterial;
+            _streamingTarget = streamingTarget;
+            _useMainCamera = useMainCamera;
+            _showDebugInfo = showDebugInfo;
+
+            // Perform initialization
+            ValidateAndInitialize();
+        }
+
+        /// <summary>
+        /// Programmatically initialize the terrain streamer with an existing ChunkManager.
+        /// This allows sharing a ChunkManager instance between multiple systems (e.g., custom terrain generator).
+        /// Use this overload when you need fine-grained control over chunk generation.
+        /// </summary>
+        /// <param name="config">VoxelConfiguration defining chunk size, render distance, etc.</param>
+        /// <param name="chunkManager">Pre-configured ChunkManager instance to use for chunk operations</param>
+        /// <param name="streamingTarget">Transform to stream chunks around (e.g., player)</param>
+        /// <param name="useMainCamera">If true, uses Camera.main as streaming target (overrides streamingTarget parameter)</param>
+        /// <param name="showDebugInfo">If true, displays debug UI with streaming statistics</param>
+        public void Initialize(
+            VoxelConfiguration config,
+            ChunkManager chunkManager,
+            Transform streamingTarget,
+            bool useMainCamera = false,
+            bool showDebugInfo = false)
+        {
+            if (_isInitialized)
+            {
+                Debug.LogWarning("[ProceduralTerrainStreamer] Already initialized. Ignoring duplicate Initialize() call.");
+                return;
+            }
+
+            // Assign parameters
+            _config = config;
+            _chunkManager = chunkManager;
+            _streamingTarget = streamingTarget;
+            _useMainCamera = useMainCamera;
+            _showDebugInfo = showDebugInfo;
+
+            // Perform initialization (skip ChunkManager creation since it was provided)
+            ValidateAndInitialize();
+        }
 
         private void Awake()
+        {
+            // Only initialize from Inspector if not already initialized programmatically
+            if (!_isInitialized)
+            {
+                ValidateAndInitialize();
+            }
+        }
+
+        private void Start()
+        {
+            // Final validation check before streaming begins
+            if (!_isInitialized)
+            {
+                Debug.LogError("[ProceduralTerrainStreamer] Failed to initialize. Disabling component.");
+                enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Validates configuration and initializes internal systems.
+        /// </summary>
+        private void ValidateAndInitialize()
         {
             // Validation
             if (_config == null)
@@ -36,35 +127,59 @@ namespace TimeSurvivor.Voxel.Terrain
                 return;
             }
 
-            if (_chunkMaterial == null)
+            if (_chunkMaterial == null && _chunkManager == null)
             {
                 Debug.LogWarning("[ProceduralTerrainStreamer] Chunk material not assigned. Creating default material.");
                 _chunkMaterial = new Material(Shader.Find("Standard"));
             }
 
-            // Initialize systems
-            _chunkManager = new ChunkManager(_config, transform, _chunkMaterial);
-            _chunkCache = new LRUCache<ChunkCoord, TerrainChunk>(_config.MaxCachedChunks);
+            // Initialize ChunkManager if not provided
+            if (_chunkManager == null)
+            {
+                _chunkManager = new ChunkManager(_config, transform, _chunkMaterial);
+            }
 
-            // Find streaming target
+            // Initialize LRU cache
+            if (_chunkCache == null)
+            {
+                _chunkCache = new LRUCache<ChunkCoord, TerrainChunk>(_config.MaxCachedChunks);
+            }
+
+            // Validate and set streaming target
+            if (!ValidateStreamingTarget())
+            {
+                enabled = false;
+                return;
+            }
+
+            _lastPlayerChunk = new ChunkCoord(int.MaxValue, int.MaxValue, int.MaxValue);
+            _isInitialized = true;
+
+            Debug.Log("[ProceduralTerrainStreamer] Initialized successfully.");
+        }
+
+        /// <summary>
+        /// Validates and sets the streaming target transform.
+        /// </summary>
+        /// <returns>True if streaming target is valid, false otherwise</returns>
+        private bool ValidateStreamingTarget()
+        {
             if (_useMainCamera)
             {
                 _streamingTarget = Camera.main?.transform;
                 if (_streamingTarget == null)
                 {
                     Debug.LogError("[ProceduralTerrainStreamer] MainCamera not found!");
-                    enabled = false;
-                    return;
+                    return false;
                 }
             }
             else if (_streamingTarget == null)
             {
                 Debug.LogError("[ProceduralTerrainStreamer] Streaming target not assigned!");
-                enabled = false;
-                return;
+                return false;
             }
 
-            _lastPlayerChunk = new ChunkCoord(int.MaxValue, int.MaxValue, int.MaxValue);
+            return true;
         }
 
         private void Update()

@@ -280,6 +280,14 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
             camera.nearClipPlane = 0.1f;
             camera.farClipPlane = 500f;
 
+            // Add URP-specific camera data (fixes URP warning)
+#if UNITY_PIPELINE_URP
+            var urpCameraData = cameraObj.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+            urpCameraData.renderType = UnityEngine.Rendering.Universal.CameraRenderType.Base;
+            urpCameraData.antialiasing = UnityEngine.Rendering.Universal.AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+            urpCameraData.antialiasingQuality = UnityEngine.Rendering.Universal.AntialiasingQuality.Medium;
+#endif
+
             // Tag as MainCamera
             cameraObj.tag = "MainCamera";
 

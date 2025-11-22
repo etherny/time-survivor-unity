@@ -111,27 +111,14 @@ namespace TimeSurvivor.Demos.TerrainCollision
             // Create terrain streamer
             terrainStreamer = gameObject.AddComponent<ProceduralTerrainStreamer>();
 
-            // Configure streamer using reflection (since fields are private)
-            var streamerType = typeof(ProceduralTerrainStreamer);
-
-            var configField = streamerType.GetField("_config", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            configField?.SetValue(terrainStreamer, config);
-
-            var materialField = streamerType.GetField("_chunkMaterial", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            materialField?.SetValue(terrainStreamer, terrainMaterial);
-
-            var targetField = streamerType.GetField("_streamingTarget", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            targetField?.SetValue(terrainStreamer, playerTransform);
-
-            var useCameraField = streamerType.GetField("_useMainCamera", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            useCameraField?.SetValue(terrainStreamer, false);
-
-            var debugField = streamerType.GetField("_showDebugInfo", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            debugField?.SetValue(terrainStreamer, false); // Disable built-in debug UI
-
-            // Replace the streamer's chunk manager with ours
-            var chunkManagerField = streamerType.GetField("_chunkManager", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            chunkManagerField?.SetValue(terrainStreamer, chunkManager);
+            // Initialize streamer using the new public API (replaces reflection-based approach)
+            terrainStreamer.Initialize(
+                config: config,
+                chunkManager: chunkManager,
+                streamingTarget: playerTransform,
+                useMainCamera: false,
+                showDebugInfo: false
+            );
 
             Debug.Log("[CollisionDemoController] Terrain initialized with collision support");
         }
