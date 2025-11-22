@@ -187,7 +187,7 @@ namespace TimeSurvivor.Voxel.Physics
             /// </summary>
             private int Flatten3DIndex(int x, int y, int z, int size)
             {
-                return x + (z * size) + (y * size * size);
+                return x + (y * size) + (z * size * size);
             }
         }
 
