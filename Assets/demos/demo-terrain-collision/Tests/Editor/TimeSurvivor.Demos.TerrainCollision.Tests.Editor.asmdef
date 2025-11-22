@@ -5,6 +5,7 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "TimeSurvivor.Demos.TerrainCollision",
+        "TimeSurvivor.Demos.TerrainCollision.Editor",
         "TimeSurvivor.Voxel.Core",
         "Unity.InputSystem"
     ],

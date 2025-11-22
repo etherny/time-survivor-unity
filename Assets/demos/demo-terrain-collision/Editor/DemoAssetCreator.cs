@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine.InputSystem;
 using TimeSurvivor.Voxel.Core;
 using TimeSurvivor.Demos.TerrainCollision;
 
@@ -17,6 +18,7 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
         private const string MATERIALS_PATH = DEMO_PATH + "/Materials";
         private const string PREFABS_PATH = DEMO_PATH + "/Prefabs";
         private const string SCENES_PATH = DEMO_PATH + "/Scenes";
+        private const string INPUT_PATH = DEMO_PATH + "/Input";
 
         [MenuItem("Tools/Terrain Collision Demo/Create Demo Assets")]
         public static void CreateDemoAssets()
@@ -41,10 +43,14 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
             CreateVoxelConfiguration();
             CreateMaterials();
             CreatePrefabs();
-            CreateDemoScene();
+            CreateInputActions();
 
+            // Save and refresh BEFORE creating scene to ensure all assets are loaded
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+
+            // Create scene (all assets are now available)
+            CreateDemoScene();
 
             // Validate created scene
             if (!ValidateCreatedScene())
@@ -78,6 +84,9 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
 
             if (!AssetDatabase.IsValidFolder(SCENES_PATH))
                 AssetDatabase.CreateFolder(DEMO_PATH, "Scenes");
+
+            if (!AssetDatabase.IsValidFolder(INPUT_PATH))
+                AssetDatabase.CreateFolder(DEMO_PATH, "Input");
         }
 
         private static void CreateVoxelConfiguration()
@@ -282,6 +291,231 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
             Debug.Log($"[DemoAssetCreator] Created DemoCamera prefab at {path}");
         }
 
+        /// <summary>
+        /// Creates the Input Actions asset programmatically.
+        /// This ensures the asset is properly configured with all required actions and bindings.
+        /// Uses JSON serialization and import to properly create the .inputactions file.
+        /// </summary>
+        private static void CreateInputActions()
+        {
+            string path = $"{INPUT_PATH}/DemoInputActions.inputactions";
+
+            // Check if already exists
+            if (System.IO.File.Exists(path))
+            {
+                Debug.Log($"[DemoAssetCreator] InputActionAsset already exists at {path}");
+                return;
+            }
+
+            // Create InputActionAsset as JSON
+            string json = @"{
+    ""name"": ""DemoInputActions"",
+    ""maps"": [
+        {
+            ""name"": ""Player"",
+            ""id"": ""7a7c7c7a-1234-4567-89ab-cdef12345678"",
+            ""actions"": [
+                {
+                    ""name"": ""Move"",
+                    ""type"": ""Value"",
+                    ""id"": ""1a1a1a1a-1111-1111-1111-111111111111"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Look"",
+                    ""type"": ""Value"",
+                    ""id"": ""2b2b2b2b-2222-2222-2222-222222222222"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""3c3c3c3c-3333-3333-3333-333333333333"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SpawnObject"",
+                    ""type"": ""Button"",
+                    ""id"": ""4d4d4d4d-4444-4444-4444-444444444444"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleVisualization"",
+                    ""type"": ""Button"",
+                    ""id"": ""5e5e5e5e-5555-5555-5555-555555555555"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleUI"",
+                    ""type"": ""Button"",
+                    ""id"": ""6f6f6f6f-6666-6666-6666-666666666666"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UnlockCursor"",
+                    ""type"": ""Button"",
+                    ""id"": ""7a7a7a7a-7777-7777-7777-777777777777"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""8b8b8b8b-8888-8888-8888-888888888888"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""9c9c9c9c-9999-9999-9999-999999999999"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""adadadad-aaaa-aaaa-aaaa-aaaaaaaaaaaa"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""bebebebe-bbbb-bbbb-bbbb-bbbbbbbbbbbb"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""cfcfcfcf-cccc-cccc-cccc-cccccccccccc"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d0d0d0d0-dddd-dddd-dddd-dddddddddddd"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e1e1e1e1-eeee-eeee-eeee-eeeeeeeeeeee"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f2f2f2f2-ffff-ffff-ffff-ffffffffffff"",
+                    ""path"": ""<Keyboard>/o"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SpawnObject"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""03030303-0000-0000-0000-000000000001"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleVisualization"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""04040404-0000-0000-0000-000000000002"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleUI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""05050505-0000-0000-0000-000000000003"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UnlockCursor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        }
+    ],
+    ""controlSchemes"": []
+}";
+
+            // Write JSON to file
+            System.IO.File.WriteAllText(path, json);
+
+            // Import the asset
+            AssetDatabase.ImportAsset(path);
+
+            Debug.Log($"[DemoAssetCreator] Created InputActionAsset at {path}");
+        }
+
         private static void CreateDemoScene()
         {
             string scenePath = $"{SCENES_PATH}/TerrainCollisionDemo.unity";
@@ -358,16 +592,9 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
             var inputManager = new GameObject("InputManager");
             var demoInputManager = inputManager.AddComponent<DemoInputManager>();
 
-            // Load and assign Input Actions asset
-            var inputActionsAsset = AssetDatabase.LoadAssetAtPath<UnityEngine.InputSystem.InputActionAsset>($"{DEMO_PATH}/Input/DemoInputActions.inputactions");
-            if (inputActionsAsset != null)
-            {
-                AssignSerializedField(demoInputManager, "inputActions", inputActionsAsset);
-            }
-            else
-            {
-                Debug.LogError("[DemoAssetCreator] Failed to load DemoInputActions.inputactions asset!");
-            }
+            // Load and assign Input Actions asset (created earlier)
+            var inputActionsAsset = AssetDatabase.LoadAssetAtPath<InputActionAsset>($"{INPUT_PATH}/DemoInputActions.inputactions");
+            AssignSerializedField(demoInputManager, "inputActions", inputActionsAsset);
 
             // Save scene
             EditorSceneManager.SaveScene(scene, scenePath);
