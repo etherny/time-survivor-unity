@@ -5,6 +5,10 @@
     "TimeSurvivor.Voxel.Core",
     "TimeSurvivor.Voxel.Rendering",
     "TimeSurvivor.Voxel.Physics",
+    "Unity.Mathematics",
+    "Unity.Collections",
+    "Unity.Burst",
+    "Unity.Jobs",
     "UnityEngine.TestRunner",
     "UnityEditor.TestRunner"
   ],
@@ -12,7 +16,7 @@
     "Editor"
   ],
   "excludePlatforms": [],
-  "allowUnsafeCode": false,
+  "allowUnsafeCode": true,
   "overrideReferences": true,
   "precompiledReferences": [
     "nunit.framework.dll"

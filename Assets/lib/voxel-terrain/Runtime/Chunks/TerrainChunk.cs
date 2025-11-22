@@ -21,6 +21,16 @@ namespace TimeSurvivor.Voxel.Terrain
         public bool IsMeshed { get; private set; }
         public bool IsDirty { get; set; }
 
+        /// <summary>
+        /// Indicates if this chunk has collision mesh assigned.
+        /// </summary>
+        public bool HasCollision { get; private set; }
+
+        /// <summary>
+        /// Indicates if collision is pending (queued for baking).
+        /// </summary>
+        public bool IsCollisionPending { get; private set; }
+
         private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;
         private MeshCollider _meshCollider;
@@ -36,16 +46,20 @@ namespace TimeSurvivor.Voxel.Terrain
             // Scale GameObject by voxel size so mesh vertices (in voxel coords) map to world units
             GameObject.transform.localScale = Vector3.one * voxelSize;
 
-            // Add required components
+            // Add required components for rendering
             _meshFilter = GameObject.AddComponent<MeshFilter>();
             _meshRenderer = GameObject.AddComponent<MeshRenderer>();
-            _meshCollider = GameObject.AddComponent<MeshCollider>();
 
             _meshRenderer.material = material;
+
+            // Note: MeshCollider is NOT added by default - managed separately via collision system
+            _meshCollider = null;
 
             IsGenerated = false;
             IsMeshed = false;
             IsDirty = false;
+            HasCollision = false;
+            IsCollisionPending = false;
         }
 
         /// <summary>
@@ -58,12 +72,13 @@ namespace TimeSurvivor.Voxel.Terrain
         }
 
         /// <summary>
-        /// Set the chunk's mesh.
+        /// Set the chunk's render mesh.
+        /// Note: This does NOT set collision mesh - use SetCollisionMesh() for collision.
         /// </summary>
         public void SetMesh(Mesh mesh)
         {
             _meshFilter.mesh = mesh;
-            _meshCollider.sharedMesh = mesh;
+            // DO NOT assign to collider here - collision is managed separately
             IsMeshed = true;
             IsDirty = false;
         }
@@ -110,6 +125,78 @@ namespace TimeSurvivor.Voxel.Terrain
         }
 
         /// <summary>
+        /// Set the collision mesh for this chunk and assign to specified physics layer.
+        /// Creates MeshCollider if needed.
+        /// </summary>
+        /// <param name="collisionMesh">Collision mesh to assign</param>
+        /// <param name="layerName">Physics layer name (e.g., "TerrainStatic")</param>
+        public void SetCollisionMesh(Mesh collisionMesh, string layerName)
+        {
+            if (collisionMesh == null)
+            {
+                Debug.LogWarning($"[TerrainChunk] Attempted to set null collision mesh on chunk {Coord}");
+                return;
+            }
+
+            // Get or create MeshCollider
+            if (_meshCollider == null)
+            {
+                _meshCollider = GameObject.AddComponent<MeshCollider>();
+            }
+
+            _meshCollider.sharedMesh = collisionMesh;
+            _meshCollider.convex = false; // Terrain uses non-convex collision
+
+            // Set physics layer
+            int layer = LayerMask.NameToLayer(layerName);
+            if (layer >= 0)
+            {
+                GameObject.layer = layer;
+            }
+            else
+            {
+                Debug.LogWarning($"[TerrainChunk] Layer '{layerName}' not found. Using default layer.");
+            }
+
+            HasCollision = true;
+            IsCollisionPending = false;
+        }
+
+        /// <summary>
+        /// Remove collision from this chunk.
+        /// Destroys MeshCollider component and clears collision mesh.
+        /// </summary>
+        public void RemoveCollision()
+        {
+            if (_meshCollider != null)
+            {
+                #if UNITY_EDITOR
+                if (!UnityEngine.Application.isPlaying)
+                {
+                    Object.DestroyImmediate(_meshCollider);
+                }
+                else
+                #endif
+                {
+                    Object.Destroy(_meshCollider);
+                }
+                _meshCollider = null;
+            }
+
+            HasCollision = false;
+            IsCollisionPending = false;
+        }
+
+        /// <summary>
+        /// Mark this chunk as pending collision baking.
+        /// Used by async collision system to track state.
+        /// </summary>
+        public void MarkCollisionPending()
+        {
+            IsCollisionPending = true;
+        }
+
+        /// <summary>
         /// Dispose of native resources.
         /// </summary>
         public void Dispose()
@@ -121,7 +208,16 @@ namespace TimeSurvivor.Voxel.Terrain
 
             if (GameObject != null)
             {
-                Object.Destroy(GameObject);
+                #if UNITY_EDITOR
+                if (!UnityEngine.Application.isPlaying)
+                {
+                    Object.DestroyImmediate(GameObject);
+                }
+                else
+                #endif
+                {
+                    Object.Destroy(GameObject);
+                }
             }
         }
 

@@ -4,6 +4,7 @@
   "references": [
     "TimeSurvivor.Voxel.Core",
     "TimeSurvivor.Voxel.Rendering",
+    "TimeSurvivor.Voxel.Physics",
     "Unity.Mathematics",
     "Unity.Collections",
     "Unity.Burst",

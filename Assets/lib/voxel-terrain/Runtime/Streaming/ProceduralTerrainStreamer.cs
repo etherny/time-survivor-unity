@@ -86,9 +86,10 @@ namespace TimeSurvivor.Voxel.Terrain
                 _lastPlayerChunk = currentChunk;
             }
 
-            // Process chunk generation and meshing
+            // Process chunk generation, meshing, and collision
             _chunkManager.ProcessGenerationQueue();
             _chunkManager.ProcessMeshingQueue(Time.deltaTime);
+            _chunkManager.ProcessCollisionQueue(Time.deltaTime);
         }
 
         /// <summary>
@@ -183,6 +184,7 @@ namespace TimeSurvivor.Voxel.Terrain
             GUILayout.Label($"Loaded Chunks: {_chunkCache.Count}/{_config.MaxCachedChunks}");
             GUILayout.Label($"Generation Queue: {_chunkManager.GenerationQueueCount}");
             GUILayout.Label($"Meshing Queue: {_chunkManager.MeshingQueueCount}");
+            GUILayout.Label($"Collision Queue: {_chunkManager.CollisionQueueCount}");
 
             GUILayout.EndArea();
         }
