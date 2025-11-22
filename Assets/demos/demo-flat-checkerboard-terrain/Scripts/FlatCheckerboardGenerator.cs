@@ -1,0 +1,74 @@
+using Unity.Collections;
+using TimeSurvivor.Voxel.Core;
+
+namespace TimeSurvivor.Demos.FlatCheckerboardTerrain
+{
+    /// <summary>
+    /// Generates flat terrain with a checkerboard pattern of Grass and Dirt voxels.
+    /// Creates a simple 8-voxel high ground with alternating 4x4 tiles.
+    /// </summary>
+    public class FlatCheckerboardGenerator : IVoxelGenerator
+    {
+        private const int GROUND_HEIGHT = 8;
+        private const int TILE_SIZE = 4;
+        private int chunkSize;
+
+        /// <summary>
+        /// Generates voxel data for a chunk with flat checkerboard terrain.
+        /// </summary>
+        /// <param name="coord">Chunk coordinate</param>
+        /// <param name="chunkSize">Size of chunk (typically 64)</param>
+        /// <param name="allocator">Memory allocator for NativeArray</param>
+        /// <returns>NativeArray of VoxelTypes representing the chunk</returns>
+        public NativeArray<VoxelType> Generate(ChunkCoord coord, int chunkSize, Allocator allocator)
+        {
+            this.chunkSize = chunkSize;
+
+            int totalVoxels = chunkSize * chunkSize * chunkSize;
+            NativeArray<VoxelType> voxels = new NativeArray<VoxelType>(totalVoxels, allocator);
+
+            // Generate flat terrain with checkerboard pattern
+            for (int y = 0; y < chunkSize; y++)
+            {
+                for (int z = 0; z < chunkSize; z++)
+                {
+                    for (int x = 0; x < chunkSize; x++)
+                    {
+                        int index = x + z * chunkSize + y * chunkSize * chunkSize;
+
+                        if (y < GROUND_HEIGHT)
+                        {
+                            // Below ground height: use checkerboard pattern
+                            voxels[index] = CalculateCheckerboardPattern(x, z, coord.x, coord.z);
+                        }
+                        else
+                        {
+                            // Above ground height: air
+                            voxels[index] = VoxelType.Air;
+                        }
+                    }
+                }
+            }
+
+            return voxels;
+        }
+
+        /// <summary>
+        /// Calculates checkerboard pattern (Grass/Dirt) based on world coordinates.
+        /// Uses 4x4 voxel tiles in XOR pattern.
+        /// </summary>
+        private VoxelType CalculateCheckerboardPattern(int localX, int localZ, int chunkX, int chunkZ)
+        {
+            // Convert to world coordinates
+            int worldX = chunkX * chunkSize + localX;
+            int worldZ = chunkZ * chunkSize + localZ;
+
+            // Calculate tile indices
+            bool isEvenTileX = ((worldX / TILE_SIZE) % 2) == 0;
+            bool isEvenTileZ = ((worldZ / TILE_SIZE) % 2) == 0;
+
+            // XOR pattern for checkerboard
+            return (isEvenTileX == isEvenTileZ) ? VoxelType.Grass : VoxelType.Dirt;
+        }
+    }
+}

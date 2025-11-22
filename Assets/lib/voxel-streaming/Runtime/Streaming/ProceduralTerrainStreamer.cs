@@ -447,27 +447,40 @@ namespace TimeSurvivor.Voxel.Streaming
         /// </summary>
         private IEnumerator GenerateVoxelDataAsync(TerrainChunk chunk)
         {
-            ProceduralTerrainGenerationJob genJob = new ProceduralTerrainGenerationJob
+            // Allocate empty heightmap for 3D noise mode (required by Unity Job System)
+            // Unity requires ALL NativeArray fields to be properly allocated, even if unused
+            NativeArray<float> emptyHeightmap = new NativeArray<float>(0, Allocator.TempJob);
+
+            try
             {
-                ChunkCoord = chunk.Coord,
-                ChunkSize = voxelConfig.ChunkSize,
-                VoxelSize = voxelConfig.MacroVoxelSize,
-                Seed = voxelConfig.Seed,
-                NoiseFrequency = voxelConfig.NoiseFrequency,
-                NoiseOctaves = voxelConfig.NoiseOctaves,
-                Lacunarity = NOISE_LACUNARITY,
-                Persistence = NOISE_PERSISTENCE,
-                TerrainOffsetY = 0f,
-                Heightmap = default(NativeArray<float>), // Use 3D noise mode (no heightmap)
-                VoxelData = chunk.VoxelData
-            };
+                ProceduralTerrainGenerationJob genJob = new ProceduralTerrainGenerationJob
+                {
+                    ChunkCoord = chunk.Coord,
+                    ChunkSize = voxelConfig.ChunkSize,
+                    VoxelSize = voxelConfig.MacroVoxelSize,
+                    Seed = voxelConfig.Seed,
+                    NoiseFrequency = voxelConfig.NoiseFrequency,
+                    NoiseOctaves = voxelConfig.NoiseOctaves,
+                    Lacunarity = NOISE_LACUNARITY,
+                    Persistence = NOISE_PERSISTENCE,
+                    TerrainOffsetY = 0f,
+                    Heightmap = emptyHeightmap, // Use 3D noise mode (empty heightmap, Length == 0)
+                    VoxelData = chunk.VoxelData
+                };
 
-            JobHandle genHandle = genJob.Schedule(chunk.VoxelData.Length, GENERATION_JOB_BATCH_SIZE);
+                JobHandle genHandle = genJob.Schedule(chunk.VoxelData.Length, GENERATION_JOB_BATCH_SIZE);
 
-            yield return new WaitUntil(() => genHandle.IsCompleted);
+                yield return new WaitUntil(() => genHandle.IsCompleted);
 
-            genHandle.Complete();
-            chunk.MarkGenerated();
+                genHandle.Complete();
+                chunk.MarkGenerated();
+            }
+            finally
+            {
+                // CRITICAL: Dispose to prevent memory leak
+                if (emptyHeightmap.IsCreated)
+                    emptyHeightmap.Dispose();
+            }
         }
 
         /// <summary>

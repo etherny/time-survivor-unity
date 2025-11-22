@@ -1,0 +1,23 @@
+{
+    "name": "TimeSurvivor.Demos.FlatCheckerboardTerrain.Editor",
+    "rootNamespace": "TimeSurvivor.Demos.FlatCheckerboardTerrain.Editor",
+    "references": [
+        "TimeSurvivor.Demos.FlatCheckerboardTerrain",
+        "TimeSurvivor.Voxel.Core",
+        "TimeSurvivor.Voxel.Terrain",
+        "Unity.TextMeshPro",
+        "Unity.InputSystem",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
