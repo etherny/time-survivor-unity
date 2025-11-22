@@ -39,7 +39,7 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain
                         if (y < GROUND_HEIGHT)
                         {
                             // Below ground height: use checkerboard pattern
-                            voxels[index] = CalculateCheckerboardPattern(x, z, coord.x, coord.z);
+                            voxels[index] = CalculateCheckerboardPattern(x, z, coord.X, coord.Z);
                         }
                         else
                         {
@@ -51,6 +51,30 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain
             }
 
             return voxels;
+        }
+
+        /// <summary>
+        /// Get a single voxel at world position without generating a full chunk.
+        /// Useful for raycasting and point queries.
+        /// </summary>
+        /// <param name="worldX">World X coordinate</param>
+        /// <param name="worldY">World Y coordinate</param>
+        /// <param name="worldZ">World Z coordinate</param>
+        /// <returns>Voxel type at that position</returns>
+        public VoxelType GetVoxelAt(int worldX, int worldY, int worldZ)
+        {
+            if (worldY < GROUND_HEIGHT)
+            {
+                // Below ground height: calculate checkerboard pattern
+                bool isEvenTileX = ((worldX / TILE_SIZE) % 2) == 0;
+                bool isEvenTileZ = ((worldZ / TILE_SIZE) % 2) == 0;
+                return (isEvenTileX == isEvenTileZ) ? VoxelType.Grass : VoxelType.Dirt;
+            }
+            else
+            {
+                // Above ground height: air
+                return VoxelType.Air;
+            }
         }
 
         /// <summary>
