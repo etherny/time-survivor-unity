@@ -1,13 +1,9 @@
 {
-    "name": "TimeSurvivor.Voxel.Streaming",
-    "rootNamespace": "TimeSurvivor.Voxel.Streaming",
+    "name": "TimeSurvivor.Demos.ProceduralTerrainStreamer",
+    "rootNamespace": "TimeSurvivor.Demos.ProceduralTerrainStreamer",
     "references": [
-        "TimeSurvivor.Voxel.Core",
-        "TimeSurvivor.Voxel.Rendering",
-        "TimeSurvivor.Voxel.Terrain",
-        "Unity.Mathematics",
-        "Unity.Collections",
-        "Unity.Profiling.Core"
+        "TimeSurvivor.Voxel.Streaming",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -6,12 +6,11 @@
         "UnityEditor.TestRunner",
         "TimeSurvivor.Voxel.Streaming",
         "TimeSurvivor.Voxel.Core",
+        "TimeSurvivor.Voxel.Terrain",
         "Unity.Mathematics",
         "Unity.Collections"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
