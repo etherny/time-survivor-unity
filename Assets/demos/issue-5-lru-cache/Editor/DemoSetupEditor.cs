@@ -248,7 +248,7 @@ namespace TimeSurvivor.Demos.LRUCache.Editor
             // Auto-Simulate Section
             CreateText("AutoSimLabel", panel.transform, "Auto-Simulate", 14, FontStyle.Bold, TextAnchor.MiddleLeft);
             GameObject autoGroup = CreateHorizontalGroup("AutoGroup", panel.transform, 10);
-            CreateToggle("AutoSimulateToggle", autoGroup.transform, "Enable", false);
+            CreateToggle("AutoSimulateToggle", autoGroup.transform, "Enable", true);
 
             // Auto-Simulate Speed
             CreateText("SpeedLabel", panel.transform, "Speed (ops/sec)", 12, FontStyle.Normal, TextAnchor.MiddleLeft);

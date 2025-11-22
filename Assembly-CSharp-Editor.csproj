@@ -1324,16 +1324,16 @@
       <HintPath>Library/ScriptAssemblies/Unity.VisualScripting.State.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.RenderPipelines.GPUDriven.Runtime">
-      <HintPath>Library/ScriptAssemblies/Unity.RenderPipelines.GPUDriven.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.Mathematics">
       <HintPath>Library/ScriptAssemblies/Unity.Mathematics.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Mathematics.Extensions.Hybrid">
       <HintPath>Library/ScriptAssemblies/Unity.Mathematics.Extensions.Hybrid.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.GPUDriven.Runtime">
+      <HintPath>Library/ScriptAssemblies/Unity.RenderPipelines.GPUDriven.Runtime.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Serialization">
@@ -1431,9 +1431,11 @@
     <ProjectReference Include="TimeSurvivor.Demos.GreedyMeshing.csproj" />
     <ProjectReference Include="TimeSurvivor.Voxel.Core.csproj" />
     <ProjectReference Include="TimeSurvivor.Demos.ChessboardVoxel.csproj" />
+    <ProjectReference Include="TimeSurvivor.Voxel.Streaming.csproj" />
     <ProjectReference Include="TimeSurvivor.Voxel.Terrain.csproj" />
     <ProjectReference Include="TimeSurvivor.Voxel.Physics.csproj" />
     <ProjectReference Include="TimeSurvivor.Voxel.Rendering.csproj" />
+    <ProjectReference Include="TimeSurvivor.Demo.LRUCache.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <ItemGroup>
