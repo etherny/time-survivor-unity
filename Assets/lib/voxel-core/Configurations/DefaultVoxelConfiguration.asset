@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e68ee3d0141d54358a158fea199613a9, type: 3}
   m_Name: DefaultVoxelConfiguration
   m_EditorClassIdentifier: TimeSurvivor.Voxel.Core::TimeSurvivor.Voxel.Core.VoxelConfiguration
-  ChunkSize: 64
+  ChunkSize: 32
   MacroVoxelSize: 0.2
   MicroVoxelSize: 0.1
   MaxCachedChunks: 300

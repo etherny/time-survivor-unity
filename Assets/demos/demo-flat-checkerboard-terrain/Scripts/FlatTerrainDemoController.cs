@@ -235,7 +235,7 @@ Shift: Sprint (2x vitesse)
 FPS: {currentFps:F0}
 Chunks actifs: {TOTAL_CHUNKS} / {TOTAL_CHUNKS}
 Pattern: Damier (Grass/Dirt)
-Taille de case: 4 voxels
+Taille de case: 8 voxels
 
 Position joueur: ({playerPos.x:F1}, {playerPos.y:F1}, {playerPos.z:F1})";
         }

@@ -12,7 +12,7 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain
         [SerializeField] public Transform target;
 
         [Header("Offset Settings")]
-        [SerializeField] public Vector3 offset = new Vector3(0, 20, -20);
+        [SerializeField] public Vector3 offset = new Vector3(0, 12, -12); // Closer to terrain for better pattern visibility
 
         [Header("Smooth Follow")]
         [SerializeField] public bool smoothFollow = true;

@@ -5,12 +5,12 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain
 {
     /// <summary>
     /// Generates flat terrain with a checkerboard pattern of Grass and Dirt voxels.
-    /// Creates a simple 8-voxel high ground with alternating 4x4 tiles.
+    /// Creates a simple 8-voxel high ground with alternating 8x8 tiles.
     /// </summary>
     public class FlatCheckerboardGenerator : IVoxelGenerator
     {
         private const int GROUND_HEIGHT = 8;
-        private const int TILE_SIZE = 4;
+        private const int TILE_SIZE = 8; // Increased from 4 to make checkerboard pattern more visible
         private int chunkSize;
 
         /// <summary>
@@ -34,7 +34,8 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain
                 {
                     for (int x = 0; x < chunkSize; x++)
                     {
-                        int index = x + z * chunkSize + y * chunkSize * chunkSize;
+                        // Use VoxelMath's XYZ ordering: x + y*size + z*size*size
+                        int index = VoxelMath.Flatten3DIndex(x, y, z, chunkSize);
 
                         if (y < GROUND_HEIGHT)
                         {

@@ -8,14 +8,17 @@
   <Project Path="TimeSurvivor.Demo.LRUCache.Editor.csproj" />
   <Project Path="TimeSurvivor.Voxel.Terrain.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="TimeSurvivor.Demos.FlatCheckerboardTerrain.csproj" />
   <Project Path="TimeSurvivor.Demo.LRUCache.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="TimeSurvivor.Demos.FlatCheckerboardTerrain.Tests.csproj" />
   <Project Path="TimeSurvivor.Voxel.Rendering.Tests.csproj" />
   <Project Path="TimeSurvivor.Voxel.Rendering.csproj" />
   <Project Path="TimeSurvivor.Voxel.Physics.csproj" />
   <Project Path="TimeSurvivor.Demos.ProceduralTerrainStreamer.csproj" />
   <Project Path="TimeSurvivor.Demos.MinecraftTerrain.Editor.csproj" />
   <Project Path="TimeSurvivor.Demos.ProceduralTerrainStreamer.Editor.csproj" />
+  <Project Path="TimeSurvivor.Demos.FlatCheckerboardTerrain.Editor.csproj" />
   <Project Path="TimeSurvivor.Demos.GreedyMeshing.Editor.csproj" />
   <Project Path="TimeSurvivor.Demos.GreedyMeshing.csproj" />
 </Solution>

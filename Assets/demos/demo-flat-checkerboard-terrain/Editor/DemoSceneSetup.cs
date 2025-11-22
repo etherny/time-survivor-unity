@@ -123,7 +123,7 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain.Editor
 
             // Create player GameObject
             GameObject playerObj = new GameObject("Player");
-            playerObj.transform.position = new Vector3(0f, 10f, 0f); // Higher start position
+            playerObj.transform.position = new Vector3(0f, 2f, 0f); // Just above terrain (terrain height = 1.6)
 
             // Add CharacterController
             CharacterController characterController = playerObj.AddComponent<CharacterController>();
@@ -173,7 +173,7 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain.Editor
             }
 
             // Position camera (initial position before follow starts)
-            mainCamera.transform.position = new Vector3(0f, 20f, -20f);
+            mainCamera.transform.position = new Vector3(0f, 12f, -12f);
             mainCamera.transform.LookAt(player.transform);
 
             // Add SimpleCameraFollow component
@@ -181,7 +181,7 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain.Editor
 
             // Configure camera follow (direct assignment of public fields)
             cameraFollow.target = player.transform;
-            cameraFollow.offset = new Vector3(0, 20, -20);
+            cameraFollow.offset = new Vector3(0, 12, -12); // Closer to terrain for better pattern visibility
             cameraFollow.smoothFollow = true;
             cameraFollow.smoothSpeed = 5f;
 

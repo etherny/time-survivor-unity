@@ -15,6 +15,7 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain
         [SerializeField] public float sprintMultiplier = 2f;
 
         private CharacterController characterController;
+        private Vector3 initialPosition = new Vector3(0, 2f, 0); // Spawn just above terrain (terrain height = 1.6)
 
         private void Awake()
         {
@@ -24,6 +25,13 @@ namespace TimeSurvivor.Demos.FlatCheckerboardTerrain
             {
                 Debug.LogError("[FlatTerrainPlayerController] CharacterController component is missing!");
             }
+        }
+
+        private void Start()
+        {
+            // Position the player just above the terrain surface
+            transform.position = initialPosition;
+            Debug.Log($"[FlatTerrainPlayerController] Player spawned at {transform.position}");
         }
 
         private void Update()

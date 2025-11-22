@@ -1408,10 +1408,6 @@
       <HintPath>Library/ScriptAssemblies/Unity.Serialization.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.ShaderGraph.Editor">
-      <HintPath>Library/ScriptAssemblies/Unity.ShaderGraph.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Editor.Shared">
       <HintPath>Library/ScriptAssemblies/Unity.RenderPipelines.Core.Editor.Shared.dll</HintPath>
       <Private>False</Private>
@@ -1424,12 +1420,17 @@
       <HintPath>Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Unity.ShaderGraph.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.ShaderGraph.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp.csproj" />
     <ProjectReference Include="TimeSurvivor.Demos.MinecraftTerrain.Editor.csproj" />
     <ProjectReference Include="TimeSurvivor.Demos.ProceduralTerrainStreamer.csproj" />
     <ProjectReference Include="TimeSurvivor.Demos.GreedyMeshing.csproj" />
+    <ProjectReference Include="TimeSurvivor.Demos.FlatCheckerboardTerrain.csproj" />
     <ProjectReference Include="TimeSurvivor.Voxel.Core.csproj" />
     <ProjectReference Include="TimeSurvivor.Demos.ChessboardVoxel.csproj" />
     <ProjectReference Include="TimeSurvivor.Voxel.Streaming.csproj" />

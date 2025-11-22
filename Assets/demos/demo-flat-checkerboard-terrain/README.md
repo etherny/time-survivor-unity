@@ -2,13 +2,17 @@
 
 ## Description
 
-Cette démo présente un terrain voxel plat avec un motif en damier (checkerboard pattern) utilisant le moteur voxel existant. Elle démontre:
+Cette démo présente un terrain voxel **plat et STATIQUE** avec un motif en damier.
 
-- Génération de terrain plat avec pattern damier (Grass/Dirt alternés)
-- Implémentation d'un générateur custom (`IVoxelGenerator`)
-- Intégration avec ChunkManager et le système de meshing
-- Contrôle joueur sans gravité (mouvement planar uniquement)
-- Caméra suivant le joueur avec offset isométrique
+**IMPORTANT**: Cette démo ne comporte PAS de streaming dynamique - seulement 9 chunks fixes (3x3 grille).
+Pour une démo de streaming dynamique avec génération infinie, voir: `demo-procedural-terrain-streamer`.
+
+Elle démontre:
+- Génération de terrain plat fixe (9 chunks de 32x32x32 voxels)
+- Pattern damier visible (Grass vert / Dirt brun alternés, cases 8x8 voxels)
+- Joueur sans gravité (mouvement planar fluide)
+- Caméra isométrique qui suit le joueur
+- Utilisation d'un générateur custom (`FlatCheckerboardGenerator`)
 
 **Objectif**: Fournir une démonstration simplifiée et stable du moteur voxel sans complexité de terrain procédural ou streaming dynamique.
 
@@ -85,7 +89,7 @@ Si le menu Tools ne fonctionne pas:
 3. Sélectionner "Main Camera" GameObject
 4. Vérifier que SimpleCameraFollow a:
    - `Target`: Référence au Player Transform
-   - `Offset`: (0, 20, -20)
+   - `Offset`: (0, 12, -12)
    - `Smooth Follow`: coché
    - `Smooth Speed`: 5
 
@@ -97,10 +101,10 @@ Si le menu Tools ne fonctionne pas:
 
 **Comportements attendus**:
 - 9 chunks (3x1x3 grid) s'affichent au démarrage
-- Pattern damier visible: alternance Grass (vert) / Dirt (brun) en cases de 4x4 voxels
+- Pattern damier visible: alternance Grass (vert) / Dirt (brun) en cases de 8x8 voxels
 - Terrain plat à hauteur fixe (8 voxels de haut)
-- Joueur spawné à position (0, 10, 0)
-- Caméra suit le joueur avec vue isométrique
+- Joueur spawné à position (0, 2, 0) - juste au-dessus du terrain
+- Caméra suit le joueur avec vue isométrique rapprochée
 
 **Contrôles disponibles**:
 - **W/A/S/D**: Déplacer le joueur (mouvement planar, pas de gravité)
@@ -113,20 +117,26 @@ Le panneau Stats (coin supérieur droit) affiche:
 - FPS actuel
 - Nombre de chunks actifs (9 / 9)
 - Type de pattern (Damier Grass/Dirt)
-- Taille de case (4 voxels)
+- Taille de case (8 voxels)
 - Position du joueur en temps réel
 
 ## Validation
 
 ### Ce que vous devriez voir:
 
-- ✅ **Terrain visible**: 9 chunks affichés formant un terrain plat continu
-- ✅ **Pattern damier**: Alternance claire de Grass (vert) et Dirt (brun)
-- ✅ **Cases 4x4**: Pattern répétitif de 4x4 voxels par case
-- ✅ **Pas de chunks vides**: Tous les chunks sont solides et rendus
-- ✅ **Caméra suit le joueur**: Vue isométrique stable suivant les déplacements
-- ✅ **FPS stable**: 60+ FPS (selon hardware)
-- ✅ **UI fonctionnelle**: Stats et instructions affichées correctement
+- ✅ **Terrain plat visible**: 9 chunks affichés formant un plateau vert/brun
+- ✅ **Pattern damier CLAIR**: Alternance Grass (vert vif) / Dirt (brun) en cases 8x8 voxels
+- ✅ **Joueur sur le terrain**: Avatar rouge positionné à Y=2 (juste au-dessus du sol)
+- ✅ **Caméra suit**: Vue isométrique (offset: 0, 12, -12) qui suit le joueur
+- ✅ **Mouvement fluide**: WASD sans gravité, Sprint avec Shift
+- ✅ **FPS élevés**: >60 FPS attendu (seulement 9 chunks statiques)
+- ✅ **Pas de chunks vides**: Tous les chunks contiennent du terrain solide
+
+### Ce que vous NE devriez PAS voir:
+
+- ❌ **Terrain comme des "marches"**: Si c'est le cas, le joueur est mal positionné
+- ❌ **Tout vert uniforme**: Si pas de pattern brun, vérifier material/shader
+- ❌ **Nouveaux chunks apparaissent**: Pas de streaming dans cette démo (9 chunks fixes)
 
 ### Critères de succès détaillés:
 
@@ -137,7 +147,7 @@ Le panneau Stats (coin supérieur droit) affiche:
 
 2. **Pattern damier**:
    - Alternance visible Grass/Dirt
-   - Taille de case: 4x4 voxels
+   - Taille de case: 8x8 voxels
    - Pattern cohérent entre les chunks
 
 3. **Mouvement joueur**:
@@ -148,7 +158,7 @@ Le panneau Stats (coin supérieur droit) affiche:
 
 4. **Caméra**:
    - Suit le joueur en continu
-   - Offset isométrique maintenu (0, 20, -20)
+   - Offset isométrique maintenu (0, 12, -12)
    - Smoothing visible et agréable
 
 5. **Performance**:
@@ -185,13 +195,42 @@ Le panneau Stats (coin supérieur droit) affiche:
 
 ## Notes techniques
 
-### Architecture:
+### Architecture
 
-**Générateur custom**: `FlatCheckerboardGenerator`
-- Implémente `IVoxelGenerator` interface
-- Génère terrain plat (hauteur fixe: 8 voxels)
-- Calcule pattern damier par coordonnées monde (4x4 tiles)
-- Formule XOR pour alternance: `(isEvenX == isEvenZ) ? Grass : Dirt`
+- **Générateur**: `FlatCheckerboardGenerator` implements `IVoxelGenerator`
+- **Hauteur sol**: 8 voxels (GROUND_HEIGHT = 8)
+- **Taille cases damier**: 8x8 voxels (TILE_SIZE = 8)
+- **Chunks**: 9 fixes (coordonnées -1 à 1 en X/Z, Y=0)
+- **ChunkSize**: 32 voxels (VoxelConfiguration)
+- **MacroVoxelSize**: 0.2 Unity units
+
+### Coordonnées
+
+- Chunk(0,0,0) position monde: (0, 0, 0)
+- Surface du terrain: Y = 1.6 Unity units (top du voxel Y=7)
+- Spawn joueur: (0, 2, 0) - juste au-dessus du terrain
+- Caméra offset: (0, 12, -12) - vue isométrique rapprochée
+
+### Pattern Damier
+
+Algorithme XOR sur les coordonnées monde:
+```csharp
+bool isEvenTileX = ((worldX / TILE_SIZE) % 2) == 0;
+bool isEvenTileZ = ((worldZ / TILE_SIZE) % 2) == 0;
+return (isEvenTileX == isEvenTileZ) ? VoxelType.Grass : VoxelType.Dirt;
+```
+
+### Shader
+
+- **Shader URP custom**: `URP/VoxelVertexColor`
+- **Vertex colors**: Grass = (0.2, 0.8, 0.2), Dirt = (0.6, 0.4, 0.2)
+- **Lighting**: Simple Lambert + ambient
+
+### Limitations volontaires
+
+- **Pas de streaming dynamique**: Les 9 chunks sont fixes, pas de génération/suppression pendant le jeu
+- **Terrain limité**: 3x3 chunks = 96x96 voxels = 19.2x19.2 Unity units
+- **Pas de gravité**: Mouvement planar uniquement (design voulu pour la démo)
 
 **Contrôleur joueur**: `FlatTerrainPlayerController`
 - Hérite de MonoBehaviour
@@ -248,10 +287,10 @@ Le panneau Stats (coin supérieur droit) affiche:
 ```csharp
 VoxelType CalculateCheckerboardPattern(int localX, int localZ, int chunkX, int chunkZ)
 {
-    int worldX = chunkX * 64 + localX;
-    int worldZ = chunkZ * 64 + localZ;
+    int worldX = chunkX * 32 + localX;
+    int worldZ = chunkZ * 32 + localZ;
 
-    int tileSize = 4;
+    int tileSize = 8; // Increased for better visibility
     bool isEvenTileX = ((worldX / tileSize) % 2) == 0;
     bool isEvenTileZ = ((worldZ / tileSize) % 2) == 0;
 
