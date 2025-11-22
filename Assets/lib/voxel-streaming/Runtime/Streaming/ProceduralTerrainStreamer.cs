@@ -458,7 +458,7 @@ namespace TimeSurvivor.Voxel.Streaming
                 Lacunarity = NOISE_LACUNARITY,
                 Persistence = NOISE_PERSISTENCE,
                 TerrainOffsetY = 0f,
-                Heightmap = new NativeArray<float>(),
+                Heightmap = default(NativeArray<float>), // Use 3D noise mode (no heightmap)
                 VoxelData = chunk.VoxelData
             };
 

@@ -30,15 +30,15 @@ namespace TimeSurvivor.Demos.ProceduralTerrainStreamer
         private int frameCount = 0;
         private float currentFps = 0f;
 
-        private const string INSTRUCTIONS_TEXT = @"=== CONTRÔLES ===
-WASD: Déplacer le joueur
+        private const string INSTRUCTIONS_TEXT = @"=== CONTROLES ===
+WASD: Deplacer le joueur
 Shift: Sprint (2x vitesse)
 G: Toggle Gizmos debug
 
 === VALIDATION ===
-✅ Déplacez-vous: chunks load automatiquement
-✅ Revenez en arrière: chunks load instantanément (cache)
-✅ Sprintez loin: max 1 chunk load/frame (smooth)";
+[OK] Deplacez-vous: chunks load automatiquement
+[OK] Revenez en arriere: chunks load instantanement (cache)
+[OK] Sprintez loin: max 1 chunk load/frame (smooth)";
 
         void Start()
         {
