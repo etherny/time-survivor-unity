@@ -131,11 +131,13 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
 
         private static void CreateMaterials()
         {
-            // Terrain Material (URP Lit)
-            CreateMaterial("TerrainMaterial", "Universal Render Pipeline/Lit", mat =>
+            // Terrain Material (Voxel Vertex Color for checkerboard pattern)
+            CreateMaterial("TerrainMaterial", "Voxel/VertexColor", mat =>
             {
-                mat.color = Color.white;
-                mat.SetFloat("_Smoothness", 0.2f);
+                mat.SetInt("_UseVertexColor", 1);  // Enable vertex colors
+                // Shader handles vertex colors automatically
+                // Grass = green (0.2, 0.8, 0.2)
+                // Dirt = brown (0.6, 0.4, 0.2)
             });
 
             // Physics Object Material
