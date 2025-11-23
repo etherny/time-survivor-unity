@@ -210,12 +210,65 @@ namespace TimeSurvivor.Voxel.Terrain
 
         /// <summary>
         /// Update which chunks are loaded based on player position.
+        /// Switches between flat terrain (2D horizontal) and 3D terrain (spherical) modes.
         /// </summary>
         private void UpdateChunks(ChunkCoord playerChunk)
         {
             int renderDistance = _config.RenderDistance;
 
-            // Determine which chunks should be loaded
+            if (_config.IsFlatTerrain)
+            {
+                // FLAT TERRAIN MODE: Stream only on X and Z, Y fixed
+                UpdateChunksFlat(playerChunk, renderDistance);
+            }
+            else
+            {
+                // 3D TERRAIN MODE: Stream spherically on X, Y, Z
+                UpdateChunks3D(playerChunk, renderDistance);
+            }
+
+            // Unload chunks outside render distance
+            UnloadDistantChunks(playerChunk, renderDistance);
+        }
+
+        /// <summary>
+        /// Update chunks for flat terrain (2D horizontal streaming, single Y level).
+        /// Generates chunks in a circular pattern around the player on X-Z plane.
+        /// </summary>
+        /// <param name="playerChunk">Current chunk coordinate of the streaming target</param>
+        /// <param name="renderDistance">Render distance in chunks</param>
+        private void UpdateChunksFlat(ChunkCoord playerChunk, int renderDistance)
+        {
+            int y = _config.FlatTerrainYLevel; // Typically 0
+
+            for (int z = -renderDistance; z <= renderDistance; z++)
+            {
+                for (int x = -renderDistance; x <= renderDistance; x++)
+                {
+                    // Use configured Y level (0 by default)
+                    ChunkCoord coord = new ChunkCoord(playerChunk.X + x, y, playerChunk.Z + z);
+
+                    // Check horizontal distance (2D circle, not 3D sphere)
+                    int distSq = (x * x) + (z * z);
+                    int maxDistSq = renderDistance * renderDistance;
+
+                    if (distSq <= maxDistSq)
+                    {
+                        LoadChunkIfNeeded(coord);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update chunks for 3D terrain (spherical streaming, multiple Y levels).
+        /// Generates chunks in a spherical pattern around the player.
+        /// </summary>
+        /// <param name="playerChunk">Current chunk coordinate of the streaming target</param>
+        /// <param name="renderDistance">Render distance in chunks</param>
+        private void UpdateChunks3D(ChunkCoord playerChunk, int renderDistance)
+        {
+            // 3D spherical streaming (original logic)
             for (int y = -renderDistance; y <= renderDistance; y++)
             {
                 for (int z = -renderDistance; z <= renderDistance; z++)
@@ -230,42 +283,49 @@ namespace TimeSurvivor.Voxel.Terrain
 
                         if (distSq <= maxDistSq)
                         {
-                            // Load chunk if not already loaded
-                            if (!_chunkManager.IsChunkLoaded(coord))
-                            {
-                                // Load the chunk first
-                                _chunkManager.LoadChunk(coord);
-
-                                // Then add to cache (evicting LRU if needed)
-                                var chunkToCache = _chunkManager.GetTerrainChunk(coord);
-                                if (chunkToCache != null)
-                                {
-                                    var evicted = _chunkCache.Put(coord, chunkToCache);
-                                    if (evicted != null)
-                                    {
-                                        _chunkManager.UnloadChunk(evicted.Coord);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // Mark as recently used in cache
-                                if (_chunkCache.TryGet(coord, out var chunk))
-                                {
-                                    // Just accessing it updates LRU order
-                                }
-                            }
+                            LoadChunkIfNeeded(coord);
                         }
                     }
                 }
             }
+        }
 
-            // Unload chunks outside render distance
-            UnloadDistantChunks(playerChunk, renderDistance);
+        /// <summary>
+        /// Loads a chunk if not already loaded, managing LRU cache.
+        /// Extracted common logic to eliminate code duplication.
+        /// </summary>
+        /// <param name="coord">Chunk coordinate to load</param>
+        private void LoadChunkIfNeeded(ChunkCoord coord)
+        {
+            if (!_chunkManager.IsChunkLoaded(coord))
+            {
+                // Load the chunk first
+                _chunkManager.LoadChunk(coord);
+
+                // Then add to cache (evicting LRU if needed)
+                var chunkToCache = _chunkManager.GetTerrainChunk(coord);
+                if (chunkToCache != null)
+                {
+                    var evicted = _chunkCache.Put(coord, chunkToCache);
+                    if (evicted != null)
+                    {
+                        _chunkManager.UnloadChunk(evicted.Coord);
+                    }
+                }
+            }
+            else
+            {
+                // Mark as recently used in cache
+                if (_chunkCache.TryGet(coord, out var chunk))
+                {
+                    // Just accessing it updates LRU order
+                }
+            }
         }
 
         /// <summary>
         /// Unload chunks that are outside render distance.
+        /// Distance calculation respects flat terrain mode (2D vs 3D).
         /// </summary>
         private void UnloadDistantChunks(ChunkCoord playerChunk, int renderDistance)
         {
@@ -273,7 +333,21 @@ namespace TimeSurvivor.Voxel.Terrain
 
             foreach (var chunk in _chunkManager.GetAllChunks())
             {
-                int distSq = VoxelMath.ChunkDistanceSquared(chunk.Coord, playerChunk);
+                int distSq;
+
+                if (_config.IsFlatTerrain)
+                {
+                    // 2D horizontal distance only (ignore Y axis)
+                    int dx = chunk.Coord.X - playerChunk.X;
+                    int dz = chunk.Coord.Z - playerChunk.Z;
+                    distSq = dx * dx + dz * dz;
+                }
+                else
+                {
+                    // 3D spherical distance
+                    distSq = VoxelMath.ChunkDistanceSquared(chunk.Coord, playerChunk);
+                }
+
                 int maxDistSq = (renderDistance + 1) * (renderDistance + 1); // +1 for hysteresis
 
                 if (distSq > maxDistSq)

@@ -36,6 +36,13 @@ namespace TimeSurvivor.Voxel.Core
         [Range(1, 10)]
         public int MaxChunksLoadedPerFrame = 2;
 
+        [Header("Flat Terrain Settings")]
+        [Tooltip("If true, terrain streaming will only load chunks at a single Y level (flat terrain mode)")]
+        public bool IsFlatTerrain = false;
+
+        [Tooltip("Y coordinate level for flat terrain chunks (typically 0)")]
+        public int FlatTerrainYLevel = 0;
+
         [Header("Mesh Generation")]
         [Tooltip("Use amortized meshing to spread work across frames (ADR-005)")]
         public bool UseAmortizedMeshing = true;
@@ -164,6 +171,19 @@ namespace TimeSurvivor.Voxel.Core
                 {
                     Debug.LogWarning($"[VoxelConfiguration] Estimated collision memory: {collisionMemoryMB} MB. " +
                                      "Consider increasing CollisionResolutionDivider or reducing MaxCachedChunks.");
+                }
+            }
+
+            // Validate flat terrain settings
+            if (IsFlatTerrain)
+            {
+                // Warn if cache size is excessive for flat terrain
+                int estimatedFlatChunks = (RenderDistance * 2 + 1) * (RenderDistance * 2 + 1); // 2D circle
+                if (MaxCachedChunks > estimatedFlatChunks * 2)
+                {
+                    Debug.LogWarning($"[VoxelConfiguration] Flat terrain mode: MaxCachedChunks ({MaxCachedChunks}) " +
+                                    $"is much larger than needed (~{estimatedFlatChunks * 2} recommended). " +
+                                    "Consider reducing for better memory usage.");
                 }
             }
         }

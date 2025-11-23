@@ -121,6 +121,10 @@ namespace TimeSurvivor.Demos.TerrainCollision.Editor
             config.UseAmortizedMeshing = true;
             config.MaxMeshingTimePerFrameMs = 3f;
 
+            // Flat terrain settings (single horizontal level like demo-flat-checkerboard-terrain)
+            config.IsFlatTerrain = true;
+            config.FlatTerrainYLevel = 0;
+
             AssetDatabase.CreateAsset(config, path);
             Debug.Log($"[DemoAssetCreator] Created VoxelConfiguration at {path}");
         }
