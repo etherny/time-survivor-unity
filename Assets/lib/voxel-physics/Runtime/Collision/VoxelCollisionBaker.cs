@@ -1,31 +1,315 @@
 using UnityEngine;
 using Unity.Collections;
+using Unity.Jobs;
 using Unity.Mathematics;
+using Unity.Burst;
 using TimeSurvivor.Voxel.Core;
 
 namespace TimeSurvivor.Voxel.Physics
 {
     /// <summary>
-    /// Bakes collision meshes from voxel data.
-    /// Generates simplified collision geometry for physics interactions.
+    /// Bakes collision meshes from voxel data using simplified resolution.
+    /// Supports both synchronous and asynchronous (Job System) baking.
     /// </summary>
     public static class VoxelCollisionBaker
     {
         /// <summary>
-        /// Bake a collision mesh from voxel data and apply to GameObject.
-        /// Uses simplified geometry (less detailed than render mesh).
+        /// Collision baking job with Burst compilation for high performance.
+        /// Generates simplified collision mesh at reduced resolution.
         /// </summary>
-        /// <param name="voxels">Voxel data array</param>
-        /// <param name="chunkSize">Size of chunk in voxels</param>
-        /// <param name="target">Target GameObject to add MeshCollider</param>
-        /// <returns>Created MeshCollider component</returns>
-        public static MeshCollider BakeCollision(
+        [BurstCompile]
+        public struct CollisionBakingJob : IJob
+        {
+            [ReadOnly] public NativeArray<VoxelType> SourceVoxels;
+            [ReadOnly] public int SourceChunkSize;
+            [ReadOnly] public int ResolutionDivider;
+
+            public NativeList<float3> Vertices;
+            public NativeList<int> Triangles;
+
+            public void Execute()
+            {
+                int targetSize = SourceChunkSize / ResolutionDivider;
+
+                // Process at reduced resolution
+                for (int y = 0; y < targetSize; y++)
+                {
+                    for (int z = 0; z < targetSize; z++)
+                    {
+                        for (int x = 0; x < targetSize; x++)
+                        {
+                            // Sample from source voxels at reduced resolution
+                            int3 sourcePos = new int3(
+                                x * ResolutionDivider,
+                                y * ResolutionDivider,
+                                z * ResolutionDivider
+                            );
+
+                            // Check if this reduced-resolution voxel should be solid
+                            if (IsSolidAtReducedResolution(sourcePos))
+                            {
+                                // Check if voxel has any exposed faces
+                                if (HasExposedFace(x, y, z, targetSize))
+                                {
+                                    // Add box geometry for this collision voxel
+                                    float3 position = new float3(x, y, z) * ResolutionDivider;
+                                    float scale = ResolutionDivider;
+                                    AddVoxelBox(position, scale);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Check if a reduced-resolution voxel should be considered solid.
+            /// Samples the dominant voxel type in the source region.
+            /// </summary>
+            private bool IsSolidAtReducedResolution(int3 sourcePos)
+            {
+                // Sample center voxel of the region (simple approach)
+                int3 centerOffset = new int3(ResolutionDivider / 2);
+                int3 samplePos = sourcePos + centerOffset;
+
+                // Clamp to source bounds
+                samplePos = math.clamp(samplePos, int3.zero, new int3(SourceChunkSize - 1));
+
+                int index = Flatten3DIndex(samplePos.x, samplePos.y, samplePos.z, SourceChunkSize);
+                if (index >= 0 && index < SourceVoxels.Length)
+                {
+                    return SourceVoxels[index] != VoxelType.Air;
+                }
+
+                return false;
+            }
+
+            /// <summary>
+            /// Check if a collision voxel has any exposed faces (borders air).
+            /// </summary>
+            private bool HasExposedFace(int x, int y, int z, int size)
+            {
+                // Check all 6 neighbors in reduced-resolution space
+                if (x > 0 && !IsSolidAtReducedResolution(new int3((x - 1) * ResolutionDivider, y * ResolutionDivider, z * ResolutionDivider))) return true;
+                if (x < size - 1 && !IsSolidAtReducedResolution(new int3((x + 1) * ResolutionDivider, y * ResolutionDivider, z * ResolutionDivider))) return true;
+                if (y > 0 && !IsSolidAtReducedResolution(new int3(x * ResolutionDivider, (y - 1) * ResolutionDivider, z * ResolutionDivider))) return true;
+                if (y < size - 1 && !IsSolidAtReducedResolution(new int3(x * ResolutionDivider, (y + 1) * ResolutionDivider, z * ResolutionDivider))) return true;
+                if (z > 0 && !IsSolidAtReducedResolution(new int3(x * ResolutionDivider, y * ResolutionDivider, (z - 1) * ResolutionDivider))) return true;
+                if (z < size - 1 && !IsSolidAtReducedResolution(new int3(x * ResolutionDivider, y * ResolutionDivider, (z + 1) * ResolutionDivider))) return true;
+
+                // Check boundaries (always expose at chunk edges)
+                if (x == 0 || x == size - 1) return true;
+                if (y == 0 || y == size - 1) return true;
+                if (z == 0 || z == size - 1) return true;
+
+                return false;
+            }
+
+            /// <summary>
+            /// Add a box to the collision mesh.
+            /// </summary>
+            private void AddVoxelBox(float3 position, float scale)
+            {
+                int startIndex = Vertices.Length;
+
+                // Define 8 vertices of a unit cube scaled and positioned
+                float3 p0 = position + new float3(0, 0, 0);
+                float3 p1 = position + new float3(scale, 0, 0);
+                float3 p2 = position + new float3(scale, scale, 0);
+                float3 p3 = position + new float3(0, scale, 0);
+                float3 p4 = position + new float3(0, 0, scale);
+                float3 p5 = position + new float3(scale, 0, scale);
+                float3 p6 = position + new float3(scale, scale, scale);
+                float3 p7 = position + new float3(0, scale, scale);
+
+                // Add vertices
+                Vertices.Add(p0);
+                Vertices.Add(p1);
+                Vertices.Add(p2);
+                Vertices.Add(p3);
+                Vertices.Add(p4);
+                Vertices.Add(p5);
+                Vertices.Add(p6);
+                Vertices.Add(p7);
+
+                // Add triangles (12 triangles for 6 faces)
+                // Front face (Z-)
+                Triangles.Add(startIndex + 0);
+                Triangles.Add(startIndex + 2);
+                Triangles.Add(startIndex + 1);
+                Triangles.Add(startIndex + 0);
+                Triangles.Add(startIndex + 3);
+                Triangles.Add(startIndex + 2);
+
+                // Back face (Z+)
+                Triangles.Add(startIndex + 5);
+                Triangles.Add(startIndex + 6);
+                Triangles.Add(startIndex + 4);
+                Triangles.Add(startIndex + 4);
+                Triangles.Add(startIndex + 6);
+                Triangles.Add(startIndex + 7);
+
+                // Left face (X-)
+                Triangles.Add(startIndex + 4);
+                Triangles.Add(startIndex + 7);
+                Triangles.Add(startIndex + 0);
+                Triangles.Add(startIndex + 0);
+                Triangles.Add(startIndex + 7);
+                Triangles.Add(startIndex + 3);
+
+                // Right face (X+)
+                Triangles.Add(startIndex + 1);
+                Triangles.Add(startIndex + 6);
+                Triangles.Add(startIndex + 5);
+                Triangles.Add(startIndex + 1);
+                Triangles.Add(startIndex + 2);
+                Triangles.Add(startIndex + 6);
+
+                // Top face (Y+)
+                Triangles.Add(startIndex + 3);
+                Triangles.Add(startIndex + 7);
+                Triangles.Add(startIndex + 6);
+                Triangles.Add(startIndex + 3);
+                Triangles.Add(startIndex + 6);
+                Triangles.Add(startIndex + 2);
+
+                // Bottom face (Y-)
+                Triangles.Add(startIndex + 4);
+                Triangles.Add(startIndex + 0);
+                Triangles.Add(startIndex + 1);
+                Triangles.Add(startIndex + 4);
+                Triangles.Add(startIndex + 1);
+                Triangles.Add(startIndex + 5);
+            }
+
+            /// <summary>
+            /// Flatten 3D index to 1D array index.
+            /// </summary>
+            private int Flatten3DIndex(int x, int y, int z, int size)
+            {
+                return x + (y * size) + (z * size * size);
+            }
+        }
+
+        /// <summary>
+        /// Data structure to hold async baking job and its resources.
+        /// </summary>
+        public class AsyncBakingHandle
+        {
+            public JobHandle JobHandle;
+            public NativeList<float3> Vertices;
+            public NativeList<int> Triangles;
+            public bool IsCompleted => JobHandle.IsCompleted;
+
+            /// <summary>
+            /// Complete the job and extract the resulting mesh.
+            /// Caller is responsible for disposing native collections.
+            /// </summary>
+            public Mesh Complete()
+            {
+                JobHandle.Complete();
+                return BuildMesh(Vertices, Triangles);
+            }
+
+            /// <summary>
+            /// Dispose of native resources.
+            /// Should only be called after Complete().
+            /// </summary>
+            public void Dispose()
+            {
+                // Force job completion before disposing (safety measure)
+                if (!JobHandle.IsCompleted)
+                {
+                    JobHandle.Complete();
+                }
+
+                // Dispose NativeCollections
+                if (Vertices.IsCreated) Vertices.Dispose();
+                if (Triangles.IsCreated) Triangles.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Bake collision mesh asynchronously using Job System.
+        /// Returns handle that can be checked for completion and completed later.
+        /// </summary>
+        /// <param name="voxels">Source voxel data</param>
+        /// <param name="chunkSize">Size of source chunk</param>
+        /// <param name="resolutionDivider">Resolution divider (1=full, 2=half, 4=quarter)</param>
+        /// <returns>Handle to async baking job</returns>
+        public static AsyncBakingHandle BakeCollisionAsync(
             NativeArray<VoxelType> voxels,
             int chunkSize,
-            GameObject target)
+            int resolutionDivider = 2)
         {
-            // Generate simplified collision mesh (box per solid voxel cluster)
-            Mesh collisionMesh = GenerateSimplifiedCollisionMesh(voxels, chunkSize);
+            // Allocate output buffers
+            // Use Persistent allocator for async jobs that may exceed 4 frames
+            var vertices = new NativeList<float3>(Allocator.Persistent);
+            var triangles = new NativeList<int>(Allocator.Persistent);
+
+            // Create and schedule job
+            var job = new CollisionBakingJob
+            {
+                SourceVoxels = voxels,
+                SourceChunkSize = chunkSize,
+                ResolutionDivider = resolutionDivider,
+                Vertices = vertices,
+                Triangles = triangles
+            };
+
+            var handle = job.Schedule();
+
+            return new AsyncBakingHandle
+            {
+                JobHandle = handle,
+                Vertices = vertices,
+                Triangles = triangles
+            };
+        }
+
+        /// <summary>
+        /// Bake collision mesh synchronously.
+        /// Blocks until mesh is generated.
+        /// </summary>
+        /// <param name="voxels">Source voxel data</param>
+        /// <param name="chunkSize">Size of source chunk</param>
+        /// <param name="resolutionDivider">Resolution divider (1=full, 2=half, 4=quarter)</param>
+        /// <returns>Generated collision mesh</returns>
+        public static Mesh BakeCollisionSync(
+            NativeArray<VoxelType> voxels,
+            int chunkSize,
+            int resolutionDivider = 2)
+        {
+            var handle = BakeCollisionAsync(voxels, chunkSize, resolutionDivider);
+            var mesh = handle.Complete();
+            handle.Dispose();
+            return mesh;
+        }
+
+        /// <summary>
+        /// Apply collision mesh to a GameObject's MeshCollider.
+        /// Creates MeshCollider if it doesn't exist.
+        /// </summary>
+        /// <param name="collisionMesh">Collision mesh to apply</param>
+        /// <param name="target">Target GameObject</param>
+        /// <param name="layerName">Physics layer name</param>
+        /// <returns>The MeshCollider component</returns>
+        public static MeshCollider ApplyCollisionMesh(
+            Mesh collisionMesh,
+            GameObject target,
+            string layerName = "Default")
+        {
+            if (collisionMesh == null)
+            {
+                Debug.LogWarning("[VoxelCollisionBaker] Cannot apply null collision mesh");
+                return null;
+            }
+
+            if (target == null)
+            {
+                Debug.LogWarning("[VoxelCollisionBaker] Cannot apply collision to null GameObject");
+                return null;
+            }
 
             // Get or add MeshCollider
             var meshCollider = target.GetComponent<MeshCollider>();
@@ -35,49 +319,53 @@ namespace TimeSurvivor.Voxel.Physics
             }
 
             meshCollider.sharedMesh = collisionMesh;
-            meshCollider.convex = false; // Use non-convex for terrain
+            meshCollider.convex = false; // Terrain uses non-convex collision
+
+            // Set layer
+            int layer = LayerMask.NameToLayer(layerName);
+            if (layer >= 0)
+            {
+                target.layer = layer;
+            }
+            else
+            {
+                Debug.LogWarning($"[VoxelCollisionBaker] Layer '{layerName}' not found. Using default layer.");
+            }
 
             return meshCollider;
         }
 
         /// <summary>
-        /// Generate simplified collision mesh.
-        /// Uses box primitives for clusters of voxels (more efficient than per-voxel).
+        /// Build a Unity Mesh from vertices and triangles.
         /// </summary>
-        private static Mesh GenerateSimplifiedCollisionMesh(NativeArray<VoxelType> voxels, int chunkSize)
+        private static Mesh BuildMesh(NativeList<float3> vertices, NativeList<int> triangles)
         {
-            var vertices = new System.Collections.Generic.List<Vector3>();
-            var triangles = new System.Collections.Generic.List<int>();
-
-            // Simple approach: create a box for each solid voxel
-            // TODO: Optimize by merging adjacent voxels into larger boxes
-            for (int y = 0; y < chunkSize; y++)
+            if (vertices.Length == 0 || triangles.Length == 0)
             {
-                for (int z = 0; z < chunkSize; z++)
-                {
-                    for (int x = 0; x < chunkSize; x++)
-                    {
-                        int index = VoxelMath.Flatten3DIndex(x, y, z, chunkSize);
-                        VoxelType voxelType = voxels[index];
-
-                        if (voxelType != VoxelType.Air)
-                        {
-                            // Check if voxel has exposed faces (optimization)
-                            if (HasExposedFace(voxels, x, y, z, chunkSize))
-                            {
-                                AddVoxelBox(vertices, triangles, new float3(x, y, z));
-                            }
-                        }
-                    }
-                }
+                // Return empty mesh if no geometry
+                return new Mesh { name = "EmptyCollisionMesh" };
             }
 
             var mesh = new Mesh
             {
-                name = "VoxelCollisionMesh",
-                vertices = vertices.ToArray(),
-                triangles = triangles.ToArray()
+                name = "VoxelCollisionMesh"
             };
+
+            // Convert NativeList to arrays
+            var vertexArray = new Vector3[vertices.Length];
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertexArray[i] = vertices[i];
+            }
+
+            var triangleArray = new int[triangles.Length];
+            for (int i = 0; i < triangles.Length; i++)
+            {
+                triangleArray[i] = triangles[i];
+            }
+
+            mesh.vertices = vertexArray;
+            mesh.triangles = triangleArray;
 
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
@@ -86,84 +374,7 @@ namespace TimeSurvivor.Voxel.Physics
         }
 
         /// <summary>
-        /// Check if a voxel has any exposed faces (border with air).
-        /// </summary>
-        private static bool HasExposedFace(NativeArray<VoxelType> voxels, int x, int y, int z, int chunkSize)
-        {
-            // Check all 6 neighbors
-            if (x > 0 && GetVoxelSafe(voxels, x - 1, y, z, chunkSize) == VoxelType.Air) return true;
-            if (x < chunkSize - 1 && GetVoxelSafe(voxels, x + 1, y, z, chunkSize) == VoxelType.Air) return true;
-            if (y > 0 && GetVoxelSafe(voxels, x, y - 1, z, chunkSize) == VoxelType.Air) return true;
-            if (y < chunkSize - 1 && GetVoxelSafe(voxels, x, y + 1, z, chunkSize) == VoxelType.Air) return true;
-            if (z > 0 && GetVoxelSafe(voxels, x, y, z - 1, chunkSize) == VoxelType.Air) return true;
-            if (z < chunkSize - 1 && GetVoxelSafe(voxels, x, y, z + 1, chunkSize) == VoxelType.Air) return true;
-
-            return false;
-        }
-
-        /// <summary>
-        /// Get voxel safely (returns Air if out of bounds).
-        /// </summary>
-        private static VoxelType GetVoxelSafe(NativeArray<VoxelType> voxels, int x, int y, int z, int chunkSize)
-        {
-            if (x < 0 || x >= chunkSize || y < 0 || y >= chunkSize || z < 0 || z >= chunkSize)
-                return VoxelType.Air;
-
-            int index = VoxelMath.Flatten3DIndex(x, y, z, chunkSize);
-            return voxels[index];
-        }
-
-        /// <summary>
-        /// Add a cube's vertices and triangles to the mesh lists.
-        /// </summary>
-        private static void AddVoxelBox(
-            System.Collections.Generic.List<Vector3> vertices,
-            System.Collections.Generic.List<int> triangles,
-            float3 position)
-        {
-            int startIndex = vertices.Count;
-
-            // Define 8 vertices of a unit cube at position
-            Vector3 p0 = position + new float3(0, 0, 0);
-            Vector3 p1 = position + new float3(1, 0, 0);
-            Vector3 p2 = position + new float3(1, 1, 0);
-            Vector3 p3 = position + new float3(0, 1, 0);
-            Vector3 p4 = position + new float3(0, 0, 1);
-            Vector3 p5 = position + new float3(1, 0, 1);
-            Vector3 p6 = position + new float3(1, 1, 1);
-            Vector3 p7 = position + new float3(0, 1, 1);
-
-            // Add vertices
-            vertices.AddRange(new[] { p0, p1, p2, p3, p4, p5, p6, p7 });
-
-            // Add triangles (12 triangles for 6 faces)
-            // Front face
-            triangles.AddRange(new[] { startIndex + 0, startIndex + 2, startIndex + 1 });
-            triangles.AddRange(new[] { startIndex + 0, startIndex + 3, startIndex + 2 });
-
-            // Back face
-            triangles.AddRange(new[] { startIndex + 5, startIndex + 6, startIndex + 4 });
-            triangles.AddRange(new[] { startIndex + 4, startIndex + 6, startIndex + 7 });
-
-            // Left face
-            triangles.AddRange(new[] { startIndex + 4, startIndex + 7, startIndex + 0 });
-            triangles.AddRange(new[] { startIndex + 0, startIndex + 7, startIndex + 3 });
-
-            // Right face
-            triangles.AddRange(new[] { startIndex + 1, startIndex + 6, startIndex + 5 });
-            triangles.AddRange(new[] { startIndex + 1, startIndex + 2, startIndex + 6 });
-
-            // Top face
-            triangles.AddRange(new[] { startIndex + 3, startIndex + 7, startIndex + 6 });
-            triangles.AddRange(new[] { startIndex + 3, startIndex + 6, startIndex + 2 });
-
-            // Bottom face
-            triangles.AddRange(new[] { startIndex + 4, startIndex + 0, startIndex + 1 });
-            triangles.AddRange(new[] { startIndex + 4, startIndex + 1, startIndex + 5 });
-        }
-
-        /// <summary>
-        /// Calculate estimated memory usage of collision mesh.
+        /// Calculate estimated memory usage of collision mesh in bytes.
         /// </summary>
         public static int CalculateCollisionMemoryUsage(Mesh collisionMesh)
         {
@@ -173,6 +384,20 @@ namespace TimeSurvivor.Voxel.Physics
             int trianglesSize = collisionMesh.triangles.Length * sizeof(int);
 
             return verticesSize + trianglesSize;
+        }
+
+        /// <summary>
+        /// Legacy synchronous baking method (deprecated - use BakeCollisionSync instead).
+        /// Kept for backward compatibility.
+        /// </summary>
+        [System.Obsolete("Use BakeCollisionSync instead")]
+        public static MeshCollider BakeCollision(
+            NativeArray<VoxelType> voxels,
+            int chunkSize,
+            GameObject target)
+        {
+            var mesh = BakeCollisionSync(voxels, chunkSize, resolutionDivider: 2);
+            return ApplyCollisionMesh(mesh, target);
         }
     }
 }

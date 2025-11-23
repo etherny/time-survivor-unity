@@ -36,6 +36,13 @@ namespace TimeSurvivor.Voxel.Core
         [Range(1, 10)]
         public int MaxChunksLoadedPerFrame = 2;
 
+        [Header("Flat Terrain Settings")]
+        [Tooltip("If true, terrain streaming will only load chunks at a single Y level (flat terrain mode)")]
+        public bool IsFlatTerrain = false;
+
+        [Tooltip("Y coordinate level for flat terrain chunks (typically 0)")]
+        public int FlatTerrainYLevel = 0;
+
         [Header("Mesh Generation")]
         [Tooltip("Use amortized meshing to spread work across frames (ADR-005)")]
         public bool UseAmortizedMeshing = true;
@@ -63,6 +70,24 @@ namespace TimeSurvivor.Voxel.Core
         [Tooltip("Use Unity Job System for parallel processing")]
         public bool UseJobSystem = true;
 
+        [Header("Collision System")]
+        [Tooltip("Enable collision generation for voxel terrain")]
+        public bool EnableCollision = true;
+
+        [Tooltip("Collision resolution divider (1=full resolution, 2=half, 4=quarter). Higher = better performance, lower quality.")]
+        [Range(1, 4)]
+        public int CollisionResolutionDivider = 2;
+
+        [Tooltip("Use async collision baking (amortized over frames)")]
+        public bool UseAsyncCollisionBaking = true;
+
+        [Tooltip("Maximum milliseconds per frame for collision baking (if async enabled)")]
+        [Range(0.1f, 2f)]
+        public float MaxCollisionBakingTimePerFrameMs = 0.3f;
+
+        [Tooltip("Layer name for terrain collision (used for physics filtering)")]
+        public string TerrainLayerName = "TerrainStatic";
+
         /// <summary>
         /// Get the total volume of a chunk in voxels
         /// </summary>
@@ -77,6 +102,34 @@ namespace TimeSurvivor.Voxel.Core
         /// Get the world size of a micro-scale chunk in Unity units
         /// </summary>
         public float MicroChunkWorldSize => ChunkSize * MicroVoxelSize;
+
+        /// <summary>
+        /// Estimate memory usage per chunk for collision mesh (in bytes).
+        /// Based on simplified resolution collision geometry.
+        /// </summary>
+        public int EstimatedCollisionMemoryPerChunk
+        {
+            get
+            {
+                if (!EnableCollision) return 0;
+
+                // Calculate collision resolution
+                int collisionSize = ChunkSize / CollisionResolutionDivider;
+                int maxVoxels = collisionSize * collisionSize * collisionSize;
+
+                // Estimate vertices/triangles (conservative estimate: ~8 vertices + 12 triangles per exposed voxel)
+                // Assuming ~25% voxels are surface voxels on average terrain
+                int estimatedSurfaceVoxels = maxVoxels / 4;
+                int estimatedVertices = estimatedSurfaceVoxels * 8;
+                int estimatedTriangles = estimatedSurfaceVoxels * 12;
+
+                // Memory: vertices (float3) + triangles (int3)
+                int verticesSize = estimatedVertices * 3 * sizeof(float);
+                int trianglesSize = estimatedTriangles * 3 * sizeof(int);
+
+                return verticesSize + trianglesSize;
+            }
+        }
 
         private void OnValidate()
         {
@@ -100,6 +153,38 @@ namespace TimeSurvivor.Voxel.Core
             {
                 Debug.LogWarning($"[VoxelConfiguration] Estimated memory usage: {estimatedMemoryMB} MB. " +
                                  "Consider reducing MaxCachedChunks or ChunkSize.");
+            }
+
+            // Validate collision settings
+            if (EnableCollision)
+            {
+                // Ensure divider evenly divides chunk size
+                if (ChunkSize % CollisionResolutionDivider != 0)
+                {
+                    Debug.LogWarning($"[VoxelConfiguration] ChunkSize ({ChunkSize}) should be evenly divisible by " +
+                                     $"CollisionResolutionDivider ({CollisionResolutionDivider}) for optimal collision generation.");
+                }
+
+                // Warn about collision memory usage
+                int collisionMemoryMB = (MaxCachedChunks * EstimatedCollisionMemoryPerChunk) / (1024 * 1024);
+                if (collisionMemoryMB > 200)
+                {
+                    Debug.LogWarning($"[VoxelConfiguration] Estimated collision memory: {collisionMemoryMB} MB. " +
+                                     "Consider increasing CollisionResolutionDivider or reducing MaxCachedChunks.");
+                }
+            }
+
+            // Validate flat terrain settings
+            if (IsFlatTerrain)
+            {
+                // Warn if cache size is excessive for flat terrain
+                int estimatedFlatChunks = (RenderDistance * 2 + 1) * (RenderDistance * 2 + 1); // 2D circle
+                if (MaxCachedChunks > estimatedFlatChunks * 2)
+                {
+                    Debug.LogWarning($"[VoxelConfiguration] Flat terrain mode: MaxCachedChunks ({MaxCachedChunks}) " +
+                                    $"is much larger than needed (~{estimatedFlatChunks * 2} recommended). " +
+                                    "Consider reducing for better memory usage.");
+                }
             }
         }
 

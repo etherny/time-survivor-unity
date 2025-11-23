@@ -1,0 +1,24 @@
+{
+    "name": "TimeSurvivor.Demos.TerrainCollision.Editor",
+    "rootNamespace": "TimeSurvivor.Demos.TerrainCollision.Editor",
+    "references": [
+        "GUID:061d022b8d7584f34813857d497b6e95",
+        "GUID:cb530158dcf314bb8bca2217f1b5012e",
+        "GUID:271c2863bea304a25bf33512e0428dcc",
+        "GUID:565415072a23e4b3cb63a0e713faa07f",
+        "GUID:daa6652c1f7dc4a60b52da822a22c53f",
+        "GUID:5f90bfa939bfe43efa18576bd607dfa6",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

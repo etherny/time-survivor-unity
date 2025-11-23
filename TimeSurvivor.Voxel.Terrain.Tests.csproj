@@ -52,6 +52,8 @@
     <Compile Include="Assets/lib/voxel-terrain/Tests/Runtime/ProceduralTerrainGenerationJobTests.cs" />
     <Compile Include="Assets/lib/voxel-terrain/Tests/Runtime/SimplexNoise3DTests.cs" />
     <Compile Include="Assets/lib/voxel-terrain/Tests/Runtime/MinecraftTerrainGeneratorTests.cs" />
+    <Compile Include="Assets/lib/voxel-terrain/Tests/Runtime/TerrainChunkCollisionTests.cs" />
+    <Compile Include="Assets/lib/voxel-terrain/Tests/Runtime/ChunkManagerCollisionTests.cs" />
     <Compile Include="Assets/lib/voxel-terrain/Tests/Runtime/ProceduralTerrainGenerationJobValidationTests.cs" />
   </ItemGroup>
   <ItemGroup>

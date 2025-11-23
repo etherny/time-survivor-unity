@@ -1,5 +1,6 @@
 ﻿<Solution>
   <Project Path="TimeSurvivor.Voxel.Terrain.Tests.csproj" />
+  <Project Path="TimeSurvivor.Demos.TerrainCollision.csproj" />
   <Project Path="TimeSurvivor.Demos.ChessboardVoxel.csproj" />
   <Project Path="TimeSurvivor.Voxel.Streaming.csproj" />
   <Project Path="TimeSurvivor.Voxel.Core.Tests.csproj" />
@@ -8,12 +9,14 @@
   <Project Path="TimeSurvivor.Demo.LRUCache.Editor.csproj" />
   <Project Path="TimeSurvivor.Voxel.Terrain.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="TimeSurvivor.Demos.TerrainCollision.Editor.csproj" />
   <Project Path="TimeSurvivor.Demos.FlatCheckerboardTerrain.csproj" />
   <Project Path="TimeSurvivor.Demo.LRUCache.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="TimeSurvivor.Demos.FlatCheckerboardTerrain.Tests.csproj" />
   <Project Path="TimeSurvivor.Voxel.Rendering.Tests.csproj" />
   <Project Path="TimeSurvivor.Voxel.Rendering.csproj" />
+  <Project Path="TimeSurvivor.Voxel.Physics.Tests.csproj" />
   <Project Path="TimeSurvivor.Voxel.Physics.csproj" />
   <Project Path="TimeSurvivor.Demos.ProceduralTerrainStreamer.csproj" />
   <Project Path="TimeSurvivor.Demos.MinecraftTerrain.Editor.csproj" />

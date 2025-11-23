@@ -1138,6 +1138,7 @@
   <ItemGroup>
     <ProjectReference Include="TimeSurvivor.Voxel.Core.csproj" />
     <ProjectReference Include="TimeSurvivor.Voxel.Rendering.csproj" />
+    <ProjectReference Include="TimeSurvivor.Voxel.Physics.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <ItemGroup>

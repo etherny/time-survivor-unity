@@ -5,6 +5,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using TimeSurvivor.Voxel.Core;
 using TimeSurvivor.Voxel.Rendering;
+using TimeSurvivor.Voxel.Physics;
 
 namespace TimeSurvivor.Voxel.Terrain
 {
@@ -18,6 +19,8 @@ namespace TimeSurvivor.Voxel.Terrain
         private readonly Dictionary<ChunkCoord, TerrainChunk> _chunks;
         private readonly Queue<ChunkCoord> _generationQueue;
         private readonly Queue<ChunkCoord> _meshingQueue;
+        private readonly Queue<ChunkCoord> _collisionQueue;
+        private readonly Dictionary<ChunkCoord, VoxelCollisionBaker.AsyncBakingHandle> _pendingCollisionJobs;
         private readonly Transform _chunkParent;
         private readonly Material _chunkMaterial;
         private readonly IVoxelGenerator _customGenerator;
@@ -28,6 +31,8 @@ namespace TimeSurvivor.Voxel.Terrain
             _chunks = new Dictionary<ChunkCoord, TerrainChunk>();
             _generationQueue = new Queue<ChunkCoord>();
             _meshingQueue = new Queue<ChunkCoord>();
+            _collisionQueue = new Queue<ChunkCoord>();
+            _pendingCollisionJobs = new Dictionary<ChunkCoord, VoxelCollisionBaker.AsyncBakingHandle>();
 
             // Create parent GameObject for organizing chunks
             if (chunkParent == null)
@@ -69,7 +74,7 @@ namespace TimeSurvivor.Voxel.Terrain
 
         /// <summary>
         /// Unload a chunk at the specified coordinate.
-        /// Disposes of resources.
+        /// Disposes of resources and cleans up pending collision jobs.
         /// </summary>
         public void UnloadChunk(ChunkCoord coord)
         {
@@ -77,6 +82,14 @@ namespace TimeSurvivor.Voxel.Terrain
             {
                 chunk.Dispose();
                 _chunks.Remove(coord);
+            }
+
+            // Cleanup pending collision job if exists
+            if (_pendingCollisionJobs.TryGetValue(coord, out var handle))
+            {
+                handle.JobHandle.Complete(); // Force complete to avoid leaks
+                handle.Dispose();
+                _pendingCollisionJobs.Remove(coord);
             }
         }
 
@@ -251,6 +264,13 @@ namespace TimeSurvivor.Voxel.Terrain
             Mesh mesh = MeshBuilder.BuildMesh(vertices, triangles, uvs, normals, colors);
             chunk.SetMesh(mesh);
 
+            // Queue collision baking if enabled
+            if (_config.EnableCollision && !chunk.HasCollision && !chunk.IsCollisionPending)
+            {
+                _collisionQueue.Enqueue(chunk.Coord);
+                chunk.MarkCollisionPending();
+            }
+
             // Cleanup
             vertices.Dispose();
             triangles.Dispose();
@@ -280,17 +300,105 @@ namespace TimeSurvivor.Voxel.Terrain
         public int MeshingQueueCount => _meshingQueue.Count;
 
         /// <summary>
+        /// Get number of chunks waiting for collision baking.
+        /// </summary>
+        public int CollisionQueueCount => _collisionQueue.Count + _pendingCollisionJobs.Count;
+
+        /// <summary>
+        /// Process collision baking queue.
+        /// Starts new collision jobs and completes finished ones.
+        /// Call this from Update() after ProcessMeshingQueue().
+        /// </summary>
+        /// <param name="deltaTime">Time since last frame</param>
+        public void ProcessCollisionQueue(float deltaTime)
+        {
+            if (!_config.EnableCollision) return;
+
+            float startTime = Time.realtimeSinceStartup;
+            float timeLimit = _config.UseAsyncCollisionBaking
+                ? _config.MaxCollisionBakingTimePerFrameMs / 1000f
+                : float.MaxValue;
+
+            // Check and complete pending jobs
+            var completedJobs = new List<ChunkCoord>();
+            foreach (var kvp in _pendingCollisionJobs)
+            {
+                var coord = kvp.Key;
+                var handle = kvp.Value;
+
+                if (handle.IsCompleted)
+                {
+                    // Complete the job and apply collision
+                    if (_chunks.TryGetValue(coord, out var chunk))
+                    {
+                        var collisionMesh = handle.Complete();
+                        chunk.SetCollisionMesh(collisionMesh, _config.TerrainLayerName);
+                    }
+
+                    handle.Dispose();
+                    completedJobs.Add(coord);
+
+                    // Check time budget
+                    float elapsed = Time.realtimeSinceStartup - startTime;
+                    if (elapsed > timeLimit)
+                        break;
+                }
+            }
+
+            // Remove completed jobs
+            foreach (var coord in completedJobs)
+            {
+                _pendingCollisionJobs.Remove(coord);
+            }
+
+            // Start new collision jobs if time budget allows
+            while (_collisionQueue.Count > 0)
+            {
+                float elapsed = Time.realtimeSinceStartup - startTime;
+                if (elapsed > timeLimit)
+                    break;
+
+                ChunkCoord coord = _collisionQueue.Dequeue();
+
+                if (_chunks.TryGetValue(coord, out var chunk))
+                {
+                    // Start async collision baking
+                    var handle = VoxelCollisionBaker.BakeCollisionAsync(
+                        chunk.VoxelData,
+                        _config.ChunkSize,
+                        _config.CollisionResolutionDivider
+                    );
+
+                    _pendingCollisionJobs[coord] = handle;
+                }
+            }
+        }
+
+        /// <summary>
         /// Dispose of all chunks and cleanup.
+        /// Completes and disposes all pending collision jobs.
         /// </summary>
         public void Dispose()
         {
+            // Dispose all chunks
             foreach (var chunk in _chunks.Values)
             {
                 chunk.Dispose();
             }
             _chunks.Clear();
+
+            // Complete and dispose all pending collision jobs
+            foreach (var handle in _pendingCollisionJobs.Values)
+            {
+                handle.JobHandle.Complete();
+                handle.Dispose();
+            }
+            _pendingCollisionJobs.Clear();
+
+            // Clear queues
             _generationQueue.Clear();
             _meshingQueue.Clear();
+            _collisionQueue.Clear();
         }
     }
 }
